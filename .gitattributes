@@ -2,3 +2,4 @@
 电子书/人工智能[[:space:]]一种现代的方法（第3版）.pdf filter=lfs diff=lfs merge=lfs -text
 电子书/机器学习方法[[:space:]](李航).pdf filter=lfs diff=lfs merge=lfs -text
 *.pdf filter=lfs diff=lfs merge=lfs -text
+电子书/政治学概论（第二版）.pdf filter=lfs diff=lfs merge=lfs -text
