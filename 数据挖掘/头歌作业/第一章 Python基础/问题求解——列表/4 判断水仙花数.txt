@@ -1,0 +1,11 @@
+x = int(input())
+########## Begin ##########
+if len(str(x))==3 and x>0:
+    li=list(map(int,str(x)))
+    s=0
+    for i in li:
+        s+=i**3
+    print(s==x)
+else:
+    print(False)
+########## End ##########

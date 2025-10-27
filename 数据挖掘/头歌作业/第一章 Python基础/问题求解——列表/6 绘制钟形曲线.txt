@@ -1,0 +1,25 @@
+import matplotlib.pyplot as plt
+
+########## Begin ##########
+import math
+a=-3
+b=3
+n=21
+f=(b-a)/(21-1)
+X=[a+f*i for i in range(n)]
+Y=[math.exp(-x**2/2)/(2*math.pi)**0.5 for x in X]
+########## End ##########
+
+#以下代码用于打印结果
+for i in range(len(X)):
+    if round(X[i],2)==-0.0:
+        X[i]=0
+    print('%.2f\t%.2f' % (X[i],Y[i]))
+
+#以下代码用于绘制图形
+plt.plot(X,Y,'bo-')
+plt.grid('on')
+plt.axis([-3, 3, 0, 0.4])
+plt.show()
+plt.savefig( 'src/step6/student/pic.png' )
+plt.close()

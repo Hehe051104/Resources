@@ -1,0 +1,18 @@
+from PIL import Image
+
+########## Begin ##########
+def enImg(path1, path2):
+    img1=Image.open(path1)
+    w,h=img1.size
+    img2=Image.new(img1.mode,(w,h))
+    for i in range(w):
+        for j in range(h):
+            nw=(i+2*j)%w
+            nh=(i+3*j)%w
+            img2.putpixel((nw,nh),img1.getpixel((i,j)))
+    img2.save(path2)
+########## End ##########
+
+path1 = 'src/step6/source/step6.bmp'    #原始图像
+path2 = 'src/step6/student/step6_2.bmp' #加密后的图像
+enImg(path1, path2)

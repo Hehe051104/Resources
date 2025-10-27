@@ -1,0 +1,9 @@
+L = [101, 25, 38, 29, 108, 121]
+########## Begin ##########
+miu=sum(L)/len(L)
+s=0
+for i in L:
+    s+=(i-miu)**2
+sigma=(s/len(L))**0.5
+########## End ##########
+print('%.2f' % sigma)

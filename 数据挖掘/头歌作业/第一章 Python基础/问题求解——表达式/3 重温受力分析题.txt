@@ -1,0 +1,9 @@
+import math
+l = eval(input())     #获取斜面长度l
+theta = eval(input()) #获取斜面角度θ（输入的是角度）
+########## Begin ##########
+theta=math.radians(theta)
+a=9.8*math.sin(theta)-0.1*9.8*math.cos(theta)
+t=(2*l/a)**0.5
+########## End ##########
+print(int(t))         #打印木块滑行时间（保留整数）

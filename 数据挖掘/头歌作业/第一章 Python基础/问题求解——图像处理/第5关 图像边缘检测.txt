@@ -1,0 +1,43 @@
+from PIL import Image
+
+#求图像img中(x,y)处像素的卷积c
+def convolute(img, x, y):
+    ########## Begin ##########
+    # 定义卷积核
+    kernel = [[1, 1, 1], [1, -8, 1], [1, 1, 1]]
+    c = 0
+    # 遍历3x3的卷积核和图像区域
+    for i in range(3):
+        for j in range(3):
+            # 获取对应位置的像素值
+            pixel_value = img.getpixel((x + i - 1, y + j - 1))
+            # 将卷积核元素与像素值相乘并累加
+            c += kernel[i][j] * pixel_value
+    ########## End ##########
+    return c
+
+#对图像文件1进行边缘检测，并将结果保存为图像文件2
+#图像文件1和2的路径分别为path1和path2
+def detectEdge(path1, path2):
+    img1 = Image.open(path1)  #图像1
+    img1 = img1.convert('L')  #将图像1转换为灰度图
+    w, h = img1.size
+    img2 = Image.new('L', (w, h), 'white') #图像2
+    ########## Begin ##########
+    ##此部分功能：依次求img1中每个像素的卷积c，再将c放到img2的对应位置
+    # 遍历图像中所有非边界的像素
+    for x in range(1, w - 1):
+        for y in range(1, h - 1):
+            # 计算当前像素的卷积
+            c = convolute(img1, x, y)
+            # 根据卷积结果设置新图像的像素值
+            if c > 0:
+                img2.putpixel((x, y), 0)  # c > 0, 设为黑色
+            else:
+                img2.putpixel((x, y), 255) # c <= 0, 设为白色
+    ########## End ##########
+    img2.save(path2)
+
+path1 = 'src/step5/source/step5.bmp'    #原始图像
+path2 = 'src/step5/student/step5_2.bmp' #检测到的边缘图像
+detectEdge(path1, path2)

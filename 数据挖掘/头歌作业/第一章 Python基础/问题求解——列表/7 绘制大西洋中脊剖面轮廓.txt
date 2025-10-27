@@ -1,0 +1,22 @@
+import matplotlib.pyplot as plt
+
+########## Begin ##########
+X=[]
+Y=[]
+for i in range(-1200,1201,200):
+    X.append(i)
+    Y.append(-(2.5+0.11*(10*abs(i)/50)**0.5))
+plt.plot(X,Y,'r-')
+plt.xlim([-1200,1200])
+plt.ylim([-4.2,0])
+plt.grid(False)
+plt.show()
+########## End ##########
+
+#以下代码用于打印结果
+for i in range(len(X)):
+    print('%5s\t%.2f' % (int(X[i]),Y[i]))
+    
+#以下代码用于保存图片
+plt.savefig( 'src/step7/student/pic.png' )
+plt.close()

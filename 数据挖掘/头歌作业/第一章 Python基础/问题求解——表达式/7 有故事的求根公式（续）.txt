@@ -1,0 +1,15 @@
+import numpy as np
+a = eval(input()) #获取a的值
+b = eval(input()) #获取b的值
+c = eval(input()) #获取c的值
+d = eval(input()) #获取d的值
+########## Begin ##########
+A=b**2-3*a*c
+B=b*c-9*a*d
+C=c**2-3*b*d
+delta=B**2-4*A*C
+y1=A*b+3*a*((-B+np.sqrt(delta))/2)
+y2=A*b+3*a*((-B-np.sqrt(delta))/2)
+x1=(-b-(np.cbrt(y1)+np.cbrt(y2)))/(3*a)
+########## End ##########
+print('%.1fx^3+%.1fx^2+%.1fx+%.1f=0的实数根为：%.4f' % (a,b,c,d,x1))

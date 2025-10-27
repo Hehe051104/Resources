@@ -1,0 +1,8 @@
+########## Begin ##########
+import math
+g=17**0.5
+left=math.cos(2*math.pi/17)
+right=(-1+g+(2*(17-g))**0.5+2*(17+3*g-(2*(17-g))**0.5-2*(2*(17+g))**0.5)**0.5)/16
+print('等式左边：%.8f' % (left))
+print('等式右边：%.8f' % (right))
+print('左右之差：%.8f' % (left-right))

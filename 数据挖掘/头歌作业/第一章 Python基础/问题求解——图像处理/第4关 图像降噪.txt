@@ -1,0 +1,30 @@
+from PIL import Image
+
+#求图像img中(x,y)处像素的中值c
+def median(img, x, y):
+    ########## Begin ##########
+    li=[]
+    for i in range(x-1,x+2):
+        for j in range(y-1,y+2):
+            li.append(img.getpixel((i,j)))
+    li.sort()
+    c=li[4]
+    ########## End ##########
+    return c
+
+#对图像文件1进行降噪，并将结果保存为图像文件2
+#图像文件1和2的路径分别为path1和path2
+def denoise(path1, path2):
+    img1 = Image.open(path1)  #图像1
+    img1 = img1.convert('L')  #将图像1转换为灰度图
+    w, h = img1.size
+    img2 = Image.new('L', (w, h), 'white') #图像2
+    for x in range(1, w-1):
+        for y in range(1, h-1):
+            c = median(img1, x, y)  #求中值
+            img2.putpixel((x,y), c) #将灰度设置为中值
+    img2.save(path2)
+
+path1 = 'src/step4/source/step4.bmp'   #带噪声的图像
+path2 = 'src/step4/student/step4_2.bmp'  #降噪后的图像
+denoise(path1, path2)

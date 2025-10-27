@@ -1,0 +1,7 @@
+import math
+H = eval(input()) #获取振幅H
+D = eval(input()) #获取距离D
+########## Begin ##########
+Mt=math.log(H,10)+math.log(D,10)+5.8
+########## End ##########
+print(int(Mt))    #打印海啸等级（保留整数）

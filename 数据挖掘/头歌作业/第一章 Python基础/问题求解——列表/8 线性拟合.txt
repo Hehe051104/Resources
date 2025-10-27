@@ -1,0 +1,26 @@
+import matplotlib.pyplot as plt
+X = [0,  0.5,   1,   1.5,   2,  2.5,   3,   4,  4.5,    5]
+Y = [0,   18,  20,  39.5,  60,   50,  68,  77,  100,  110]
+########## Begin ##########
+n=len(X)
+x=0
+y=0
+x2=0
+c=0
+for i in range(n):
+    x+=X[i]
+    y+=Y[i]
+    x2+=X[i]**2
+    c+=X[i]*Y[i]
+k=(x*y-n*c)/(x**2-n*x2)
+b=(x*c-x2*y)/(x**2-n*x2)
+
+plt.plot(X, Y, 'bo')
+x_line=[X[0],X[-1]]
+y_line=[k*X[0]+b,k*X[-1]+b]
+plt.plot(x_line,y_line,'r-')
+plt.grid(False)
+########## End ##########
+print('y = %.3fx + %.3f' % (k,b))
+plt.savefig( 'src/step8/student/pic.png' )
+plt.close()

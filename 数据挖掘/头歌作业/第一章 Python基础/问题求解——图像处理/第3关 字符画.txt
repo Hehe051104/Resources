@@ -1,0 +1,30 @@
+from PIL import Image
+
+#将一个灰度值转换成对应的字符
+def GraytoChar(gray):
+    allChar = """@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,"^`'"""
+    ########## Begin ##########
+    char=allChar[int(gray*len(allChar)/256)]
+    ########## End ##########
+    return char
+
+#将真彩色图像转换成字符画，真彩色图像文件路径为path
+def toCharImage(path):
+    img = Image.open(path)
+    ow, oh = img.size #原始图像的宽和高    
+    w = 80            #调整后的宽度（即字符画每行有w个字符）
+    h = w*oh//ow      #高度也按比例调整（即字符画总共有h行）
+    h = h//2          #在文本中，行与行之间有间隔，要进一步缩小高度才能得到较好效果
+    img = img.resize((w, h)) #调整图片大小
+    img = img.convert('L')   #将真彩色图像转换为灰度图
+    charImg = ''             #用于存储字符画
+    ########## Begin ##########
+    #将img中的灰度值逐一转换成字符，每得到一个字符，添加到charImg最后，转换完一行要添加换行符
+    for y in range(h):
+        for x in range(w):
+            g=img.getpixel((x,y))
+            charImg+=GraytoChar(g)
+            if x==w-1:
+                charImg+='\n'
+    ########## End ##########
+    return charImg

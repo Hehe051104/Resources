@@ -1,0 +1,27 @@
+from PIL import Image
+
+#将一个RGB颜色转换成灰度值，结果保留整数
+def RGBtoGray(r, g, b):
+    ########## Begin ##########
+    gray=round(r*0.299+g*0.587+b*0.114)
+    ########## End ##########
+    return gray
+
+#将真彩色图像转换成灰度图
+#真彩色和灰度图的文件路径分别为path1和path2
+def toGrayImage(path1, path2):
+    img1 = Image.open(path1)      #真彩色图像，像素中是RGB颜色
+    w, h = img1.size
+    img2 = Image.new('L', (w, h)) #新建一个灰度图像，像素中是灰度值
+    ########## Begin ##########
+    #此部分功能：依次取出img1中每个像素的RGB颜色，转换成灰度值，再放到img2的对应位置
+    for i in range(w):
+        for j in range(h):
+            r,g,b=img1.getpixel((i,j))
+            img2.putpixel((i,j),RGBtoGray(r,g,b))
+    ########## End ##########
+    img2.save(path2)
+
+path1 = 'src/step2/source/step2.jpg'    #真彩色图像
+path2 = 'src/step2/student/step2_2.jpg' #灰度图像
+toGrayImage(path1, path2)

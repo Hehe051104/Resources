@@ -1,0 +1,27 @@
+from PIL import Image
+
+########## Begin ##########
+#调整一个像素的亮度
+def enhancePixel(r, g, b, n):
+    er = max(0, min(255, r + n))
+    eg = max(0, min(255, g + n))
+    eb = max(0, min(255, b + n))
+    return er, eg, eb
+########## End ##########
+
+#调整图像文件1中所有像素的亮度，并将调整结果保存为图像文件2
+#图像文件1和2的路径分别为path1和path2，n为调整量
+def enhanceImg(path1, path2, n):
+    img = Image.open(path1)
+    w, h = img.size
+    for x in range(w):
+        for y in range(h):
+            r,g,b=img.getpixel((x, y))            #取出颜色
+            er, eg, eb = enhancePixel(r, g, b, n) #调整亮度
+            img.putpixel((x,y),(er, eg, eb))      #放回像素
+    img.save(path2)
+
+path1 = 'src/step1/source/step1.jpg'   #原始图像文件
+path2 = 'src/step1/student/step1_2.jpg'#调整亮度后的图像文件
+n = 50 #调整量
+enhanceImg(path1, path2, 50)
