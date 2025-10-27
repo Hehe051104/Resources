@@ -1,0 +1,22 @@
+########## Begin ##########
+def RLE(x):
+    num=1
+    pre=x[0]
+    s=''
+    for i in range(1,len(x)):
+        if x[i]==pre:
+            num+=1
+        else:
+            s+=str(num)
+            s+=pre
+            num=1
+            pre=x[i]
+    s+=str(num)
+    s+=pre
+    return s
+########## End ##########
+
+x = input()  #原始数据
+y = RLE(x)   #行程编码
+print('原始数据：', x)
+print('行程编码：', y)

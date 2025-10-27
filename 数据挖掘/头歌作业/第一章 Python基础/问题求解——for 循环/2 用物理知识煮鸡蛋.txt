@@ -1,0 +1,6 @@
+########## Begin ##########
+import math
+for i in range(-10,36,5):
+    t=437.3*math.log((100-i)/35)
+    print(f'{i}\t{int(t)}')
+########## End ##########

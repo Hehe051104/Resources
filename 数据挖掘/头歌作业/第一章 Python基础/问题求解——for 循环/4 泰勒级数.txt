@@ -1,0 +1,15 @@
+import math
+n = int(input())
+x = eval(input())   #输入时采用度数，如30表示30°
+x = math.radians(x) #将度转换为弧度，如30°转换为π/6，泰勒展开式中的x要使用弧度
+########## Begin ##########
+if n<0:
+    print('输入错误')
+else:
+    res=0
+    num=0
+    for i in range(1,2*n+2,2):
+        res+=(x**i/math.factorial(i))*(-1)**num
+        num+=1
+    print(f'{res:.8f}')
+########## End ##########

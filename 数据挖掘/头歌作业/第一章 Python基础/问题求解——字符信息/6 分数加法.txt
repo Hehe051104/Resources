@@ -1,0 +1,32 @@
+########## Begin ##########
+import math
+def add(x, y):
+    if '/' in x:
+        num1, den1 = map(int, x.split('/'))
+    else:
+        num1 = int(x)
+        den1 = 1
+    
+    if '/' in y:
+        num2, den2 = map(int, y.split('/'))
+    else:
+        num2 = int(y)
+        den2 = 1
+    
+    numerator = num1 * den2 + num2 * den1
+    denominator = den1 * den2
+    
+    g = math.gcd(numerator, denominator)
+    numerator //= g
+    denominator //= g
+    
+    if denominator == 1:
+        return str(numerator)
+    else:
+        return f'{numerator}/{denominator}'
+########## End ##########
+
+x = input()
+y = input()
+z = add(x, y) #分数相加
+print('%s + %s = %s' % (x, y, z))

@@ -1,0 +1,11 @@
+n = int(input())
+########## Begin ##########
+if n==2:
+    print(True)
+else:
+    s=1
+    for i in range(2,n):
+        if n%i==0:
+            s+=1
+    print(s==1)
+########## End ##########

@@ -1,0 +1,39 @@
+########## Begin ##########
+def enChar(x):
+    asc=f'{ord(x):08b}'
+    ascs=int((asc[-1]+asc[0:7]),2)^0b10100101
+    return f'{ascs:08b}'
+    
+########## End ##########
+def deChar(y):      #解密一个字符，密文为y，以'00000101'为例
+    x,key = '','10100101'     #key为密钥，x存放解密结果
+    for i in range(len(y)):   #1)密文与密钥进行异或运算，得'10100000'
+        if y[i]==key[i]:          #相同为0
+            x=x+'0'
+        else:                     #相异为1
+            x=x+'1'
+    x = x[1:len(x)]+x[0]      #2)循环左移1位，得'01000001'，要进一步转换成十进制
+    x = int(x,2)                  #将二进制转换为十进制，得65
+    x = chr(x)                #3)求ASCII码对应的字符，得'A'
+    return x                  #4)得解密结果x
+
+def enText(txt):      #加密一段明文
+    enTxt = ''
+    for x in txt:     #逐一加密每个字符
+        enTxt = enTxt+enChar(x)+' ' #之间加上空格，方便阅读
+    return enTxt
+
+def deText(txt):      #解密一段密文
+    txt=txt.replace(' ','')      #删去空格
+    deTxt = ''
+    for i in range(len(txt)//8): #逐一解密每个字节
+        y = txt[8*i:8*(i+1)]
+        deTxt = deTxt+deChar(y)
+    return deTxt
+
+txt = input()         #明文
+enTxt = enText(txt)   #加密
+deTxt = deText(enTxt) #解密
+print('明文：', txt)
+print('加密：', enTxt)
+print('解密：', deTxt)

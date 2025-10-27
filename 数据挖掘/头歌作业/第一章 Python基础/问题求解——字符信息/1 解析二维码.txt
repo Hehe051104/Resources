@@ -1,0 +1,9 @@
+########## Begin ##########
+def parseQR(code):
+    codes=[code[i:i+8] for i in range(0,len(code),8)]
+    asc=[chr(int(c,2)) for c in codes]
+    return ''.join(asc)
+########## End ##########
+code = input()       #01串
+info = parseQR(code) #转换成原始信息
+print('%s\n-> %s' % (code, info ))

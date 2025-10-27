@@ -1,0 +1,11 @@
+import math
+n = int(input())
+########## Begin ##########
+def y(x):
+    return math.exp(x)*math.sin(x)
+g=math.pi/n
+S=0
+for i in range(n):
+    S+=(y(i*g)+y((i+1)*g))*g/2
+########## End ##########
+print('%.4f' % S) #解析解=12.0703...

@@ -1,0 +1,9 @@
+n = int(input())
+########## Begin ##########
+for i in range(n):
+    s=' '*(n-i-1)
+    x='*'*(2*i+1)
+    print(s,end='')
+    print(x,end='')
+    print(s)
+########## End ##########

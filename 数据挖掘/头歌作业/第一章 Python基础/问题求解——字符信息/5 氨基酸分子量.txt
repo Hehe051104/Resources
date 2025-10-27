@@ -1,0 +1,28 @@
+########## Begin ##########
+di={'O':16,'C':12,'N':14,'S':32,'H':1}
+def molecularWeight(formula):
+    res=0
+    s=0
+    pre=''
+    for i in formula:
+        if i.isdigit():
+            s=s*10+int(i)
+        else:
+            if pre=='':
+                pre=i
+                s=0
+            else:
+                if s==0:
+                    s=1
+                res+=di[pre]*s
+                pre=i
+                s=0
+    if s==0:
+        s=1
+    res+=di[pre]*s
+    return res
+########## End ##########
+
+formula = input()  #分子式
+weight  = molecularWeight(formula)   #分子量
+print('%s的分子量是：%d'%(formula, weight))
