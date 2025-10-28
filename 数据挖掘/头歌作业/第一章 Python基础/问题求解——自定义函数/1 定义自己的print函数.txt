@@ -1,0 +1,12 @@
+########## Begin ##########
+def myprint(s):
+    if type(s)==float:
+        print(f'{s:.3f}')
+    else:
+        print(s)
+########## End ##########
+r, pi=3, 3.141592653589793
+myprint('半径r：')
+myprint(r)
+myprint('\n圆的面积S：')
+myprint(pi*r**2)

@@ -1,0 +1,25 @@
+########## Begin ##########
+def multiply(A, B):
+    x,y=len(A),len(B[0])
+    li=[[0 for _ in range(y)] for _ in range(x)]
+    for i in range(len(A)):
+        for j in range(len(B[0])):
+            for k in range(len(B)):
+                li[i][j]+=A[i][k]*B[k][j]
+    return li
+########## End ##########
+import myMatrix 
+num1 = int(input())
+num2 = int(input())
+
+A = myMatrix.getMatrix(num1)
+print('A=')
+myMatrix.printMatrix(A)
+
+B = myMatrix.getMatrix(num2)
+print('\nB=')
+myMatrix.printMatrix(B)
+
+C=multiply(A, B)
+print('\nC=AxB=')
+myMatrix.printMatrix(C)

@@ -1,0 +1,31 @@
+########## Begin ##########
+def func(n):
+    return n**2+n+41
+
+def su(n):
+    if n==1:
+        return False
+    s=0
+    for i in range(2,n):
+        if n%i==0:
+            s+=1
+    return s==0
+
+def zuixiao(n):
+    for i in range(2,n):
+        if n%i==0:
+            return i
+
+i=1
+while(1):
+    oula=func(i)
+    res=su(oula)
+    if res:
+        print(f'f({i})={oula}是素数')
+        i+=1
+    else:
+        a=zuixiao(oula)
+        b=oula//a
+        print(f'f({i})={oula}={a}*{b}不是素数')
+        break
+########## End ##########

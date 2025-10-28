@@ -1,0 +1,9 @@
+########## Begin ##########
+def printOneRow(n):
+    f=1.8*n+32
+    print(f'{int(n):>3}     {int(f):>3}')
+########## End ##########
+print('%3s     %3s' % ('C', 'F')) #打印第1行的表头
+print('------------')             #打印第2行的分隔线
+for C in range(0, 101, 10):       #依次打印数据行
+    printOneRow(C)

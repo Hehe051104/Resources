@@ -1,0 +1,22 @@
+########## Begin ##########
+def  su(n):
+    if n==1:
+        return False
+    s=0
+    for i in range(2,n):
+        if n%i==0:
+            s+=1
+    return s==0
+
+def Goldbach(n):
+    li=[]
+    for i in range(2,n):
+        if su(i):
+            li.append(i)
+    for i in range(2,n):
+        if i in li and n-i in li:
+            return i,n-i
+########## End ##########
+N=int(input(''))
+N1,N2 = Goldbach(N)
+print('%d = %d + %d' % (N, N1, N2))

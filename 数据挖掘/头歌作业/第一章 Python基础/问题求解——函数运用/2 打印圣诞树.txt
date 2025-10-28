@@ -1,0 +1,24 @@
+########## Begin ##########
+def san(h):
+    for i in range(h):
+        x=2*i+1
+        k=(19-x)//2
+        xs='*'*x
+        ks=' '*k
+        print(ks,end='')
+        print(xs,end='')
+        print(ks)
+def rec(h):
+    x=3
+    k=(19-x)//2
+    xs='*'*x
+    ks=' '*k
+    for i in range(h):
+        print(ks,end='')
+        print(xs,end='')
+        print(ks)
+san(5)
+san(7)
+san(10)
+rec(6)
+########## End ##########

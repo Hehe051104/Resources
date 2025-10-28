@@ -1,0 +1,12 @@
+########## Begin ##########
+def fac(x):
+    s=1
+    for i in range(1,x+1):
+        s*=i
+    return s
+########## End ##########
+n = int(input())
+s = 0
+for x in range(1, n+1):
+    s = s+fac(x)
+print('1到%d的阶乘之和为：%d' % (n, s))

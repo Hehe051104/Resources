@@ -1,0 +1,24 @@
+########## Begin ##########
+import numpy as np
+import matplotlib.pyplot as plt
+
+v0 = 50      # 初速度 (m/s)
+g = 9.8      # 重力加速度 (m/s^2)
+n = 30       # 采样点数
+angles = [30, 45, 60, 75]  # 发射角度（度）
+
+for theta_deg in angles:
+    theta = np.radians(theta_deg)          # 转为弧度
+    t_max = 2 * v0 * np.sin(theta) / g     # 飞行总时间
+    t = np.linspace(0, t_max, n)           # 时间数组
+    
+    x = v0 * np.cos(theta) * t             # x(t)
+    y = v0 * np.sin(theta) * t - 0.5 * g * t**2  # y(t)
+    
+    plt.plot(x, y, 'r-')                   # 红色实线
+
+plt.grid(True)                             # 显示网格
+plt.axis([0, 260, 0, 120])                 # 设置坐标范围
+########## End ##########
+plt.savefig( 'src/step6/student/pic.png' )
+plt.close()

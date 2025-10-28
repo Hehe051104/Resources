@@ -1,0 +1,17 @@
+########## Begin ##########
+import math
+def mycos(x, n=10):
+    res = 0
+    for k in range(n + 1):
+        res += ((-1) ** k) * (x ** (2 * k)) / math.factorial(2 * k)
+    return res
+########## End ##########
+pi = 3.14159
+x  = pi/3
+for n in range(5):
+    print('n=%d时，cos(60°)=%.5f' % (n, mycos(x, n)))
+
+print('-'*30)
+L = [0, 30, 45, 60, 90]
+for x in L:
+    print('cos(%d°)=%.5f' % (x, mycos(x*pi/180)))
