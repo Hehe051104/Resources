@@ -1,0 +1,9 @@
+m = int(input()) #行数
+n = int(input()) #列数
+########## Begin ##########
+li=[[0 for _ in range(n)] for _ in range(m)]
+for i in range(m):
+    for j in range(n):
+        print(0,end='\t')
+    print()
+########## End ##########

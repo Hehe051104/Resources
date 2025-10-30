@@ -1,0 +1,28 @@
+import myMatrix
+num = int(input())
+A = myMatrix.getMatrix(num)
+print('A=')
+myMatrix.printMatrix(A)
+########## Begin ##########
+flag=True
+if len(A)!=len(A[0]):
+    flag=False
+else:
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            if i==j and A[i][j]==1:
+                continue
+            elif i==j and A[i][j]!=1:
+                flag=False
+                break
+            else:
+                if A[i][j]!=0:
+                    flag=False
+                    break
+        if not flag:
+            break
+########## End ##########
+if flag == True:
+    print('A是单位矩阵')
+else:
+    print('A不是单位矩阵')

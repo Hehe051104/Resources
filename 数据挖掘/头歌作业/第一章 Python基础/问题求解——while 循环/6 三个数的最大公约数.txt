@@ -1,0 +1,12 @@
+a = int(input())
+b = int(input())
+c = int(input())
+########## Begin ##########
+def gcd(x, y):
+    while y != 0:
+        x, y = y, x % y
+    return x
+
+result = gcd(gcd(a, b), c)
+print(result)
+########## End ##########

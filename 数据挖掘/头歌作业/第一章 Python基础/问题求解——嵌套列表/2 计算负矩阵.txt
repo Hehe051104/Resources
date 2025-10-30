@@ -1,0 +1,10 @@
+import myMatrix             #myMatrix是自己定义的一个库
+num = int(input())
+A = myMatrix.getMatrix(num) #利用myMatrix库生成矩阵A
+print('A=')
+myMatrix.printMatrix(A)     #利用myMatrix库打印矩阵A
+########## Begin ##########
+B=[[-A[i][j] for j in range(len(A[0]))] for i in range(len(A))]
+########## End ##########
+print('\nB=-A=')
+myMatrix.printMatrix(B)     #利用myMatrix库打印矩阵B

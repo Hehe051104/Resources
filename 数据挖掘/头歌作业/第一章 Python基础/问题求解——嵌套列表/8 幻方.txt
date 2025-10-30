@@ -1,0 +1,40 @@
+import myMatrix
+num = int(input())
+A = myMatrix.getMatrix(num)
+print('A=')
+myMatrix.printMatrix(A)
+########## Begin ##########
+n=len(A)
+res=sum(A[0])
+flag=True
+ans=0
+for i in range(n):
+    for j in range(n):
+        ans+=A[i][j]
+if ans!=n**2*(1+n**2)//2:
+    flag=False
+for i in range(1,n):
+    if sum(A[i])!=res:
+        flag=False
+for j in range(n):
+    ans=0
+    for i in range(n):
+        ans+=A[i][j]
+    if ans!=res:
+        flag=False
+        break
+ans=0
+for i in range(n):
+    ans+=A[i][i]
+if ans!=res:
+    flag=False
+ans=0
+for i in range(n):
+    ans+=A[i][n-i-1]
+if ans!=res:
+    flag=False
+########## End ##########
+if flag == True:
+    print('A是幻方')
+else:
+    print('A不是幻方')

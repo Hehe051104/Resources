@@ -1,0 +1,15 @@
+a = eval(input()) #获取a的值
+b = eval(input()) #获取b的值
+c = eval(input()) #获取c的值
+########## Begin ##########
+d=b**2-4*a*c
+if d>0:
+    x1=(-b+d**0.5)/(2*a)
+    x2=(-b-d**0.5)/(2*a)
+    print(f'x1={x1:.4f},x2={x2:.4f}')
+elif d==0:
+    x1=-b/(2*a)
+    print(f'x1={x1:.4f}')
+else:
+    print('无实数根')
+########## End ##########

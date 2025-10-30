@@ -1,0 +1,8 @@
+import pandas as pd
+df = pd.read_csv('deaths.csv')
+data = pd.DataFrame(df)
+data = data.iloc[1:,1]
+#### begin ####
+li=[min(data),max(data)]
+print(li)
+#### end ####

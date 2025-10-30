@@ -1,0 +1,8 @@
+D.    单值属性(Single-Valued)
+D.    相异
+C.    区间
+C.    非对称的二元属性
+C.    float64
+B.    str
+A.   正确
+A.   正确

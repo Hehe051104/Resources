@@ -1,0 +1,16 @@
+import myMatrix
+num1 = int(input())
+num2 = int(input())
+
+A = myMatrix.getMatrix(num1)
+print('A=')
+myMatrix.printMatrix(A)
+
+B = myMatrix.getMatrix(num2)
+print('\nB=')
+myMatrix.printMatrix(B)
+########## Begin ##########
+C=[[A[i][j]+B[i][j] for j in range(len(A[0]))] for i in range(len(A))]
+########## End ##########
+print('\nC=A+B=')
+myMatrix.printMatrix(C) #打印矩阵C

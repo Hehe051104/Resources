@@ -1,0 +1,7 @@
+x = eval(input())
+########## Begin ##########
+g=x/2
+while abs(x-g*g)>=1e-6:
+    g=(g+x/g)/2
+########## End ##########
+print('%.5f' % g)

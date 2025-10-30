@@ -1,0 +1,7 @@
+import pandas as pd
+pd.set_option('display.max_rows', 1000)
+# 读入外部数据
+data3 = pd.read_csv('deaths.csv')
+#####begin#####
+print(data3.dtypes)
+#####end######

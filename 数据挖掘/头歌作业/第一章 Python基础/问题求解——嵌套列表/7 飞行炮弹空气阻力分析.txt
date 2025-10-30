@@ -1,0 +1,13 @@
+import myMatrix
+########## Begin ##########
+def func(s,v):
+    return round(0.5*0.1*1.2*s*v**2)
+s=[0.005,0.01,0.015,0.02]
+v=[100,200,300,400,500]
+F=[[0 for _ in range(len(v))] for _ in range(len(s))]
+for i in range(len(s)):
+    for j in range(len(v)):
+        F[i][j]=func(s[i],v[j])
+########## End ##########
+myMatrix.printMatrix(F)    #打印结果
+myMatrix.drawMatrixIn3D(F) #绘制图形

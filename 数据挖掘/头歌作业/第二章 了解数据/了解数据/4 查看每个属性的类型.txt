@@ -1,0 +1,9 @@
+import pandas as pd
+df = pd.read_csv('deaths.csv')
+data = pd.DataFrame(df)
+data = data.iloc[1,:]
+#### begin ####
+li=[type(i) for i in data]
+
+print(li)
+#### end ####

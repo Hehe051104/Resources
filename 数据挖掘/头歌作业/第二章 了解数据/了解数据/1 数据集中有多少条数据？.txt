@@ -1,0 +1,5 @@
+import pandas as pd
+df = pd.read_csv("deaths.csv")
+#### Begin ####
+print(len(df))
+#### End ####
