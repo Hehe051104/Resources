@@ -1,0 +1,41 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+import numpy as np
+
+data = pd.read_csv("src/death.csv", index_col='Unnamed: 0')
+
+data = data.dropna(axis=1, thresh=data.shape[0] * 0.2)
+data = data.dropna(axis=0, thresh=data.shape[1] * 0.2)
+
+a = pd.isna(data).sum()
+cols = [x for i, x in enumerate(a.index) if a[i] > 0]
+
+mode_list = 'FIPS Admin2'
+for i in cols:
+    if mode_list.find(i) != -1:
+        data[i] = data[i].fillna(data[i].mode().iloc[0])
+    else:
+        data[i] = data[i].fillna(data.mean()[i])
+
+
+cols = '2008/10/20,2008/11/20,2008/12/20'.split(',')
+x = data[cols]
+
+########## Begin ########## 
+# 3σ 原则检测异常值
+mean=x.mean()
+std=x.std()
+
+lower=mean-3*std
+upper=mean+3*std
+
+out=((x<lower) | (x>upper))
+
+# 删除异常值
+x=x[~out.any(axis=1)]
+
+# 打印各列异常值个数 
+print(out.sum())
+########## End ########## 
+

@@ -1,0 +1,21 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.neighbors import LocalOutlierFactor
+# 导入数据
+abc = pd.read_csv('deaths.csv')
+## 只分析其中的Population和Lat两个变量
+abc = abc[["Population","Lat"]]
+
+
+###begin###
+# 初始化LOF模型，设置近邻数量为10 
+lof = LocalOutlierFactor(n_neighbors=10, metric='minkowski')
+
+# 拟合数据并预测异常值标签  
+outlier_pre = lof.fit_predict(abc)
+
+# 分离异常值和正常值  
+outliers = len(abc[outlier_pre==-1])
+inliers = len(abc[outlier_pre==1])
+###end####

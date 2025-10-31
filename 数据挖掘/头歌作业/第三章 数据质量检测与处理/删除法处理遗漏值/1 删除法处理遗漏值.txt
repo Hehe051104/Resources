@@ -1,0 +1,14 @@
+import pandas as pd
+
+data = pd.read_csv("src/death.csv", index_col='Unnamed: 0')
+
+########### Begin ##########
+
+# 删除缺失值超过 80% 的行
+data = data.dropna(thresh=data.shape[1]*0.2)
+
+# 删除缺失值超过 80% 的列
+data = data.dropna(axis=1,thresh=data.shape[0]*0.2)
+
+########### End ##########
+print(data)

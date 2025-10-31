@@ -1,0 +1,26 @@
+import pandas as pd
+
+data = pd.read_csv("src/death.csv", index_col='Unnamed: 0')
+
+data = data.dropna(axis=1, thresh=data.shape[0] * 0.2)
+data = data.dropna(axis=0, thresh=data.shape[1] * 0.2)
+
+a = pd.isna(data).sum()
+cols = [x for i, x in enumerate(a.index) if a[i] > 0]
+
+mode_list = 'FIPS Admin2'
+for i in cols:
+    if mode_list.find(i) != -1:
+        data[i] = data[i].fillna(data[i].mode().iloc[0])
+    else:
+        data[i] = data[i].fillna(data.mean()[i])
+
+########## Begin ##########
+
+#去除所有重复项
+data=data.drop_duplicates(data.columns,False)
+#重置索引，从0重新开始
+data=data.reset_index(drop=True)
+########## End ##########
+
+print(data)

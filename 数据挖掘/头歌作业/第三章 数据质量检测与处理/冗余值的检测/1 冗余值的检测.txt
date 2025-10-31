@@ -1,0 +1,7 @@
+import pandas as pd
+
+# 读入外部数据
+data3 = pd.read_csv('deaths.csv')
+#####begin######
+print(data3.duplicated().any())
+####end#########
