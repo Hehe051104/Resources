@@ -1,0 +1,71 @@
+import pandas as pd
+import os
+from rule import *
+# 此处引入rule接口是为了可以调用里边的生成后项为1个元素的强关联规则的函数find_rule()
+
+# house-votes-84.data数据为美国国会投票数据，425行，16列。425行表示有425个议员对某个事项进行了投票，
+# 16列表示有16个事项需要表决，每个位置元素为y(yes),n(no)或?(不确定或弃权)，其中已经将原数据中第一列party列删除掉
+# 注意：
+# house-votes-84.data文件中的数据部分行举例：
+# y,y,y,n,y,y,n,n,n,n,y,?,y,y,y,y
+# n,y,y,n,y,y,n,n,n,n,n,n,y,y,y,y
+# n,y,n,y,y,y,n,n,n,n,n,n,?,y,y,y
+# n,y,n,y,y,y,n,n,n,n,n,n,y,y,?,y
+# n,y,n,y,y,y,n,n,n,n,n,y,y,y,n,y
+# y,y,y,n,n,n,y,y,y,n,n,n,n,n,?,?
+inputfilePath = os.path.dirname(os.path.realpath(__file__)) + "/house-votes-84.data"
+df = pd.read_table(inputfilePath, sep=',',
+                   names=["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"])
+
+
+'''
+数据预处理：将投赞成票的设置为1，投反对票的设置为0，无效票（？）设置为0
+'''
+df[df == 'y'] = 1
+df[(df == 'n') | (df == '?')] = 0
+'''
+参数设置：设置支持度为0.2，置信度为0.5.
+'''
+support = 0.2  # 最小支持度
+confidence = 0.5  # 最小置信度
+ms = '----'  # 连接符，默认'--'，用来区分不同元素，如A--B。需要保证原始表格中不含有该字符
+"""
+空空1：调用rule中的find_rule函数,其中第一个参数为数据df,第二个参数为支持度support,第三个参数为置信度confidence,
+第四个参数为支分隔符ms,从而生成国会投票数据中的所有后项为1个元素的强关联规则,返回值为rule
+"""
+# /********** Begin *********/
+rule = find_rule(df, support, confidence, ms)
+# /********** End *********/
+print(rule.head())
+confidence=0.3
+supports=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+
+confidences=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+support=0.2
+resultCounts=[]#每个supports对应关联规则数目
+resultCounts2=[]
+"""
+空空2：相同置信度0.3下遍历supports中的不同支持度，返回不同支持度下的强关联规则个数，存放到列表resultCounts中，
+最终列表形式[0.1支持度关联规则个数,0.2支持度关联规则个数,...,1支持度关联规则个数]
+"""
+# /********** Begin *********/
+for sup in supports:
+    temp_rule = find_rule(df, sup, confidence, ms)
+    resultCounts.append(len(temp_rule))
+
+# /********** End *********/
+print("——————————置信度不变为0.3，支持度不断变大时的存在的强关联规则的数目————————")
+print(resultCounts)
+"""
+空空3：相同支持度0.2下遍历supports中的不同置信度，返回不同置信度度下的强关联规则个数，存放到列表resultCounts中，
+最终列表形式[0.1置信度关联规则个数,0.2置信度关联规则个数,...,1置信度关联规则个数]
+"""
+# /********** Begin *********/
+for conf in confidences:
+    temp_rule = find_rule(df, support, conf, ms)
+    resultCounts2.append(len(temp_rule))
+
+# /********** End *********/
+print("——————————支持度不变为0.2，置信度不断变大时的存在的强关联规则的数目————————")
+print(resultCounts2)
+ 

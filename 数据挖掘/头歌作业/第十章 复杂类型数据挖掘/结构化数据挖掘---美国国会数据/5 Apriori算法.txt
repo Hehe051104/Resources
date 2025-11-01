@@ -1,0 +1,85 @@
+import pandas as pd
+import os
+# step5.data数据，为12行，5列，每个元素为0或1。具体如下所示
+# 1,1,1,0,1,1,0,0,0,0,1,0,1,1,1,1
+# 0,1,1,0,1,1,0,0,0,0,0,0,1,1,1,1
+# 0,1,0,1,1,1,0,0,0,0,0,0,0,1,1,1
+# 0,1,0,1,1,1,0,0,0,0,0,0,1,1,0,1
+# 0,1,0,1,1,1,0,0,0,0,0,1,1,1,0,1
+inputfilePath = os.path.dirname(os.path.realpath(__file__))+"/step5.data"
+df = pd.read_table(inputfilePath, sep=',',
+                   names=["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"])
+
+
+# 生成频繁1项集
+# 传入数据：d为数据，如上边处理后获得的DataFrame格式的数据df。support为支持度
+# 返回数据：column所有的频繁1项集
+def generate_L1(d, support):
+    support_series = 1.0 * d.sum() / len(d)  # 计算1项集的支持度，返回一个series,索引为事务数据库中的项，值为每个项对应的支持度
+    column = list(support_series[support_series > support].index)  # 用最小支持度，筛选频繁1项集，返回项
+    return column
+
+
+# 定义自连接函数connect_string，用于实现频繁k项集到候选k+1项集的连接
+# 传入数据：x为频繁k项集的集合，是个列表。其中每个k项集用一个字符串表示，字符串中项和项之间以ms='-'分隔,例如‘b-c’
+# 返回数据：r为由频繁k项集所生成的所有的候选k+1项集。为一个list，每一项元素为候选k+1项集的一个项
+def connect_string(x, ms):
+    f = lambda i: sorted(i.split(ms))  # 将字符串i按ms="-"进行切割，且切割的结果进行排序
+    x = list(map(f, x))  # 对x中的每个字符串使用f函数，并将结果存在x中
+    l = len(x[0])  # 返回x[0]的长度，即当前项集中有多少个项，k-1
+    """
+    空空1.连接步之——根据频繁k项集（x），返回候选k+1项集（r）。
+    注意：
+    1.返回的为列表，用r表示。列表中每个元素是候选k+1项集的一个项。
+    2.生成的方式为每2个频繁项集的元素除了最后一位不同，其他位全相同的组合生成方式。
+    """
+    r = []
+    # /********** Begin *********/
+    for i in range(len(x)):
+        for j in range(i+1, len(x)):
+            if x[i][:l-1] == x[j][:l-1] and x[i][l-1] != x[j][l-1]:
+                r.append(x[i] + [x[j][l-1]])
+
+    # /********** End *********/
+    return r
+
+# 定义生成频繁项集函数find_freset
+# 传入数据：dd为数据，如上边处理后获得的DataFrame格式的数据df。support为支持度，ms为分隔符，这里默认为'-'
+# 返回数据：所有有生成的频繁项集,是一个list。col是将所有频繁项集保存在同一个列表中，列表中每个元素为一个频繁项集的字符串表示，
+# 即若a,a-b,b-c,a-b-c为所有的频繁项集，则col应该为['a','a-b','b-c','a-b-c']
+
+def find_freset(d, support, ms='-'):
+    # ms为连接符，用来区分不同元素，如A-B。
+    col = []  # 用于存放生成的频繁项集
+    column = generate_L1(d, support)  # 生成的频繁1项集
+    col.extend(column)
+    k = 0
+    while len(column) > 1:  # 包含2个或两个以上的频繁k项集，则可以考虑连接产生k+1项集
+        k = k + 1
+        column = connect_string(column, ms)  # 连接步:由频繁k-1项集产生候选k项集
+        ###剪枝步：
+        # sf用于计算一个项集在事务数据库d中是否出现
+        # 当d中和这个项集相关的列值都为1时，说明该项集中的项在这一行对应的事务中都出现了，也就是说这个项集在这个事务中出现了，计数为1，否则计数为0
+        # 输入i：一个用list存储的项集，d[i]获取d中和这个项集相关的列
+        # 输出：一个series,index是d的行标，值是1或0
+        sf = lambda i: d[i].prod(axis=1)
+        # 对column中每个项集计算其在每个事务中的计数，一行代表一个事务，一列代表一个项集（用ms连接而成的字符串表示）
+        d_2 = pd.DataFrame(list(map(sf, column)), index=[ms.join(i) for i in column]).T
+        # 计算连接后的支持度
+        support_series_2 = 1.0 * d_2.sum() / len(d_2)
+        """
+        空空2：剪枝步之——根据支持度筛选候选集，生成对应的频繁项集，以列表形式返回，用column表示。
+        注意：column表示当前k下的所有频繁k项集，如当前为生成频繁2项集，且所有的频繁2项集元素为b-c,b-d和b-e。
+        则当前的column = ['b-c', 'b-d', 'b-e']
+        """
+        # /********** Begin *********/
+        column = list(support_series_2[support_series_2 > support].index)
+        # /********** End *********/
+        col.extend(column)  # 将所有生成的频繁项集都保存在col中
+    return col  # 返回所有生成的频繁项集,col是将所有频繁项集保存在同一个列表中，列表中每个元素为一个频繁项集的字符串表示，即若a,a-b,b-c,a-b-c为所有的频繁项集，则col应该为['a','a-b','b-c','a-b-c']
+
+
+support = 0.2  # 最小支持度
+freset = find_freset(df, support)
+print(freset)  # 打印所有的频繁项集
+  

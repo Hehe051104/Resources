@@ -1,0 +1,46 @@
+import pandas as pd
+import os
+"""
+让窗口行和列可以显示所有数据，而不出现省略号
+"""
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', 1000)
+pd.set_option('display.width', 1000)
+pd.set_option('display.max_colwidth', 1000)
+inputfilePath = os.path.dirname(os.path.realpath(__file__))+"/step3-house-votes-84.data"
+df = pd.read_table(inputfilePath, sep = ',',names= ["party", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j","k", "l", "m", "n", "o", "p"])
+
+print('-----处理前的输出------')
+"""
+1.输出所有的行是否和其他行有重复，有则为True,没有则为False
+2.输出df的重复数据共有多少个
+注意：
+step3-house-votes-84.data文件中的数据部分行举例：
+democrat,y,y,y,n,y,y,n,n,n,n,y,?,y,y,y,y
+democrat,n,y,y,n,y,y,n,n,n,n,n,n,y,y,y,y
+democrat,n,y,n,y,y,y,n,n,n,n,n,n,?,y,y,y
+republican,n,y,n,y,y,y,n,n,n,n,n,n,y,y,?,y
+republican,n,y,n,y,y,y,n,n,n,n,n,y,y,y,n,y
+democrat,y,y,y,n,n,n,y,y,y,n,n,n,n,n,?,?
+"""
+# /********** Begin *********/
+print(df.duplicated())  # 输出每行是否重复
+print(df.duplicated().sum())  # 输出重复数据总数
+# /********** End *********/
+print(df.tail())  # 输出当前的最后五行
+print(df.shape)  # 输出当前df的行和列
+
+print('-----处理后的输出------')
+"""
+1.删除所有重复行
+2.重新对删除后的df进行索引序号编写
+3.显示处理后的df重复数据共有多少个
+注意：处理后的dataframe仍然命名为df
+"""
+# /********** Begin *********/
+df = df.drop_duplicates()  # 删除重复行
+df = df.reset_index(drop=True)  # 重置索引
+print(df.duplicated().sum())  # 输出处理后的重复数据总数
+# /********** End *********/
+print(df.tail())  # 输出处理后的df的最后五行
+print(df.shape)  # 输出处理后的df的行和列

@@ -1,0 +1,69 @@
+import numpy as np
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import pandas as pd
+import os
+
+dirname = os.path.dirname(os.path.realpath(__file__))
+inputFilePath = dirname + "/feature_vec_head100_with_label.csv"
+feature_vec_with_label = pd.read_csv(inputFilePath) #读取特征+标签
+feature_vec = feature_vec_with_label.iloc[:,0: -1]  #截取特征数据
+labels = feature_vec_with_label['label']    #截取标签
+n_cluster = len(set(labels))  #得到簇的个数
+
+# 用TSNE进行数据降维并展示聚类结果
+
+# 调用API sklearn.manifold.TSNE，sklearn.manifold.TSNE.fit_transform得到数据降为结果
+# ------------------Begin-----------------#
+tsne = TSNE(n_components=3, init='random',random_state=0)
+tsne.fit_transform(X=feature_vec)      # 补充代码，利用tsne进行对特征数据降维（注意参数应该选择哪个变量）
+# ------------------End-----------------#
+
+tsne = pd.DataFrame(tsne.embedding_, index=range(feature_vec_with_label.shape[0]))  # 转换数据格式,tsne中存储降维后的数据
+
+# 填充代码，实现K-Means与 AgglomerativeClustering 聚类结果可视化
+plt.figure(1)
+ax1 = plt.subplot(1, 1, 1, projection='3d')  # 创建第一个子图
+ax1.set_title('The result of K-means')
+t = int(255 / n_cluster)
+for i in range(n_cluster):
+    # 填充代码，提取K-Means聚类结果第i个cluster的数据，同一cluster的point使用相同的颜色(color_i)绘制
+    # 提示：API Axes3D.scatter
+    color_i = '#%02X%02X%02X' % (t * i, int(t * i / 2), 255 - t * i)#请在绘图时将color参数设置为color_i
+    # ------------------Begin-----------------#
+    d = tsne[labels == i]                             #补充()代码，在tsne中提取属于第i个cluster的集合d
+    ax1.scatter(d[0], d[1], d[2], color=color_i)  #补充代码，利用ax1.scatter绘制d，注意设置color参数
+    # ------------------End-----------------#
+plt.savefig(dirname + "/practice_img/practice.png")
+
+
+# 计算 K-Means与 AgglomerativeClustering 聚类结果的紧密度
+
+# 填充代码，计算k-meas聚类结果紧密度：
+CP_set = []  # 用于保存所有簇的紧密度
+for i in range(n_cluster):#计算每个簇紧密度，添加到CP_set
+    # ------------------Begin-----------------#
+    set_i = feature_vec[labels == i]   #补充[]中代码，提取相同簇集合
+    center_i = set_i.mean()    #补充()代码，计算每个簇中心  
+    CP_i_set = [] #用于存储簇中每个点到中心的距离
+    for j in set_i.index:#遍历簇中每个点
+        p_j = set_i.loc[j]
+        dist = np.sqrt(((p_j - center_i) ** 2).sum())#补充()代码，计算p_j到center_i的距离
+        CP_i_set.append(dist)
+    CP_i = np.mean(CP_i_set)             #补充()代码，计算簇的紧密度
+    CP_set.append(CP_i)
+    # ------------------End-----------------#
+
+CP = np.mean(CP_set)  # 计算所有簇的紧密度均值
+print("%.2f"%CP)
+
+
+'''以下为测试代码'''
+import matplotlib.image as mpimg  # mpimg 用于读取图片
+
+test_img = mpimg.imread(dirname + '/test_img/test.png')
+answer_img = mpimg.imread(dirname + '/practice_img/practice.png')
+result = answer_img == test_img
+if type(result) != bool:
+    result = result.all()

@@ -1,0 +1,33 @@
+import matplotlib
+matplotlib.use('Agg')
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import os
+from keras.utils import to_categorical
+from keras.models import Sequential
+from keras.layers.core import Dense, Activation
+from keras.optimizers import Adam
+from sklearn.metrics import accuracy_score,recall_score
+import cv2
+import matplotlib.pyplot as plt
+import keras
+
+#加载模型
+new_model = keras.models.load_model('./my_model.h5')
+#处理图片数据
+im = plt.imread('./level6/img_dir3.jpg')[:, :, :3]
+im= cv2.resize(im,(32, 32), interpolation = cv2.INTER_CUBIC)
+im=np.concatenate(im)
+im=np.concatenate(im)
+im=im.reshape((im.shape[0]//3072),3072)
+y_test =1
+xim_test=im/255.
+#/*************** Begin***************/
+#要求：请补全api中的参数，预测该图片的类型。
+result = new_model.predict_classes(xim_test)
+
+#/*************** end***************/
+
+#测试
+print(result)

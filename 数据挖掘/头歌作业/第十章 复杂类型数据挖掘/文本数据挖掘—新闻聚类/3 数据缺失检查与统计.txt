@@ -1,0 +1,35 @@
+import pandas as pd
+import os
+
+inputfilePath = os.path.dirname(os.path.realpath(__file__))+"/news.csv"
+data = pd.read_csv(inputfilePath, sep='\t')
+
+cols_names = data.columns
+
+#统计每列缺失值个数
+#------------------Begin-----------------#
+lossNum = data.isnull().sum()
+#------------------End-----------------#
+
+print("每列缺失值个数：")
+for name in cols_names:
+    print("列 " + name + " 缺失数据 " + str(lossNum[name]) + " 个")
+    
+#补充代码，将存在缺失的数据行删除
+#------------------Begin-----------------#
+data = data.dropna()
+#------------------End-----------------#
+print(data.shape)
+
+#检查是否有重复数据(重复数据的'news url'值相同）
+#------------------Begin-----------------#
+flag = data.duplicated(subset=['news url'])
+#------------------End-----------------#
+print(flag.any())
+
+#将冗余的数据行删除，然后重新建立索引
+#------------------Begin-----------------#
+data = data.drop_duplicates(subset=['news url'])
+data = data.reset_index(drop=True)
+#------------------End-----------------#
+print(data.shape)

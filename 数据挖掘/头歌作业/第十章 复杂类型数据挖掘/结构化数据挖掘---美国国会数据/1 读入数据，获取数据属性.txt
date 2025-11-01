@@ -1,0 +1,32 @@
+import pandas as pd
+import os
+inputfilePath = os.path.dirname(os.path.realpath(__file__))+"/house-votes-84.data"
+
+"""
+使用pandas的read_table函数读入数据house-votes-84.data，赋值给df。
+要求生成的dataframe数据修改各列名称为party,a,b,c,...,p。
+注意：
+house-votes-84.data文件中的数据部分行举例：
+democrat,y,y,y,n,y,y,n,n,n,n,y,?,y,y,y,y
+democrat,n,y,y,n,y,y,n,n,n,n,n,n,y,y,y,y
+democrat,n,y,n,y,y,y,n,n,n,n,n,n,?,y,y,y
+republican,n,y,n,y,y,y,n,n,n,n,n,n,y,y,?,y
+republican,n,y,n,y,y,y,n,n,n,n,n,y,y,y,n,y
+democrat,y,y,y,n,n,n,y,y,y,n,n,n,n,n,?,?
+"""
+#/********** Begin *********/
+column_names = ['party'] + list('abcdefghijklmnop')
+df = pd.read_table(inputfilePath, sep=',', names=column_names, header=None)
+#/********** End *********/
+"""
+打印出df的前5行
+"""
+#/********** Begin *********/
+print(df.head(5))
+#/********** End *********/
+"""
+显示df的行列属性（行数，列数）
+"""
+#/********** Begin *********/
+print(df.shape)
+#/********** End *********/

@@ -1,0 +1,52 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import os
+#反序列化函数，从储存区取出原数据
+def unpickle(file): 
+    import pickle
+    with open(file, 'rb') as fo:
+        dict = pickle.load(fo,encoding='iso-8859-1')
+    return dict
+#读入数据函数getdata(file)——根据文件名使用unpickle(file)取出原数据，将原数据中的labels和data取出，化为DataFrame结构，转置并保留猫和飞机的数据。
+def getdata(file):
+    dict=unpickle(file)
+    t1=dict['labels']
+    t1=np.array(t1)
+    #t1_cat==3
+    t2=dict['data'].copy()  
+    t2=np.array(t2)
+# DataFrame是Python中Pandas库中的一种数据结构，它类似excel，是一种二维表。
+# pd.DataFrame（）第二个参数index就是行名，第三个参数columns是列名。
+    train=pd.DataFrame([t1,t2],index=['labels','data'])
+#(transpose)——矩阵转置：即行列转换。
+    train=train.transpose()
+#保留猫和飞机的数据。
+    train=train[(train['labels']==3 ) | (train['labels']==0)]
+    train['prediction']=0
+    train['labels'][train['labels']==3]=1
+    return train
+#6个batch文件
+file1="./data_batch_1"
+file2="./data_batch_2"
+file3="./data_batch_3"
+file4="./data_batch_4"
+file5="./data_batch_5"
+file6="./test_batch"
+filex="./batches.meta"
+#构建训练集
+train=getdata(file1)
+train=train.append(getdata(file5))
+x_train = train['data'].values
+y_train = train["labels"].values
+#/*************** Begin***************/
+#要求：
+#将x_train中的所有数组拼接，再转换维度为（ ，3072）
+#将y_train转换维度为（ ，1）
+x_train = np.vstack(x_train).reshape(-1, 3072)
+
+y_train = y_train.reshape(-1, 1)
+#/*************** end***************/
+#测试
+print(x_train)
+print(y_train)

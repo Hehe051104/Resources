@@ -1,0 +1,46 @@
+import pandas as pd
+from pandas import DataFrame 
+import os
+
+inputFilePath = os.path.dirname(os.path.realpath(__file__))+"/processedData.csv"
+news  = pd.read_csv(inputFilePath)#读入已经处理好的新闻数据
+data = news['processedNews']#提取经过上一关预处理后的新闻内容
+#提示: 可通过data[i]获得第i条新闻的内容
+news_num = 100 #由于评测时间限制，取前100条新闻练习
+# #补充代码，生成单词表
+wordlist=[]#存储单词表
+for i in range(0,news_num):#取前100条新闻
+    #------------------Begin-----------------#
+    processedNews = data[i].split()   #把data中第i条数据分割成单词列表
+    wordlist += processedNews
+    #------------------End-----------------#
+    
+wordlist = list(set(wordlist))
+wordlist.sort()
+
+#补充代码，构造feature_vector的dataframe,用以保存每条新闻的特征向量。
+#------------------Begin-----------------#
+feature_vec=DataFrame(index=range(news_num), columns=wordlist )
+#------------------End-----------------#
+
+#再次扫描每条新闻的词序列，针对词表中每一个词计算其在该新闻中的概率，最后生成一个和词表长度相同的向量来表示该新闻。
+#(提示：对每个新闻，可以先定义一个Series，其中词表里的所有词作为Index，对应的值均为0。
+#然后用一个循环，扫描新闻词序列中的每一个词word，Series里word对应的值加1。最后所有值除以新闻长度)
+for i in range(0,news_num):
+    series=pd.Series([0]*len(wordlist), index = wordlist)
+    newsindex=(str(data[i])).split()
+    for j in newsindex:
+        #------------------Begin-----------------#
+        series[j] += 1                    #Series里word对应的值加1
+        #------------------End-----------------#
+    #------------------Begin-----------------#
+    series= series / len(newsindex)           #计算概率：所有值除以新闻长度
+    #------------------End-----------------#
+    feature_vec.loc[i]=list(series)
+
+#test
+print(len(wordlist))
+for i in range(len(wordlist)):
+    if feature_vec.loc[news_num-1, wordlist[i]] > 1.0e-8:
+        print(i)
+        

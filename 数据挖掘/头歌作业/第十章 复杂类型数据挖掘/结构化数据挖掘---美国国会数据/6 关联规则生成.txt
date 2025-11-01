@@ -1,0 +1,91 @@
+import pandas as pd
+import os
+from apriori import *
+# 此处引入apriori接口是为了可以调用里边的生成频繁项集的函数find_freset()
+# 注意，这里flag=True时返回的为对于的频繁K项集。flag=False时则返回的为所有的频繁项集
+# step6.data数据，为12行，10列，每个元素为0或1。具体如下所示
+# 0,1,0,1,1,1,0,0,0,1,0,1,1,1,0,1
+# 0,1,0,1,1,1,0,0,0,0,0,1,1,1,0,0
+# 0,1,1,0,1,1,0,0,0,0,1,0,1,1,0,0
+# 0,1,1,0,0,1,0,0,0,0,1,0,1,0,0,1
+# 1,1,1,0,1,1,0,0,0,0,1,0,1,1,1,1
+# 0,1,1,0,1,1,0,0,0,0,0,0,1,1,1,1
+# 0,1,0,1,1,1,0,0,0,0,0,0,0,1,1,1
+# 0,1,0,1,1,1,0,0,0,0,0,0,1,1,0,1
+# 0,1,0,1,1,1,0,0,0,0,0,1,1,1,0,1
+# 1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0
+inputfilePath = os.path.dirname(os.path.realpath(__file__)) + "/step6.data"
+df = pd.read_table(inputfilePath, sep=',',
+                   names=["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"])
+
+
+# 寻找关联规则的函数find_rule
+# 传入数据：d为数据，如上边处理后获得的DataFrame格式的数据df。support为支持度阈值，confidence为置信度阈值，ms为分隔符，默认为'--'
+# 返回数据：result为所有强关联规则和对应的置信度和支持度数据，假如强关联规则为 f----b 和e----b ，则对应的result为
+# 如下所示：
+#                support   confidence
+# f----b           0.9         1.0
+# e----b           0.8         1.0
+def find_rule(d, support, confidence, ms=u'--'):
+    result = pd.DataFrame(index=['support', 'confidence'])  # 定义输出格式
+    support_series = 1.0 * d.sum() / len(d)  # 计算1项集的支持度，返回一个series,索引为事务数据库中的项，值为每个项对应的支持度
+    column = list(support_series[support_series > support].index)  # 用最小支持度，筛选频繁1项集，返回项
+    # 此时的column为所有频繁1项集，例如筛选过后的频繁1项集为{a, b, c, e}则对应的column为['a', 'b', 'c', 'e']
+    k = 0
+    while len(column) > 1:  # 若频繁1项集中项的个数>1/频繁k项集中的项个数>1
+        column, support_series, k = find_freset(d, support, ms, k, column, support_series,
+                                                flag=True)  # 根据频繁k项集column，使用apriori算法中的生成频繁项集算法生产频繁k+1项集
+        #  此时的column为频繁k项集的列表，例如当前为频繁2项集，并且为{bc,be,ce},ms=‘----’,则此时的column = ['b----c', 'b----e', 'c----e']
+        #  生成关联规则：
+        column2 = []  # 事实上保存的是关联规则
+        """
+        空空：由频繁k项集，并产生候选关联规则的元素表示（非最后的规则表示方式）。以列表的形式保存在column2中，注意这里仅考虑后项为1个元素的情况。
+        即若当前频繁2项集column = ['b----c', 'b----e', 'c----e'],
+        则生成的column2 = [['c', 'b'], ['b', 'c'], ['e', 'b'], ['b', 'e'], ['e', 'c'], ['c', 'e']]
+        若当前频繁3项集column = ['b----c----e']
+        则生成的column2 = [['c', 'e', 'b'], ['b', 'e', 'c'], ['b', 'c', 'e']]
+        注意：若为频繁3项集生成的column2,则对应的最终的关联规则样式为['c----e----b', 'b----e----c', 'b----c----e']，
+        注意这里的前两个元素没有位置区别，但是这里只使用一种表示方式，如c----e----b所表示的关联规则为ce=>b或ec=>b
+        """
+        # /********** Begin *********/ 
+        for i in column:
+            i_list = i.split(ms)  # 先分割字符串
+            for j in range(len(i_list)):  # 遍历列表元素个数
+                column2.append(i_list[:j] + i_list[j+1:] + [i_list[j]])
+        # /********** End *********/
+        #  计算置信度，并进行置信度筛选：
+        cofidence_series = pd.Series(index=[ms.join(i) for i in column2])
+        # 定义置信度序列, 即若当前生成的column2 = [['c', 'e', 'b'], ['b', 'e', 'c'], ['b', 'c', 'e']]，
+        # 则cofidence_series为
+        # c----e----b   NaN
+        # b----e----c   NaN
+        # b----c----e   NaN
+        for i in column2:  # 计算置信度序列
+            cofidence_series[ms.join(i)] = support_series[ms.join(sorted(i))] / support_series[ms.join(i[:len(i) - 1])]
+        # 置信度筛选，根据置信度阈值筛选出置信度符合要求的强关联规则
+        # 即若由频繁3项集['b----c----e']生成的强关联规则为ce-->b和bc-->e,则对应的column2=['c----e----b', 'b----c----e']
+        column2 = list(cofidence_series[cofidence_series > confidence].index)
+        #  保存结果
+        for i in column2:
+            result[i] = 0.0
+            result[i]['confidence'] = cofidence_series[i]
+            result[i]['support'] = support_series[ms.join(sorted(i.split(ms)))]
+
+    result = result.T.sort_values(['confidence', 'support'], ascending=False)  # 结果整理，输出
+    # 将结果result以下方式进行表示方便读取：
+    #                support  confidence
+    # e----b           0.8         1.0
+    # c----b           0.5         1.0
+    # c----e----b      0.3         1.0
+    return result
+
+
+
+# 打印支持度阈值=0.2，置信度阈值=0.5,连接符为'----'的关联规则的前20行，其中第一列为关联规则，第二列为支持度，第三列为置信度。
+
+
+support = 0.2  # 最小支持度
+confidence = 0.5  # 最小置信度
+ms = '----'  # 连接符，默认'--'，用来区分不同元素，如A--B。需要保证原始表格中不含有该字符
+rule1 = find_rule(df, support, confidence, ms)
+print(rule1.head(20))  # 打印所有强关联规则的前20行

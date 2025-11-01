@@ -1,0 +1,24 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import os
+from keras.utils import to_categorical
+train_data = np.load('./train_data.npz',allow_pickle=True)
+x_train = train_data["x_train"]
+y_train = train_data["y_train"]
+
+#/*************** Begin***************/
+#要求：
+#将格式转换后的x_train归一化
+#将y_train进行独热向量转换
+# 归一化x_train (将像素值从0-255缩放到0-1)
+x_train = x_train/255.0
+
+# 独热编码y_train (假设是分类标签)
+num_classes = len(np.unique(y_train))  # 自动获取类别数
+y_train = to_categorical(y_train, num_classes)
+
+#/*************** end***************/
+#测试
+print(x_train)
+print(y_train)

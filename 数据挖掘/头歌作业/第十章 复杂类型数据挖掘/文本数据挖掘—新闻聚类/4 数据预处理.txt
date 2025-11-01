@@ -1,0 +1,49 @@
+import jieba #分词工具
+import pandas as pd
+import os
+import warnings
+import logging
+
+jieba.setLogLevel(logging.INFO)
+warnings.filterwarnings("ignore")
+datafile = os.path.dirname(os.path.realpath(__file__))+"/news.csv"
+stop_word_file = os.path.dirname(os.path.realpath(__file__))+"/stop_word.txt"
+news = pd.read_csv(datafile, sep='\t')
+
+#1.将所有停用词读到一个list中
+#------------------Begin-----------------#
+with open(stop_word_file, encoding='utf-8') as f:
+     stop_words = f.read().splitlines()
+#------------------End-----------------#
+
+def preprocess(data):
+    data['processedNews']=None #为data添加新列'processedNews’存储分词后的数据
+    for j in range(data.shape[0]):
+        #2.对新闻内容(news content)进行分词
+        #------------------Begin-----------------#
+        s2=data['news content'][j]
+        words = jieba.cut(str(s2)) #填充代码，将s2分词
+        #------------------End-----------------#
+        strWords=[]
+        for i in words:
+            strWords.append(i)
+               
+        #3.对句子中每一个词：判断该词是否在停用词表中
+        #  若不在，则删除
+        #  将所有剩余词用空格连接成字符串,并将其保存在一个新列“processedNews”中
+        #------------------Begin-----------------#
+        strWords2 = strWords.copy()
+        # 遍历原始词列表
+        for i in ( strWords ):
+            # 判断词是否在停用词表中
+            if i in ( stop_words ):
+                # 从拷贝的列表中移除该停用词
+                strWords2.remove(i)
+        # 将处理后（已删除停用词）的列表用空格连接成字符串
+        linkwords = ' '.join( strWords2 )
+        #------------------End-----------------#
+        data['processedNews'][j]=linkwords
+
+preprocess(news)
+for processedNew in news['processedNews']:
+    print(len(processedNew), end = ' ')

@@ -1,0 +1,25 @@
+import pandas as pd
+import os
+
+inputfilePath = os.path.dirname(os.path.realpath(__file__))+"/news.csv"
+data = pd.read_csv(inputfilePath, sep='\t') #读取数据
+
+#------------------Begin-----------------#
+news_num = data.shape[0]  # 获取数据记录条数
+
+#获取每条记录有哪些域（数据列标签）
+cols_num = data.shape[1]        # 获取列的个数
+cols_name = data.columns.tolist()       # 获取列标签列表
+
+#新闻时间跨度
+data['news time']=pd.to_datetime(data['news time'],format='%Y-%m-%d')#转化'news time'列的数据类型 
+first_time = data['news time'].min()    # 获取最早时间
+last_time = data['news time'].max()     # 获取最晚时间
+#------------------End-------------------#
+
+print("共有"+str(news_num)+"条记录")
+print("每条记录有"+str(cols_num)+"个域")
+print('这些域分别为:')
+for i in range(cols_num):
+    print(cols_name[i])
+print('新闻时间跨度为 %s ----> %s'%(first_time, last_time))

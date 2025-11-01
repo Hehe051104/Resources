@@ -1,0 +1,7 @@
+import pandas as pd
+import os
+inputfilePath = os.path.dirname(os.path.realpath(__file__))+"/news.csv"
+#------------------Begin-----------------#
+data = pd.read_csv(inputfilePath,delimiter='\t')
+#------------------End-------------------#
+print(data.shape)

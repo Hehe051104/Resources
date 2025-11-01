@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import os
+from keras.utils import to_categorical
+from keras.models import Sequential
+from keras.layers.core import Dense, Activation
+from keras.optimizers import Adam
+train_data = np.load('./train_data.npz',allow_pickle=True)
+x_train = train_data["x_train"]
+y_train = train_data["y_train"]
+
+x_train=np.concatenate(x_train)
+x_train=x_train.reshape((x_train.shape[0]//3072),3072)
+y_train=y_train.reshape((y_train.shape[0]),1)
+x_train=x_train/255.
+y_train=to_categorical(y_train)
+
+# 创建一个模型结构
+model = Sequential()
+
+# 使用.add()函数进行各个层的堆叠
+# 添加有1000个单元的全连接神经网络
+model.add(Dense(1000,input_dim=3072,init='uniform'))  
+model.add(Activation('relu'))
+# 添加有256个单元的全连接神经网络
+model.add(Dense(256,input_dim=1000,init='uniform'))   
+model.add(Activation('relu'))
+# 添加有两个输出单元的softmax层
+model.add(Dense(2,input_dim=256))
+model.add(Activation('softmax'))
+
+#/*************** Begin***************/
+#要求：
+#请补全api中的参数，使最终的loss<0.2
+#步骤1 模型编译
+optimizer=Adam(lr=0.001)
+model.compile(loss='categorical_crossentropy', optimizer=optimizer)
+
+#步骤2 模型训练
+modelnow=model.fit(x_train, y_train, nb_epoch=20, batch_size=256, verbose=0)
+
+#/*************** end***************/
+#测试
+lass = round(float(modelnow.history["loss"][-1]),1)
+print(lass)

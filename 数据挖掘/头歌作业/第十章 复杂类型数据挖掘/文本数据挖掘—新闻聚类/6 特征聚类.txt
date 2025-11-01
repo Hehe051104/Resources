@@ -1,0 +1,53 @@
+import time
+import pandas as pd
+import os
+from sklearn.cluster import KMeans, AgglomerativeClustering
+
+inputFilePath = os.path.dirname(os.path.realpath(__file__))+"/feature_vec_head100.csv"
+feature_vec=pd.read_csv(inputFilePath)
+
+n_cluster = 5 #设置聚类个数为5
+
+#class sklearn.cluster.KMeans(n_clusters=8, *, init='k-means++', n_init=10, max_iter=300, tol=0.0001, precompute_distances='deprecated', verbose=0, random_state=None, copy_x=True, n_jobs='deprecated', algorithm='auto')
+    # n_clusters ：int default=8，The number of clusters to form as well as the number of centroids to generate.
+    # init:初始化方式，默认'k-means++',可选'random',或用数组存放的指定一组数据点shape=(n_clusters,n_features)
+    # n_init:用不同的初始化聚类中心运行的次数，默认10次，返回最好结果
+    # max_iter:每次运行最大迭代次数，默认300次
+    # tol：收敛的标准，当两次总距离之和小于tol认为是收敛，默认0.
+    # precompute_distances:三种取值{'auto',True,False},True是计算，False是不计算，‘auto’是当样本数*簇的个数>12million时不计算
+    # verbose：默认是0
+    # random_state：指定随机数生成器，默认是0
+    # copy_x：默认是true
+    # n_jobs:相当于多个线程，多次聚类并行时使用
+
+
+
+#填充代码，使用API sklearn.cluster.KMeans 以及 sklearn.cluster.KMeans.fit_predict得到聚类结果
+#sklearn API查询网址：https://scikit-learn.org/stable/modules/classes.html
+#------------------Begin-----------------#
+kmeans = KMeans(n_clusters=n_cluster)         #创建sklearn.cluster.KMeans对象，注意设置n_clusters参数
+y_pred = kmeans.fit_predict(feature_vec)                       #利用创建的KMeans对象进行聚类
+#------------------End-----------------#
+print(len(set(y_pred)))
+
+# class sklearn.cluster.AgglomerativeClustering(n_clusters=2, affinity=’euclidean’, memory=None, connectivity=None, compute_full_tree=’auto’, linkage=’ward’, pooling_func=<function mean>)
+#     n_clusters：一个整数，指定分类簇的数量
+#     connectivity：一个数组或者可调用对象或者None，用于指定连接矩阵
+#     affinity：一个字符串或者可调用对象，用于计算距离。可以为：’euclidean’，’l1’，’l2’，’mantattan’，’cosine’，’precomputed’，如果linkage=’ward’，则affinity必须为’euclidean’
+#     memory：用于缓存输出的结果，默认为不缓存
+#     n_components：在 v-0.18中移除
+#     compute_full_tree：通常当训练了n_clusters后，训练过程就会停止，但是如果compute_full_tree=True，则会继续训练从而生成一颗完整的树
+#     linkage：一个字符串，用于指定链接算法
+#         ‘ward’：单链接single-linkage，采用dmindmin
+#         ‘complete’：全链接complete-linkage算法，采用dmaxdmax
+#         ‘average’：均连接average-linkage算法，采用davgdavg
+#     pooling_func：一个可调用对象，它的输入是一组特征的值，输出是一个数
+
+
+#填充代码，使用API sklearn.cluster.AgglomerativeClustering 以及 sklearn.cluster.AgglomerativeClustering.fit_predict得到聚类结果
+#sklearn API查询网址：https://scikit-learn.org/stable/modules/classes.html
+#------------------Begin-----------------#
+agg = AgglomerativeClustering(n_clusters=n_cluster) #创建sklearn.cluster.AgglomerativeClustering 对象，注意设置n_clusters参数
+predicted_labels = agg.fit_predict(feature_vec)      #利用创建的 AgglomerativeClustering 对象进行聚类
+#------------------End-----------------#
+print(len(set(predicted_labels)))

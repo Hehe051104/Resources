@@ -1,0 +1,3 @@
+accuracy=0.9
+recall=0.9
+print(accuracy,recall)

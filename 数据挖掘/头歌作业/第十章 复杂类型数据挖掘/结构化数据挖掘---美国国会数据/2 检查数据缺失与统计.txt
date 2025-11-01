@@ -1,0 +1,40 @@
+import pandas as pd
+import os
+"""
+防止行输出中出现省略号
+"""
+pd.set_option('display.max_columns', 1000)
+pd.set_option('display.width', 1000)
+pd.set_option('display.max_colwidth', 1000)
+
+inputfilePath = os.path.dirname(os.path.realpath(__file__))+"/house-votes-84.data"
+df = pd.read_table(inputfilePath, sep = ',',names= ["party", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j","k", "l", "m", "n", "o", "p"])
+"""
+输出每一列数据中各有多少数据
+注意：
+house-votes-84.data文件中的数据部分行举例：
+democrat,y,y,y,n,y,y,n,n,n,n,y,?,y,y,y,y
+democrat,n,y,y,n,y,y,n,n,n,n,n,n,y,y,y,y
+democrat,n,y,n,y,y,y,n,n,n,n,n,n,?,y,y,y
+republican,n,y,n,y,y,y,n,n,n,n,n,n,y,y,?,y
+republican,n,y,n,y,y,y,n,n,n,n,n,y,y,y,n,y
+democrat,y,y,y,n,n,n,y,y,y,n,n,n,n,n,?,?
+"""
+#/********** Begin *********/
+print(df.count())
+#/********** End *********/
+print('-----处理前的最后5行------')
+print(df.tail())
+"""
+检测行数据df中的空数据，即该位置什么数据都没有,显示表示为naN。
+如果该行数据中的空数据多余60%，则删掉该行；
+如果该行数据中的空数据少于60%，则不修改。
+修改后的数据仍然命名为df
+"""
+#/********** Begin *********/
+# 计算每行的空值比例并删除空值超过60%的行
+threshold = len(df.columns) * 0.4  # 至少要有40%的非空值
+df = df.dropna(thresh=threshold)
+#/********** End *********/
+print('-----处理后的最后5行------')
+print(df.tail()) #打印处理后的最后五行
