@@ -1,0 +1,61 @@
+class Apriori():
+    def create_c1(self, dataset):  # 遍历整个数据集生成c1候选集
+        c1 = set()
+        for i in dataset:
+            for j in i:
+                item = frozenset([j])
+                c1.add(item)
+        return c1
+
+    def create_ck(self, Lk_1, size):  # 通过频繁项集Lk-1创建ck候选项集
+        Ck = set()
+        l = len(Lk_1)
+        lk_list = list(Lk_1)
+        for i in range(l):
+            for j in range(i + 1, l):  
+                ##########begin##########
+                # 两次遍历Lk-1，找出前n-1个元素相同的项
+                l1 = list(lk_list[i])
+                l2 = list(lk_list[j])
+                l1.sort()
+                l2.sort()
+                ##########end##########
+                if l1[0:size - 2] == l2[0:size - 2]:  
+                    ##########begin##########
+                    #只有最后一项不同时，生成下一候选项
+                    Ck_item = lk_list[i] | lk_list[j]
+                    Ck.add(Ck_item)
+                    ##########end##########
+        return Ck
+
+    def generate_lk_by_ck_ergodic(self, data_set, ck, min_support, support_data):  
+        item_count = {}  
+        Lk = set()
+       
+        for t in data_set:  
+            for item in ck:  
+                if item.issubset(t):
+                    if item not in item_count:
+                        item_count[item] = 1
+                    else:
+                        item_count[item] += 1
+        t_num = float(len(data_set))
+        for item in item_count:  
+            if item_count[item] / t_num >= min_support:
+                Lk.add(item)
+                support_data[item] = item_count[item]
+        return Lk
+
+
+if __name__ == "__main__":
+
+    data = [['a','c','e'],['b','d'],['b','c'],['a','b','c','d'],['a','b'],['b','c'],['a','b'],
+            ['a','b','c','e'],['a','b','c'],['a','c','e']]
+    apriori = Apriori()
+    support_data = {}
+    c1 = apriori.create_c1(data)
+    l1 = apriori.generate_lk_by_ck_ergodic(data_set=data, ck=c1, min_support=0.2, support_data=support_data)
+    c2 = apriori.create_ck(l1, size=2)
+    l2 = apriori.generate_lk_by_ck_ergodic(data_set=data, ck=c2, min_support=0.2, support_data=support_data)
+    c3 = apriori.create_ck(l2, size=3)
+    print(len(c3))

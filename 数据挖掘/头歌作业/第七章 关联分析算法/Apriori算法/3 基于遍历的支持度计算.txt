@@ -1,0 +1,69 @@
+class Apriori():
+    def create_c1(self, dataset):  # 遍历整个数据集生成c1候选集
+        c1 = set()
+        for i in dataset:
+            for j in i:
+                item = frozenset([j])
+                c1.add(item)
+        return c1
+
+    def create_ck(self, Lk_1, size):  # 通过频繁项集Lk-1创建ck候选项集
+        Ck = set()
+        l = len(Lk_1)
+        lk_list = list(Lk_1)
+        for i in range(l):
+            for j in range(i + 1, l):  # 两次遍历Lk-1，找出前n-1个元素相同的项
+                l1 = list(lk_list[i])
+                l2 = list(lk_list[j])
+                l1.sort()
+                l2.sort()
+                if l1[0:size - 2] == l2[0:size - 2]:  # 只有最后一项不同时，生成下一候选项
+                    Ck_item = lk_list[i] | lk_list[j]
+                    if self.has_infrequent_subset(Ck_item, Lk_1):  # 检查该候选项的子集是否都在Lk-1中
+                        Ck.add(Ck_item)
+        return Ck
+
+    def has_infrequent_subset(self, Ck_item, Lk_1):  # 检查候选项Ck_item的子集是否都在Lk-1中
+        for item in Ck_item:
+            sub_Ck = Ck_item - frozenset([item])
+            if sub_Ck not in Lk_1:
+                return False
+        return True
+
+    def generate_lk_by_ck_ergodic(self, data_set, ck, min_support, support_data):  # 通过候选项ck生成lk，基于遍历的支持度计算并将各频繁项的支持度保存到support_data字典中
+        item_count = {}  # 用于标记各候选项在数据集出现的次数
+        Lk = set()
+        # 基于遍历的支持度计算
+        for t in data_set:  # 遍历数据集
+            for item in ck:
+                ##########begin##########
+                # 检查候选集ck中的每一项是否出现在事务t中
+                if item.issubset(t):  # 如果候选项是事务的子集
+                    if item not in item_count:
+                        item_count[item] = 1
+                    else:
+                        item_count[item] += 1
+                ##########end##########
+        t_num = float(len(data_set))
+        for item in item_count:
+            ##########begin##########
+            # 将满足支持度的候选项添加到频繁项集中
+            support = item_count[item] / t_num  # 计算支持度
+            if support >= min_support:  # 满足最小支持度
+                Lk.add(item)
+                support_data[item] = support  # 保存支持度
+            ##########end##########
+        return Lk
+
+
+if __name__ == "__main__":
+
+    data = [['a','c','e'],['b','d'],['b','c'],['a','b','c','d'],['a','b'],['b','c'],['a','b'],
+            ['a','b','c','e'],['a','b','c'],['a','c','e']]
+    apriori = Apriori()
+    support_data = {}
+    c1 = apriori.create_c1(data)
+    l1 = apriori.generate_lk_by_ck_ergodic(data_set=data, ck=c1, min_support=0.2, support_data=support_data)
+    c2 = apriori.create_ck(l1,size=2)
+    l2 = apriori.generate_lk_by_ck_ergodic(data_set=data,ck=c2,min_support=0.2,support_data=support_data)
+    print(len(l2))

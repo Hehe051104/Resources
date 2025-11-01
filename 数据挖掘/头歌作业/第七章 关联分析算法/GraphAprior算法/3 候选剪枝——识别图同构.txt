@@ -1,0 +1,340 @@
+from __future__ import print_function    
+import os, csv    
+import numpy as np    
+from base import *    
+filepath = os.path.dirname(os.path.abspath(__file__))  
+def DFS(G, v):    
+    """    
+        DFS算法
+    """    
+    G.reset()  
+    edges = []    
+    recursive_call_DFS(G, v, edges)    
+    p = Graph(-1)    
+    for e in edges:    
+        p.add_edge(e)    
+    p.generate_vertices()    
+    return p  
+def recursive_call_DFS(G, v, edges):     
+    v.visited = True    
+    v.dfs_id = len(edges)    
+    neighbors = G.adjacent_connections(vertex=v)    
+    for e, w in G.adjacent_connections(vertex=v):    
+        if not w.visited:    
+            edges.append(e)    
+            recursive_call_DFS(G, w, edges)  
+def rightmost_path_BFS(G, v, v_target):      
+    G.reset()   
+    for _v in G.vertices:    
+        _v.dfs_id = float('inf')    
+        _v.parent = None    
+    Q = Queue()    
+    v.dfs_id = 0    
+    Q.enqueue(v)    
+    while not Q.is_empty():    
+        current = Q.dequeue()    
+        for e, w in G.adjacent_connections(vertex=current):    
+            if w.dfs_id == float('inf'):    
+                w.dfs_id = current.dfs_id + 1    
+                w.parent = current    
+                Q.enqueue(w)    
+                if(w == v_target):    
+                    Q.empty()    
+                    break    
+    tmp = v_target    
+    p = Graph(id=-1)    
+    while tmp.parent is not None:    
+        e = Edge(label='_', from_vertex=tmp, to_vertex=tmp.parent)    
+        p.add_edge(edge=e)    
+        p.add_vertex(vertex=tmp)    
+        tmp = tmp.parent    
+    p.add_vertex(vertex=tmp)    
+    return p  
+def get_rightmost_path(G):     
+    v_root = G.get_min_vertex()    
+    v_target = G.get_max_vertex()    
+    T_G = DFS(G=G, v=v_root)    
+    v_target = G.get_max_dfs_id_vertex()    
+    R = rightmost_path_BFS(T_G, v_root, v_target)    
+    for v in R.vertices:    
+        v.id = v.dfs_id    
+    R.reverse_graph()    
+    return R  
+##########Begin##########    
+def G2DFS(G):    
+    """    
+        将图形式映射为串表达式    
+    """    
+    DFScode = []
+    for e in G.edges:
+        i = e.from_vertex.dfs_id
+        j = e.to_vertex.dfs_id
+        L_i = e.from_vertex.label
+        L_j = e.to_vertex.label
+        L_ij = e.label
+        DFScode.append((i, j, L_i, L_j, L_ij))
+    return DFScode
+
+###########End###########
+##########Begin##########    
+def DFS2G(C):    
+    """    
+        将串表示转化为图形式    
+    """    
+    G = Graph(id=-1)
+    for i, j, L_i, L_j, L_ij in C:
+        if not G.contains_vertex_id(i):
+            v_i = Vertex(id=i, label=L_i)
+            G.add_vertex(v_i)
+        if not G.contains_vertex_id(j):
+            v_j = Vertex(id=j, label=L_j)
+            G.add_vertex(v_j)
+        
+        v_from = G.get_vertex(i)
+        v_to = G.get_vertex(j)
+        e = Edge(label=L_ij, from_vertex=v_from, to_vertex=v_to)
+        G.add_edge(e)
+    return G
+
+###########End###########
+ 
+def tuple_is_smaller(t1,t2):      
+    t1_forward = t1[1] > t1[0]    
+    t2_forward = t2[1] > t2[0]    
+    i,j,x,y = t1[0], t1[1], t2[0], t2[1]    
+    # Edge comparison    
+    if t1_forward and t2_forward:    
+        if j < y or (j == y and i > x):    
+            return True    
+        elif j > y or (j == y and i < x):    
+            return False    
+    elif (not t1_forward) and (not t2_forward):    
+        if i < x or (i == x and j < y):    
+            return True    
+        elif i > x or (i == x and j > y):    
+            return False    
+    elif t1_forward and (not t2_forward):    
+        if j <= x:    
+            return True    
+        else:    
+            return False    
+    elif (not t1_forward) and t2_forward:    
+        if i < y:    
+            return True    
+        elif i > y:   
+            return False    
+  
+    a1,b1,c1 = t1[2], t1[3], t1[4]    
+    a2,b2,c2 = t2[2], t2[3], t2[4]  
+    if not a1.isdigit():    
+        a1,b1,c1 = ord(a1),ord(b1),ord(c1)    
+        a2,b2,c2 = ord(a2),ord(b2),ord(c2)    
+    else:    
+        a1,b1,c1 = int(a1),int(b1),int(c1)    
+        a2,b2,c2 = int(a2),int(b2),int(c2)  
+    if a1 < a2:    
+        return True    
+    elif a1 == a2:    
+        if b1 < b2:    
+            return True    
+        elif b1 == b2:    
+            if c1 < c2:    
+                return True  
+
+    return False    
+  
+def tuples_are_smaller(G1, G2):    
+    """    
+        检查G1是否小于G2    
+    """    
+    DFScodes_1, DFScodes_2 = G1, G2    
+    if len(DFScodes_1) != len(DFScodes_2):    
+        raise Exception('Size of the two graphs are not equal')    
+    for i in range(0, len(DFScodes_1)):    
+        t1, t2 = DFScodes_1[i], DFScodes_2[i]    
+        is_smaller = tuple_is_smaller(t1,t2)    
+        if is_smaller:    
+            return True    
+    return False  
+def get_minimum_DFS(G_list):    
+  
+    min_G = G_list[0]    
+    min_idx = 0    
+    counts = np.zeros(len(G_list))    
+    for i in range(0, len(G_list)):    
+        for j in range(0, len(G_list)):    
+            if i == j:    
+                continue    
+            is_smaller = tuples_are_smaller(G_list[i], G_list[j])    
+            if not is_smaller:    
+                counts[i] += 1    
+    min_idx = np.argmin(counts)    
+    min_G = G_list[min_idx]    
+    return min_G, min_idx  
+def subgraph_isomorphisms(C, G):    
+
+    phi_c = []    
+    G_C = DFS2G(C)    
+    v0 = G_C.get_min_vertex()    
+    for v in G.vertices:    
+        if v.label == v0.label:    
+            phi_c.append([(v0.id, v.id)])    
+    for i, t in enumerate(C):    
+        u, v, L_u, L_v, L_uv = t      
+        phi_c_prime = []           
+        for phi in phi_c:    
+              
+            if v > u:    
+                  
+                try:    
+                    phi_u = transform_vertex(u, phi)    
+                except Exception as e:    
+                    continue    
+                 
+                vertex = G.get_vertex(phi_u)    
+                neighbors = G.adjacent_connections(vertex)    
+                for e, x in neighbors:    
+                       
+                    inv_trans_exists = check_inv_exists(x.id, phi)    
+                    if (not inv_trans_exists) and (x.label == L_v) and (e.label == L_uv):    
+                        phi_prime = list(phi)    
+                        phi_prime.append((v, x.id))    
+                        phi_c_prime.append(list(phi_prime))    
+            else:    
+                 
+                try:    
+                    phi_u = transform_vertex(u, phi)    
+                    phi_v = transform_vertex(v, phi)    
+                except Exception as e:    
+                      
+                    continue    
+                  
+                vertex = G.get_vertex(phi_u)    
+                neighbors = G.adjacent_connections(vertex)    
+                for e, x in neighbors:    
+                    if phi_v == x.id:    
+                        phi_c_prime.append(list(phi))    
+                        break    
+        phi_c = list(phi_c_prime)    
+    return phi_c  
+def check_inv_exists(v, phi):    
+  
+    for _phi in phi:    
+        if _phi[1] == v:    
+            return True    
+    return False  
+def inv_transform_vertex(x, phi):      
+    for _phi in phi:    
+        if _phi[1] == x:    
+            return _phi[0]    
+    raise Exception('Could not find inverse transformation')  
+def transform_vertex(u, phi):      
+    for _phi in phi:    
+        if _phi[0] == u:    
+            return _phi[1]    
+    raise Exception('u couldn\' be found in the isomorphisms')  
+def RMPE(C, D):       
+     
+    G_C = DFS2G(C=C)    
+
+    if len(C) > 0:    
+         
+        R = get_rightmost_path(G_C)    
+        u_r = R.vertices[len(R.vertices)-1].dfs_id    
+        L_u_r = R.vertices[len(R.vertices)-1].label    
+    E = []   
+    for i, G in enumerate(D):    
+        if len(C) == 0:  
+              
+            for e in G.edges:    
+                L_x, L_y, L_xy = e.from_vertex.label, e.to_vertex.label, e.label    
+                f = (0, 1, L_x, L_y, L_xy)    
+                E.append((i, f))    
+                f = (0, 1, L_y, L_x, L_xy)    
+                E.append((i, f))    
+        else:    
+            
+            phi_c_i = subgraph_isomorphisms(C, G)    
+            for phi in phi_c_i:      
+                phi_u_r = transform_vertex(u_r, phi)    
+                  
+                vertex = G.get_vertex(phi_u_r)    
+                neighbors = G.adjacent_connections(vertex)    
+                for e, x in neighbors:    
+                    if check_inv_exists(x.id, phi):    
+                        v = inv_transform_vertex(x.id, phi)    
+                        if R.contains_vertex_id(id=v) and not G_C.contains_edge(from_id=u_r, to_id=v):    
+                            _e = G.get_edge(transform_vertex(v, phi), phi_u_r)    
+                            if _e is None:    
+                                raise Exception('Couldn\'t find edge')    
+                            L_v = G_C.get_vertex(id=v).label    
+                            b = (u_r, v, L_u_r, L_v, _e.label) # What label?    
+                            E.append((i, b))      
+  
+                for u in R.vertices:    
+                    phi_u = transform_vertex(u.id, phi)    
+                   
+                    vertex = G.get_vertex(phi_u)    
+                    neighbors = G.adjacent_connections(vertex)    
+                    for e, x in neighbors:    
+                        if not check_inv_exists(x.id, phi):    
+                            f = (u.id, u_r + 1, vertex.label, x.label, e.label)    
+                            E.append((i, f))    
+     
+    E = list(set(E))    
+    extensions = list(set([e for i,e in E]))    
+    extensions = sort_tuples(extensions)    
+    pairs = []    
+    for ext in extensions:    
+        sup = 0    
+        for s in E:    
+            _, tup = s    
+            if tup == ext:    
+                sup += 1    
+        pairs.append((ext, sup))    
+    return pairs  
+def sort_tuples(E):       
+    sorted_tuples = []    
+    tuples = [[t] for t in E]    
+    for i in range(0, len(tuples)):    
+        min_G, min_idx = get_minimum_DFS(tuples)    
+        sorted_tuples.append(tuples[min_idx][0])    
+        del tuples[min_idx]    
+    return sorted_tuples  
+def compute_support(C, D):    
+ 
+    sup = 0    
+    for i, G in enumerate(D):    
+        phi_c_i = subgraph_isomorphisms(C, D[i])    
+        if len(phi_c_i) > 0:    
+            sup += 1    
+    return sup  
+def is_canonical(C):     
+    D_C = [DFS2G(C)]    
+    C_star = []           
+    k = len(C)    
+    for i in range(0, k):    
+        E = RMPE(C_star, D_C)    
+        if len(E) == 0:    
+            break    
+        G_list = [[_e[0]] for _e in E]    
+        min_G, min_idx = get_minimum_DFS(G_list)    
+        s_i = E[min_idx][0]    
+        sup_s_i = E[min_idx][1]    
+        if tuple_is_smaller(s_i, C[i]):    
+            return False    
+        C_star.extend([s_i])    
+    return True
+def g_span(C, D, min_sup, extensions):      
+   
+    E = RMPE(C, D)    
+    for t, sup_t in E:    
+         
+        C_prime = list(C)    
+        C_prime.extend([t])    
+         
+        sup_C_prime = sup_t    
+           
+        if (sup_C_prime >= min_sup) and is_canonical(C_prime):    
+            extensions.append(C_prime)    
+            g_span(C_prime, D, min_sup, extensions)  

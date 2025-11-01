@@ -1,0 +1,76 @@
+
+from __future__ import print_function
+import os, csv
+import numpy as np
+from graph import *
+filepath = os.path.dirname(os.path.abspath(__file__))
+
+
+def read_data(filename, has_header=True):
+    """
+        读取数据
+    """
+    data, header = [], None
+    with open(filename, 'rt') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=' ')
+        if has_header:
+            header = spamreader.next()
+        for row in spamreader:
+            data.append(row)
+    return (np.array(data), np.array(header))
+
+def load_graphs(filename):
+    """
+        从文件中加载图
+    """
+    data, _ = read_data(filename, has_header=False)
+    graphs = []
+    for line in data:
+        if line[0] == 't':
+            G = Graph(id=int(line[2]))
+            graphs.append(G)
+        else:
+            if line[0] == 'v':
+                v = Vertex(id=int(line[1]), label=line[2])
+                graphs[len(graphs)-1].add_vertex(vertex=v)
+            elif line[0] == 'e':
+                e = Edge(label=line[3],
+                         from_vertex=graphs[len(graphs)-1].get_vertex(id=int(line[1])),
+                         to_vertex=graphs[len(graphs)-1].get_vertex(id=int(line[2])))
+                graphs[len(graphs)-1].add_edge(edge=e)
+    return graphs
+
+##########Begin##########
+class Queue(object):
+    """
+        链式数据结构的实现
+    """
+    def __init__(self, queue=None):
+        if queue is None:
+            self.queue = []
+        else:
+            self.queue = list(queue)
+    def dequeue(self):
+        if self.is_empty():
+            return None
+        return self.queue.pop(0)
+    def enqueue(self, element):
+        self.queue.append(element)
+    def is_empty(self):
+        return len(self.queue) == 0
+    def empty(self):
+        self.queue = []
+
+
+class Vertex():
+    """
+        图中顶点的实现
+    """
+    visited = False
+    dfs_id = 0
+    def __init__(self, id, label):
+        self.id = id
+        self.label = label
+        self.visited = False
+        self.dfs_id = 0
+############End############
