@@ -1,0 +1,40 @@
+# -*- coding:utf-8 -*-
+# 数据离散化-等频离散
+import pandas as pd
+import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
+np.random.seed(2021)
+
+data = np.random.randint(1, 100, 200)
+
+data = pd.Series(data)
+k = 5  # 设置离散之后的数据段为5
+
+######### Begin ##########
+# 等频率离散化
+bins = [1.0 * i / k for i in range(k + 1)]
+w = data.describe(percentiles=bins)
+w.drop('50%', axis=0, inplace=True)
+w = w[4:4 + k + 1]
+w[0] = w[0] * (1 - 1e-10)
+d2 = pd.cut(data, w, labels=range(k))
+print(d2.value_counts())
+######### End ##########
+
+
+def cluster_plot(d, k):
+    import matplotlib.pyplot as plt
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
+
+    plt.figure(figsize=(12, 4))
+    for j in range(0, k):
+        plt.plot(data[d == j], [j for i in d[d == j]], 'o')
+
+    plt.ylim(-0.5, k - 0.5)
+    return plt
+
+
+# cluster_plot(d2, k).show()
+cluster_plot(d2, k).savefig("/data/workspace/myshixun/step2/学员文件/describe.png")

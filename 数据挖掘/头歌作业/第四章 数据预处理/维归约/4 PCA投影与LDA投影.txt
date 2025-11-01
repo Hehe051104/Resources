@@ -1,0 +1,74 @@
+import matplotlib
+matplotlib.use('Agg')
+
+import numpy as np
+from numpy.linalg import eig
+from matplotlib import pyplot as plt
+Class_data1=[(1,2),(2,3),(3,3),(4,5),(5,5)]
+Class_data2=[(1,0),(2,1),(3,1),(3,2),(5,3),(6,5)]
+data1_line = np.hstack((np.array(Class_data1)[:,0],np.array(Class_data2)[:,0]))
+data2_line = np.hstack((np.array(Class_data1)[:,1],np.array(Class_data2)[:,1]))
+def pca():
+    c1 = data1_line - data1_line.mean()#减去均值，去中心化
+    c2 = data2_line - data2_line.mean()
+    data = np.vstack((c1,c2))
+    #***********Begin**********
+    cov_matrix=np.dot(data,data.T)/((len(Class_data1)+len(Class_data2))-1)
+
+    #************End***********
+    #求出协方差矩阵
+    values,vecs=eig(cov_matrix) #协方差矩阵分解
+    global vecs1
+    vecs1=vecs
+    print(vecs[:,0])
+pca()
+def LDA():
+    u1 = np.array(Class_data1).mean(axis=0) #每个类的均值
+    u2 = np.array(Class_data2).mean(axis=0)
+    #计算散布矩阵第一步，先计算每个类别每个样本的均值向量
+    m = Class_data1 - u1
+    n = Class_data2 - u2
+    #***********Begin**********
+    S1 = np.dot(m.T,m) 
+    S2 = np.dot(n.T,n)
+    #************End***********
+    Sw = S1+S2
+    C = np.array([data1_line.mean(),data2_line.mean()])
+    b = np.linalg.inv(Sw)
+    m1 = (u1 - C).reshape(2,1)
+    n1 = (u2 - C).reshape(2,1)#矩阵乘塑形
+    S3 = np.dot(m1,m1.T)
+    S4 = np.dot(n1,n1.T)
+    #***********Begin**********
+    Sb=(len(Class_data1)*S3+len(Class_data2)*S4)
+
+    #************End***********
+    values,vecs=eig(np.dot(b,Sb))
+    global vecs2 
+    vecs2 = vecs
+    print(vecs[:,1])
+    a = (u1-u2).T
+    print(np.dot(a,b))
+LDA()
+
+def plot_1(vecs1,vecs2):
+    x=np.array(Class_data1)[:,0]
+    y=np.array(Class_data1)[:,1]
+
+    x1 = np.array(Class_data2)[:,0]
+    y1 = np.array(Class_data2)[:,1]
+
+    x_ = np.linspace(0,6)
+    y_=(vecs1[:,1][1]/vecs1[:,1][0])*(x_)
+
+    x_1 = np.linspace(-2,2)
+    y_1=(vecs2[:,1][1]/vecs2[:,1][0])*(x_1)
+
+    plt.plot(x,y,'ro')
+    plt.plot(x_,y_,'-r',label="$PCA$")
+    plt.plot(x1,y1,'bo')
+    plt.plot(x_1,y_1,'blue',label="$LDA$")
+    plt.grid()
+    plt.legend()
+    return plt
+plot_1(vecs1,vecs2).savefig('/data/workspace/myshixun/step4/学员文件/describe.png')

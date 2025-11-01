@@ -1,0 +1,45 @@
+from sklearn.svm import SVC #调用支持向量机算法
+from sklearn.datasets import load_breast_cancer #从sklearn库里自带的乳腺癌数据进行数据分析
+from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA  #调用PCA库
+from sklearn.preprocessing import StandardScaler #用来标准化数据集
+from sklearn import metrics
+
+
+def knncls():
+    data=load_breast_cancer()
+    #乳腺癌数据集一共有569个样本，30个特征，标签为二分类
+    x = data.data  #待划分样本数据
+    y = data.target #待划分样本数据的结果
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25,random_state=42)
+    print("实际的测试集结果:",y_test)  #测试的数据集结果
+
+    # 进行标准化处理
+    Std = StandardScaler()
+    x_train = Std.fit_transform(x_train)
+    x_test = Std.fit_transform(x_test) #此时已标准化训练集和测试集
+
+    model_linear=SVC(C=1.0,kernel="linear")  #线性SVM分类，C是惩罚参数'linear'代表线性核
+    model_linear.fit(x_train, y_train)   #在训练集上训练该线性SVM分类器
+    preresult=model_linear.predict(x_test)
+    print("没降维时使用SVM预测结果为：",preresult)
+    print('没降维时的准确率为：{}'.format(metrics.accuracy_score(preresult, y_test)))
+
+    # 使用PCA降维
+    # ***********Begin**********
+    pca = PCA(n_components=5)  #通过PCA降到n维，但n不能大于原数据集的特征数量
+    # ************End***********
+    x_norm=StandardScaler().fit_transform(x) #这儿其实就是pca.fit(X)，只不过进行了标准化
+    x_pca=pca.fit_transform(x_norm)   #获得协方差矩阵
+    print(pca.explained_variance_ratio_) #获得5个主成分的方差占比,发现只有前两个特征为主成分，所以可以将数据降到二维
+
+    x_train = pca.fit_transform(x_train)
+    x_test = pca.transform(x_test)
+    model_linear = SVC(C=1.0, kernel="linear")  # 线性SVM分类，C是惩罚参数'linear'代表线性核
+    model_linear.fit(x_train, y_train)
+    y_predict =model_linear.predict(x_test)
+    print("降维后SVM算法预测结果为：",y_predict )
+    print('降维后的准确率为：{}'.format(metrics.accuracy_score(y_predict, y_test)))
+
+    return None
+knncls()

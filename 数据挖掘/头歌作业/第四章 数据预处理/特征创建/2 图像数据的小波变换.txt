@@ -1,0 +1,20 @@
+import cv2
+import numpy as np
+from pywt import dwt2, idwt2
+
+# 读取灰度图
+img = cv2.imread('/data/bigfiles/1aff0db7-7a83-456e-bcc3-80812c0d567e',0)
+########Begin########
+# 对img进行haar小波变换：
+cA,(cH,cV,cD)=dwt2(img,'haar')
+ 
+# 小波变换之后，低频分量对应的图像：
+cv2.imwrite('./result/lena.png',np.uint8(cA/np.max(cA)*255))
+# 小波变换之后，水平方向高频分量对应的图像：
+cv2.imwrite('./result/lena_h.png',np.uint8(cH/np.max(cH)*255))
+# 小波变换之后，垂直平方向高频分量对应的图像：
+cv2.imwrite('./result/lena_v.png',np.uint8(cV/np.max(cV)*255))
+# 小波变换之后，对角线方向高频分量对应的图像：
+cv2.imwrite('./result/lena_d.png',np.uint8(cD/np.max(cD)*255))
+########End########
+print(np.sum(cA))

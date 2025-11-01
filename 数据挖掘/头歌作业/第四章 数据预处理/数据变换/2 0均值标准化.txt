@@ -1,0 +1,28 @@
+import numpy as np
+import pandas as pd
+
+np.random.seed(1000)
+df = pd.DataFrame({"value1": np.random.rand(10) * 100,
+                   'value2': np.random.rand(10) * 100})
+# print(df.head())
+
+# 创建函数，标准化数据
+
+def data_Znorm(df, *cols):
+    df_n = df.copy()
+    ############## Begin ##############
+    for col in cols:
+        mean_val = df_n[col].mean()
+        std_val = df_n[col].std()
+        df_n[col + '_Zn'] = (df_n[col] - mean_val) / std_val
+    ############## End ##############
+    
+    return (df_n)
+
+
+
+df_z = data_Znorm(df, 'value1', 'value2')
+u_z = df_z['value1_Zn'].mean()
+std_z = df_z['value1_Zn'].std()
+print(df_z)
+print('标准化后value1的均值为:%.2f, 标准差为：%.2f' % (u_z, std_z))

@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+import math
+
+# 设置随机种子
+np.random.seed(1477)
+
+# 加载数据
+df = pd.read_csv('src/deaths.csv')
+
+
+# 分层依据
+label_unique = np.unique(df['Province_State'])
+
+# 分层抽取不确定则按数据调整每层抽取个数来达到50%抽样
+each_sample_count = math.ceil(df.shape[0] / len(label_unique) / 2)
+
+df_sample = pd.DataFrame(np.zeros((1, len(df.columns))), columns=df.columns, dtype=int)
+
+for label in label_unique:
+    # 数据抽样，根据 Province_State 字段
+    ##########Begin##########
+    sample = pd.DataFrame.sample(df[df['Province_State'] == label], each_sample_count, replace=True)
+
+    ##########End##########
+    # 合并数据
+    df_sample = pd.concat([df_sample, sample])
+
+# 把取多余的部分去掉
+print(df_sample[:math.ceil(df.shape[0] / 2)]) 

@@ -1,0 +1,22 @@
+import numpy as np
+import pandas as pd
+
+np.random.seed(1000)
+df = pd.DataFrame({"value1": np.random.rand(10) * 20,
+                   'value2': np.random.rand(10) * 100})
+
+
+# 创建函数，标准化数据
+def data_norm(df, *cols):
+    df_n = df.copy()
+    ############## Begin ##############
+    for col in cols:
+        x_min = df[col].min()
+        x_max = df[col].max()
+        df_n[col + '_n'] = (df[col] - x_min) / (x_max - x_min)
+    ############## End ##############
+    return df_n
+
+
+df_n = data_norm(df, 'value1', 'value2')
+print(df_n.head())

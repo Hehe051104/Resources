@@ -1,0 +1,28 @@
+import pandas as pd
+import numpy as np
+np.random.seed(2021)
+
+data = np.random.randint(1, 100, 200)
+
+########## Begin ##########
+bins=[0,15,28,36,60,75,84,100]
+k=len(bins)
+d1=pd.cut(data,bins=bins,labels=range(k-1))
+########## End ##########
+print(d1.value_counts())
+
+# 可视化
+def cluster_plot(d, k):
+    import matplotlib.pyplot as plt
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
+
+    plt.figure(figsize=(12, 4))
+    for j in range(0, k):
+        plt.plot(data[d == j], [j for i in d[d == j]], 'o')
+
+    plt.ylim(-0.5, k - 0.5)
+    return plt
+
+# cluster_plot(d1, k).show()
+cluster_plot(d1, k).savefig('/data/workspace/myshixun/step1/学员文件/describe.png')

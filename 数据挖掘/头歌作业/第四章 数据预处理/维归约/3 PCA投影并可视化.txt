@@ -1,0 +1,30 @@
+import matplotlib
+matplotlib.use('Agg')
+
+import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
+
+mean= [0,0] #生成二维数据的平均值
+cov= [[1,5],[5,10]] #生成数据的协方差矩阵
+count=2000
+np.random.seed(20)
+data = np.random.multivariate_normal(mean,cov,count) #生成多元正态分布矩阵
+#plt.scatter(data[:,0],data[:,1],marker = '+') #画出散点图
+from numpy.linalg import eig
+cov_matrix=np.dot(data.T,data)/(count-1) #数据的协方差矩阵
+values,vecs=eig(cov_matrix) #对协方差矩阵进行特征值分解,返回两个数组，第一个是特征值，然后是特征向量
+
+#协方差矩阵最大的特征值，最佳投影方向就是最大特征值所对应的特征向量
+
+from matplotlib import pyplot as plt
+#***********Begin**********
+#数据的协方差矩阵
+data_new=np.dot(data,vecs[:,1])#数据的协方差矩阵
+
+#************End***********
+def hist_plot(data_new):
+    plt.hist(data_new,bins=80,facecolor='blue')#画出频率分布直方图
+    return plt
+hist_plot(data_new).savefig('/data/workspace/myshixun/step3/学员文件/describe.png')
+print(data_new[0:3])

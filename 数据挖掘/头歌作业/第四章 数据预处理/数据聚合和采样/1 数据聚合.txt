@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+
+# 固定输出格式
+pd.set_option('display.max_columns', 100)
+pd.set_option('display.max_rows', 100)
+
+# 设置随机种子
+np.random.seed(1477)
+
+# 加载数据
+data = pd.read_csv('src/deaths.csv')
+
+##########Begin##########
+# 根据 Province_State（州） 分组，对 Population（人口）进行聚合操作（最大值和平均值）
+ret = data.groupby('Province_State').agg({'Population': [np.max,np.mean]})
+
+
+##########End##########
+print('ret:\n', ret)
+
+# 处理时间字段数据，方便聚合操作
+df = data.columns[13:]
+col = [i[:4] for i in df]
+
+dat = data.iloc[:, 13:].T.reset_index()
+# 年份 数据重新赋值
+dat['index'] = col
+
+##########Begin##########
+# 对处理后的 年份 数据进行 行分组，数据聚合 sum、max
+res = dat.groupby('index').agg(['sum', 'max'])
+
+##########End##########
+print('res:\n', res)

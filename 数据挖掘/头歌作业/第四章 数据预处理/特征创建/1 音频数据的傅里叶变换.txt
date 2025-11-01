@@ -1,0 +1,18 @@
+import numpy as np
+import numpy.fft as nf
+import matplotlib.pyplot as plt
+import scipy.io.wavfile as wf
+import warnings
+warnings.filterwarnings("ignore")
+#读取音频文件,将其按照采样率离散化，返回采样率和信号
+sameple_rate,sigs = wf.read('/data/bigfiles/1540cf25-e65e-40e8-83f5-e69b27d386b1')
+#######Begin########
+#sample_reate:采样率(每秒采样个数),　sigs:每个采样位移值。
+sigs = sigs/(2**15)
+times = np.arange(len(sigs))/sameple_rate 
+#基于傅里叶变换，获取音频频域信息
+freqs = nf.fftfreq(sigs.size, 1/sameple_rate)
+complex_arry = nf.fft(sigs)
+pows = np.abs(complex_arry)
+#########End########
+print(pows)
