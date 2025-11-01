@@ -1,0 +1,60 @@
+import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+from sklearn import datasets
+
+from sklearn.cluster import KMeans
+from sklearn.cluster import DBSCAN
+
+def demo():
+    # 设置随机种子
+    np.random.seed(1447)
+
+
+    # 解决中文显示问题
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
+
+    # 加载数据集
+    x1, y1 = datasets.make_circles(n_samples=500, factor=0.6, noise=0.05)
+    x2, y2 = datasets.make_blobs(n_samples=500, n_features=2, centers=[[1.2, 1.2]], cluster_std=[[.1]])
+
+    # 定义画布
+    plt.figure()
+
+    # 显示原数据集
+    plt.subplot(221)
+    x = np.concatenate((x1, x2))
+    plt.scatter(x[:, 0], x[:, 1])
+    plt.title('原数据集')
+
+    # kmeans聚类
+    plt.subplot(222)
+
+    # 聚成3类，random_state：随机生成簇中心的状态条件，要求设置为9
+    ########## Begin ##########
+    kmeans = KMeans(n_clusters=3, random_state=9)
+    y_pred = kmeans.fit_predict(x)
+
+    ########## End ##########
+
+    plt.scatter(x[:, 0], x[:, 1], c=y_pred)
+    plt.title('kmeans聚类')
+
+    # DBScan聚类
+    plt.subplot(223)
+
+    ########## Begin ##########
+    dbscan = DBSCAN(eps=0.1, min_samples=10)
+    y_pred = dbscan.fit_predict(x)
+
+    ########## End ##########
+
+    plt.scatter(x[:, 0], x[:, 1], c=y_pred)
+    plt.title('DBScan聚类')
+
+    # 保存画布图片
+    plt.savefig('src/step1/student_img/result.jpg')
