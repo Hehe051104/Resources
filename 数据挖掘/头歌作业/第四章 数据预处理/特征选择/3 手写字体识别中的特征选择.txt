@@ -1,0 +1,38 @@
+import numpy as np # 计算
+from sklearn.datasets import load_digits # 手写识别字体数据集
+from sklearn.feature_selection import SelectFromModel # 特征选择
+from sklearn.linear_model import LassoCV # 基模型
+
+
+# 加载数据集
+diabetes = load_digits()
+# 训练集和目标集
+X = diabetes.data
+y = diabetes.target
+
+# 找到特征
+feature_names = ['pixel_0_0', 'pixel_0_1', 'pixel_0_2', 'pixel_0_3', 'pixel_0_4', 'pixel_0_5', 'pixel_0_6', 'pixel_0_7', 'pixel_1_0', 'pixel_1_1', 'pixel_1_2', 'pixel_1_3', 'pixel_1_4', 'pixel_1_5', 'pixel_1_6', 'pixel_1_7', 'pixel_2_0', 'pixel_2_1', 'pixel_2_2', 'pixel_2_3', 'pixel_2_4', 'pixel_2_5', 'pixel_2_6', 'pixel_2_7', 'pixel_3_0', 'pixel_3_1', 'pixel_3_2', 'pixel_3_3', 'pixel_3_4', 'pixel_3_5', 'pixel_3_6', 'pixel_3_7', 'pixel_4_0', 'pixel_4_1', 'pixel_4_2', 'pixel_4_3', 'pixel_4_4', 'pixel_4_5', 'pixel_4_6', 'pixel_4_7', 'pixel_5_0', 'pixel_5_1', 'pixel_5_2', 'pixel_5_3', 'pixel_5_4', 'pixel_5_5', 'pixel_5_6', 'pixel_5_7', 'pixel_6_0', 'pixel_6_1', 'pixel_6_2', 'pixel_6_3', 'pixel_6_4', 'pixel_6_5', 'pixel_6_6', 'pixel_6_7', 'pixel_7_0', 'pixel_7_1', 'pixel_7_2', 'pixel_7_3', 'pixel_7_4', 'pixel_7_5', 'pixel_7_6', 'pixel_7_7']
+print(f'X的数据形状:{X.shape}')
+
+
+# ********** Begin ********** #
+# LassoCV实例化对象并训练数据
+clf = LassoCV().fit(X, y)
+# 计算特征importance
+importance = np.abs(clf.coef_)
+# ********** End ********** #
+# 找到并根据大小排序，输出最重要的两个特征
+idx_third = importance.argsort()[-3]
+threshold = importance[idx_third] + 0.01
+idx_features = (-importance).argsort()[:2]
+name_features = np.array(feature_names)[idx_features]
+print('选择的特征为: {}'.format(name_features))
+
+
+# ********** Begin ********** #
+# 基于SelectFromModel函数最终的特征选择
+sfm = SelectFromModel(clf, threshold=threshold)
+sfm.fit(X, y)
+X_transform = sfm.transform(X)
+# ********** End ********** #
+print(f'选择后的数据形状为:{X_transform.shape}')

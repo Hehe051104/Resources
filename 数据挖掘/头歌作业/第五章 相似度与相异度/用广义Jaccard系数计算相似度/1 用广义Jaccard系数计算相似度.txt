@@ -1,0 +1,37 @@
+###-----------编写代码实现广义Jaccard系数的计算----------
+def sim_tonimoto(user1, user2):
+    common = 0
+
+    #1.判断有没有相同的数据, 没有相同数据则返回0
+    ################# Begin #################
+    for item in user1:
+        if item in user2:
+            common += 1
+
+    ################# End #################
+    if common == 0:
+        return 0
+
+    common_num = common
+    user1_num = len(user1)
+    user2_num = len(user2)
+
+
+    #2.广义Jaccard系数计算
+    ################# Begin #################
+    res = common_num / (user1_num + user2_num - common_num)
+
+
+    ################# End #################
+
+    return res
+
+a = [10,20,30] #输入数据1
+b = [10,0,30] #输入数据2
+
+#3.调用自己实现的sim_tonimoto函数
+################# Begin #################
+result = sim_tonimoto(a, b)
+
+################# End #################
+print(result) #输出相似度

@@ -1,0 +1,109 @@
+# （一）：找到与目标用户兴趣相似的用户集合
+# ########## Begin ##########
+# 目标用户(A用户喜欢a、b、d商品)
+ 
+# 相似用户用户()
+ 
+target_user = {'A':['a','b','d']}
+print(f'目标用户：{target_user}')
+# 相似用户用户()
+alike_user = {'B': ['a','c'],'C': ['b','e'],'D':['c','d','e']}
+print(f'相似用户：{alike_user}')
+# ########## End ##########
+# 倒排表
+ 
+"""
+a A B C
+"""
+# 总共商品类型
+key_value = []
+value1 = target_user.values()
+for item in value1:
+    for good in item:
+        # 如果不再就添加到键值
+        if good not in key_value:
+            key_value.append(good)
+value2 = alike_user.values()
+########## Begin ##########
+for item in value2:
+   for good in item:
+       if good not in key_value:
+           key_value.append(good)
+print(f'总共商品类型：{key_value}')
+########## End ##########
+new_table = []
+for good in key_value:
+    new_dict = {}
+    user_list = []
+    # 目标用户
+    key_value_list = target_user.items()
+    # print(key_value_list)
+    for key_value in key_value_list:
+        key = key_value[0]
+        value = key_value[1]
+        if (good in value) & (key not in user_list):
+            user_list.append(key)
+    # new_dict[good] = user_list
+    # new_table.append(new_dict)
+    # 相似用户
+    key_value_list = alike_user.items()
+    # print(key_value_list)
+    for key_value in key_value_list:
+        key = key_value[0]
+        value = key_value[1]
+        if (good in value) & (key not in user_list):
+            user_list.append(key)
+    new_dict[good] = user_list
+    new_table.append(new_dict)
+print(new_table)
+########## Begin ##########
+# 计算余弦相似度
+import pandas as pd
+import numpy as np
+df = pd.DataFrame(data=np.zeros((4,4)), columns=['A','B','C','D'],index=['A','B','C','D'])
+print(df)
+# 统计交集
+for item in new_table:
+    print(list(item.values())[0])
+    label = list(item.values())[0]
+    x = label[0]
+    y = label[1]
+    df.loc[x,y] = df.loc[x,y] + 1
+    df.loc[y,x] = df.loc[y,x] + 1
+print(df)
+ 
+ 
+# 统计交集
+ 
+########## End ##########
+ 
+ 
+# 计算两两之间的相似度
+count_list = {}
+for i in ['A','B','C','D']:
+    count = df.loc[i,:].sum()
+    count_list[i] = count
+print(count_list)
+# 计算余弦相似度
+########## Begin ##########
+for i in ['A','B','C','D']:
+    for j in ['A', 'B', 'C', 'D']:
+        df.loc[i,j] = df.loc[i,j] / np.sqrt(count_list[i] * count_list[j])
+########## End ##########
+print(df)
+########## Begin ##########
+# 计算p(A,c)和p(A,e)
+ 
+p_Ac = df.loc['A','B'] + df.loc['A','D']
+print(f'p(A,c):{p_Ac}')
+p_Ae = df.loc['A','C'] + df.loc['A','D']
+print(f'p(A,e):{p_Ae}')
+ 
+ 
+########## End ##########
+if p_Ac > p_Ae:
+    print("用户A对c商品更感兴趣，将e商品推荐给A")
+elif p_Ac < p_Ae:
+    print("用户A对e商品更感兴趣，将e商品推荐给A")
+else:
+    print("用户A对c商品和e商品同样感兴趣！")

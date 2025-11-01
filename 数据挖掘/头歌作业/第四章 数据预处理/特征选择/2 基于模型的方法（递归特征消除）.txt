@@ -1,0 +1,25 @@
+from sklearn.svm import SVC  # 导入支持向量机svc库
+# 手写识别字体集
+from sklearn.datasets import load_digits 
+from sklearn.feature_selection import RFE # RFE函数
+
+# 导入数据集
+digits = load_digits()
+# 改变数据集形状
+X = digits.images.reshape((len(digits.images), -1))
+# 目标值
+Y = digits.target
+print(f'数据集X的形状：{X.shape}')
+
+
+# 创建RFE模型基于线性SVC
+svc = SVC(kernel="linear", C=1)
+# ********** Begin ********** #
+# 基于svc模型，选择特征数为1，每次移除一个属性
+rfe = RFE(estimator=svc,n_features_to_select=1,step=1)
+# 训练模型
+rfe.fit(X,Y)
+# 挑选出被选出的特征
+ranking = rfe.ranking_.reshape(digits.images[0].shape)
+# ********** End ********** #
+print(ranking)

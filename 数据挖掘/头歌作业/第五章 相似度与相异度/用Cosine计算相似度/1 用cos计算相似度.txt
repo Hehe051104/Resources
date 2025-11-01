@@ -1,0 +1,50 @@
+
+import numpy as np
+import jieba
+jieba.setLogLevel(jieba.logging.INFO)
+
+def cosine_similarity(sentence1: str, sentence2: str) -> float:
+
+    #1.实现文本分词
+    ########## Begin ##########
+    words1 = jieba.lcut(sentence1)
+    words2 = jieba.lcut(sentence2)
+
+    ########## End ##########
+
+    #2.建立词库
+    ########## Begin ##########
+    word_list = list(set(words1 + words2))
+
+
+    ########## End ##########
+
+    word_count_vec_1 = []
+    word_count_vec_2 = []
+    for word in word_list:
+
+        #3.统计各个文本在词典里出现词的次数
+        ########## Begin ##########
+        word_count_vec_1.append(words1.count(word))
+        word_count_vec_2.append(words2.count(word))
+
+        ########## End ##########
+
+    vec_1 = np.array(word_count_vec_1)
+    vec_2 = np.array(word_count_vec_2)
+
+    #4.余弦公式
+    ########## Begin ##########
+    cos = np.dot(vec_1, vec_2) / (np.linalg.norm(vec_1) * np.linalg.norm(vec_2))
+
+    ########## End ##########
+
+    return cos
+
+
+str1="湖南是一个好地方"
+str2="湖南好吃的在哪里"
+
+sim1=cosine_similarity(str1,str2)
+
+print(sim1)

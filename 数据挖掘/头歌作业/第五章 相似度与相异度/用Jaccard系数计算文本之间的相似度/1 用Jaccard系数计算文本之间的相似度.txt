@@ -1,0 +1,38 @@
+#import numpy as np
+#from scipy.spatial.distance import pdist#直接调包可以计算JC值 ,需要两个句子长度一样；
+import jieba
+jieba.setLogLevel(jieba.logging.INFO)
+
+def Jaccrad(model, reference):#terms_reference为源句子，terms_model为候选句子
+
+    #1.分词
+    ########## Begin ##########
+    terms_reference = jieba.lcut(reference)
+    terms_model = jieba.lcut(model)
+
+    ########## End ##########
+
+    grams_reference = list(set(terms_reference))
+    grams_model = list(set(terms_model))
+
+    #2.计算交集
+    ########## Begin ##########
+    temp = len(set(grams_model) & set(grams_reference))
+
+    ########## End ##########
+
+    fenmu=len(grams_model)+len(grams_reference)-temp #并集
+
+    #3.计算Jaccard系数
+    ########## Begin ##########
+    jaccard_coefficient = temp / fenmu if fenmu != 0 else 0
+
+    ########## End ##########
+
+    return jaccard_coefficient
+
+
+str1="我爱北京天安门"
+str2="天安门雄伟壮阔让人不得不爱"
+jaccard_coefficient=Jaccrad(str1,str2)
+print(jaccard_coefficient)

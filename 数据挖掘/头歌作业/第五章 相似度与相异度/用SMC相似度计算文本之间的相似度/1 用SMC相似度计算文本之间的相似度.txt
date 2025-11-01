@@ -1,0 +1,42 @@
+import numpy as np  
+import jieba  
+jieba.setLogLevel(jieba.logging.INFO)  
+  
+def smc_similarity(sentence1: str, sentence2: str) -> float:  
+    # 1. 实现文本分词  
+    ########## Begin ##########
+    seg1 = list(jieba.cut(sentence1))
+    seg2 = list(jieba.cut(sentence2)) 
+
+    ########## End ##########
+
+    # 2. 建立词库  
+    ########## Begin ##########
+    word_list = list(set(seg1 + seg2))
+
+    ########## End ##########
+
+    # 3. 统计各个文本在词典里出现词的次数  
+    ########## Begin ##########
+    word_counts_1 = [1 if word in seg1 else 0 for word in word_list]
+    word_counts_2 = [1 if word in seg2 else 0 for word in word_list]
+
+    ########## End ##########
+
+    # 4. 余弦公式  
+    ########## Begin ##########
+    f00 = sum([1 for i in range(len(word_list)) if word_counts_1[i] == 0 and word_counts_2[i] == 0])
+    f01 = sum([1 for i in range(len(word_list)) if word_counts_1[i] == 0 and word_counts_2[i] == 1])
+    f10 = sum([1 for i in range(len(word_list)) if word_counts_1[i] == 1 and word_counts_2[i] == 0])
+    f11 = sum([1 for i in range(len(word_list)) if word_counts_1[i] == 1 and word_counts_2[i] == 1])
+    smc = (f11 + f00) / (f00 + f01 + f10 + f11)
+    ########## End ##########
+      
+    return smc  
+  
+str1 = "我爱北京天安门"  
+str2 = "天安门雄伟壮阔让人不得不爱"  
+  
+sim1 = smc_similarity(str1, str2)  
+  
+print(sim1)

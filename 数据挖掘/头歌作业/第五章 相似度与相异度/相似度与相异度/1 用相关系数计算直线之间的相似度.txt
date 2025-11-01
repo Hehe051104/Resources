@@ -1,0 +1,55 @@
+# 欧几里得相关系数
+def euclidean(p, q):
+    # 如果两数据集数目不同，计算两者之间都对应有的数
+    same = 0
+    for i in p:
+        if i in q:
+            same += 1
+ 
+    # 计算欧几里德距离,并将其标准化
+    ########## Begin ##########
+    e = sum([(p[j] - q[j]) ** 2 for j in range(same)])  
+    ########## End ##########    
+    return 1 / (1 + e ** 0.5)
+ 
+ 
+print("欧几里得计算出的相似度为",euclidean([1, 2, 3, 4, 5], [2, 4, 6, 8, 10]))
+ 
+# 余弦相似度
+def cosine_similarity(x, y):
+    xx = 0.0
+    yy = 0.0
+    xy = 0.0
+    for i in range(len(x)):
+        xx += x[i] * x[i]
+        yy += y[i] * y[i]
+        xy += x[i] * y[i]
+    xx_sqrt = xx ** 0.5
+#     print(xx)
+#     print(yy)
+#     print(xy)
+    yy_sqrt = yy ** 0.5
+    cos = xy/(xx_sqrt*yy_sqrt)
+    return cos
+ 
+ 
+print('余弦相关系数计算出的相似度为',cosine_similarity([5,3],[5,8]))
+ 
+ 
+#泊松相关系数
+import scipy
+import numpy
+from scipy.stats import pearsonr
+#print()
+########## Begin ##########
+import pandas as pd
+df=pd.read_csv('/data/bigfiles/2017fb1c-45c5-4d02-bcf2-e825b34f8662')
+#print(df.loc[[1,16],'2004/1/20':'4/20/20'].values.tolist()) # 选取了第0，1，16行的用户从2004/1/20到2004/20/20这段日期的数据
+#print(df.head())
+x =numpy.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1])
+########## End ##########
+y =numpy.array([1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,3])
+ 
+r_row, p_value = pearsonr(x, y)
+print ("用户(UID)84001033与用户(UID)84001003从2004/1/20到4/20/20这段日期的相似度为",r_row)
+# print (p_value)
