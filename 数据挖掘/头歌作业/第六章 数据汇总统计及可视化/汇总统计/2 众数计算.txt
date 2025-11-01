@@ -1,0 +1,28 @@
+def get_mode(list):
+    '''
+    计算众数
+    参数：
+        list：列表类型，待分析数据
+    返回值：
+        grade_mode: 列表类型，待分析数据的众数
+
+    '''
+    list_set = set(list)  # 取list的集合，去除重复元素
+    frequency_dict = {}
+    for i in list_set:  # 遍历每一个list的元素，得到该元素何其对应的个数.count(i)
+        frequency_dict[i] = list.count(i)  # 创建dict; new_dict[key]=value
+    ls_mode = []
+    for key, value in frequency_dict.items():  # 遍历dict的key and value。key:value
+
+    # 把list的出现最多的元素添加到ls_mode里面
+    ########## Begin ##########
+        if value == max(frequency_dict.values()):
+            ls_mode.append(key)
+    ########## End ##########
+    return ls_mode
+
+# get_mode，计算众数
+
+grade_list = eval(input())
+result = get_mode(grade_list)
+print(result)

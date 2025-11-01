@@ -1,0 +1,35 @@
+import numpy as np
+
+
+def trimmed_mean(data, p):
+    """截断均值"""
+    # np数组转成列表,进行升序排序
+    ########## Begin ##########
+    data = sorted(data.tolist())
+
+    ########## End ##########
+    print(data)
+
+    # 截断元素,首位各截断元素
+    p = round(p/2/100*len(data))
+
+    re, num = 0, 0
+    
+    # 补全截断函数相关代码
+    ########## Begin ##########
+    for i in range(p, len(data) - p):
+        re += data[i]
+        num += 1
+
+    ########## End ##########
+
+
+    return round(re / num, 2)
+
+
+# 创建np数组
+array = np.array(eval(input()))
+# 计算截断均值
+p = int(input())
+result = trimmed_mean(array, p)
+print(result)

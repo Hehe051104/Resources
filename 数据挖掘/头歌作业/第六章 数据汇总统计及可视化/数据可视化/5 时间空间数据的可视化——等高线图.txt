@@ -1,0 +1,49 @@
+import matplotlib as mpl
+# linux终端下没有GUI，进行设置
+mpl.use('Agg')
+from netCDF4 import Dataset
+import matplotlib.pyplot as plt
+import numpy as np
+
+nc_obj = Dataset('step5/ERsst.mnmean.nc')
+
+########## Begin ##########
+# 获取 1970 年的全球海温数据
+temperature = nc_obj.variables['sst'][1970, :, :]
+
+########## End ##########
+
+lat, lon = temperature.shape
+
+# 生成网格点坐标矩阵
+X, Y = np.meshgrid(range(lon), range(lat))
+
+# 添加画布，画布尺寸宽为 10，长为 5
+plt.figure(figsize=(10, 5))
+
+########## Begin ##########
+# 传入海温数据绘制热力图，cmap 参数选择 coolwarm
+plt.imshow(temperature, cmap='coolwarm')
+
+########## End ##########
+
+# 绘制色彩子图
+x = plt.colorbar()
+
+########## Begin ##########
+# 设置子图标签，为 Temperature
+x.set_label('Temperature')
+
+########## End ##########
+
+########## Begin ##########
+# 画出 7 条线，并将颜色设置为红色
+contour = plt.contour(X, Y, temperature, 7, colors='r')
+
+########## End ##########
+
+# 等高线上标明z（即高度）的值，字体大小是7，颜色分别是红色
+plt.clabel(contour, fontsize=7, colors='r')
+
+# 保存图像
+plt.savefig('step5/image1/test.png')

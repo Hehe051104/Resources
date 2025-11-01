@@ -1,0 +1,27 @@
+def variance(x):
+    ########## Begin ##########
+    # 计算样本总数
+    n = len(x)
+    
+    # 求和
+    total = sum(x)
+    
+    # 计算均值
+    mean = total / n
+    
+    # 计算方差
+    y = sum((i - mean) ** 2 for i in x) / (n-1)
+    
+    ########## End ##########
+    return y
+
+
+input_x = input()
+
+########## Begin ##########
+# 处理数组
+l = [int(i) for i in input_x.split(',')]
+
+########## End ##########
+
+print(int(variance(l)))

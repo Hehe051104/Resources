@@ -1,0 +1,18 @@
+def max_min(x):
+    ########## Begin ##########
+    # 求极差
+    y=max(x)-min(x)
+    
+    ########## End ##########
+    return y
+
+
+input_x = input()
+
+########## Begin ##########
+# 处理数组
+l = list(map(int, input_x.split(',')))
+
+########## End ##########
+
+print(max_min(l))

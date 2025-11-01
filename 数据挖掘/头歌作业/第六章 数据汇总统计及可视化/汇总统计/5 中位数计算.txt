@@ -1,0 +1,23 @@
+def median(x):
+    ########## Begin ##########
+    # 获取数组长度 N
+    x = sorted(x)
+    N = len(x)
+    
+    # 当 N 为奇数时
+    if N % 2 == 1:
+        y = x[N // 2]
+    # 当 N 为偶数时
+    else:
+        y = (x[N // 2 - 1] + x[N // 2]) / 2
+    ########## End ##########
+        
+    return y
+
+input_x = input()
+########## Begin ##########
+# 处理数组
+l = list(map(int, input_x.split(',')))
+########## End ##########
+
+print(median(l))

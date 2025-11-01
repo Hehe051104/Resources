@@ -1,0 +1,74 @@
+import matplotlib as mpl
+# linux终端下没有GUI，进行设置
+mpl.use('Agg')
+from mpl_toolkits.basemap import Basemap
+import matplotlib.pyplot as plt
+import numpy as np
+
+names = []
+pops = []
+lats = []
+lons = []
+countries = []
+with open('step7/major_city') as f:
+    text = f.read().split('\n')
+
+for line in text:
+    info = line.split()
+    names.append(info[0])
+    pops.append(float(info[1]))
+    lat = float(info[2][:-1])
+    if info[2][-1] == 'S': lat = -lat
+    lats.append(lat)
+    lon = float(info[3][:-1])
+    if info[3][-1] == 'W': lon = -lon + 360.0
+    lons.append(lon)
+    country = info[4]
+    countries.append(country)
+
+
+# ============================================
+########## Begin ##########
+# 设置投影模式，初始经纬度, 纬度为 10，经度为 100
+map = Basemap(projection='ortho', lat_0=10, lon_0=100)
+
+########## End ##########
+
+# 画海岸线，国家边界，设置边界线条的粗细
+map.drawcoastlines(linewidth=0.25)
+map.drawcountries(linewidth=0.25)
+
+########## Begin ##########
+# 海洋湖泊颜色为 #0099CC，陆地颜色为 #663300，经纬线间隔 10 度
+
+# 绘制地图投影区域的边缘(海洋的颜色)
+map.drawmapboundary(fill_color='#0099CC')
+
+# 画出经纬线
+map.drawmeridians(np.arange(0, 360, 10))
+map.drawparallels(np.arange(-90, 90, 10))
+
+# 绘制颜色，zorder 为设置层级，本次是置于最低层
+map.fillcontinents(color='#663300', lake_color='#0099CC', zorder=0)
+########## End ##########
+
+# 计算出地图投影坐标的纬度/经线网格
+x, y = map(lons, lats)
+max_pop = max(pops)
+
+# 尺寸比例
+size_factor = 80.0
+
+# 字体显示角度
+rotation = 30
+for i, j, k, name in zip(x, y, pops, names):
+    # 按比例计算人口显示的散点大小
+    size = size_factor * k / max_pop
+    ########## Begin ##########
+    # 根据人口绘制地区散点图，颜色设置为 #FF5600
+    map.scatter(i, j, s=size, c='#FF5600', zorder=1)
+
+    ########## End ##########
+    plt.text(i, j, name, rotation=rotation, fontsize=10)
+plt.title('Some cities in the eastern hemisphere & Population')
+plt.savefig('step7/image1/test.png')

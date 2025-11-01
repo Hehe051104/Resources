@@ -1,0 +1,37 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from pylab import *
+np.random.seed(1447)  # 设置随机种子
+
+mpl.rcParams['font.sans-serif'] = ['SimHei']  # 可视化字体
+
+# 生成数据
+a = np.random.random_integers(1, 100, size=5000)
+a = pd.Series(a)
+
+fanwei = list(range(0, 120, 20))  # [0, 20, 40, 60, 80,100]
+fenzu = pd.cut(a, fanwei, right=False)  # 分组区间
+
+pinshu = fenzu.value_counts()  # series,区间的个数
+
+print(pinshu)
+
+# 计算频率，统计各个区间里面的频率
+########## Begin ##########
+pinlv = pinshu / pinshu.sum()  # 频率 = 各区间频数 / 总频数
+pinlv = np.round(pinlv, 3)  # 保留3位小数
+print("频率:", pinlv.values)
+########## End ##########
+
+# print(type(pinshu))
+# 前面计算出来后用数据构造series,注意差的数添加到[80,100)内，因为差的数就是100，没有被统计
+pinshu = pd.Series([952, 982, 984, 1009, 1073], index=['[0, 20)', '[20, 40)', '[40, 60)', '[60, 80)', '[80, 100)'])
+x = pinshu.index
+y = list(pinshu)
+#
+plt.bar(range(len(y)), y, width=0.4, color='c', tick_label=x)
+plt.xlabel('区间', fontsize=14)
+plt.ylabel('频数', fontsize=14)
+plt.savefig("src/step1/stu_img/frequency.png")
+ 

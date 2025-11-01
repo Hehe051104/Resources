@@ -1,0 +1,31 @@
+import matplotlib as mpl
+# linux终端下没有GUI，进行设置
+mpl.use('Agg')
+from matplotlib import pyplot as plt
+import pandas as pd
+import seaborn as sns
+from pandas.plotting import parallel_coordinates
+
+# 导入鸢尾花数据集
+data = pd.read_csv("step10/iris.csv")
+
+
+########## Begin ##########
+# 对数据进行重新定序，['sepal_width', 'sepal_length', 'petal_length', 'petal_width', 'species']
+# 这一步是正确的
+data = data[['sepal_width', 'sepal_length', 'petal_length', 'petal_width', 'species']]
+########## End ##########
+
+# 绘制子图
+fig, axes = plt.subplots()
+# 分类标签
+labels = ['setosa', 'versicolor', 'virginica']
+
+# 绘制平行坐标系,class_column为数据所属类别，axes为Matplotlib轴对象，颜色为红绿蓝。
+########## Begin ##########
+# 将颜色顺序从 ('r', 'g', 'b') 修改为 ('b', 'g', 'r') 来匹配目标图片
+parallel_coordinates(data, 'species', ax=axes, color=('b', 'g', 'r'))
+########## End ##########
+
+# 保存图片
+fig.savefig('step10/stu_img/parallel.png')

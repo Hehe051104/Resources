@@ -1,0 +1,84 @@
+# -*- coding: utf-8 -*-
+import matplotlib as mpl
+# linux终端下没有GUI，进行设置
+mpl.use('Agg')
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+
+def GatherClassRanges(data, classranges):
+    """数据预处理"""
+    classes = data.iloc[:, 4].values
+    length = data.iloc[:, 4].size
+    classranges.append(0)
+    flowertype = classes[0]
+
+    for count in range(length):
+        if flowertype != classes[count]:
+            classranges.append(count)
+            flowertype = classes[count]
+    classranges.append(length)
+    return
+
+
+def GenerateDataMatrix(data, p):
+    """创建矩阵"""
+    # 将行分隔成不同的类
+    global title
+    classes = data.iloc[:, 4].values
+    classranges = []
+    GatherClassRanges(data, classranges)
+    # 获取不包括类名的属性名
+    headers = list(data)
+    headers.pop()
+
+    # 获取列数
+    numcol = len(data)
+
+    # 每一种花
+
+    # 生成一个矩阵初始化为零
+    matrix = pd.DataFrame(np.zeros((numcol, numcol)))
+    # 矩阵填充
+    for i in range(numcol):
+        for j in range(numcol):
+            x = data.iloc[i, 0:3].values
+            y = data.iloc[j, 0:3].values
+            # 矩阵填充相关性值，这里闵可夫斯基距离的p设定为2
+            matrix[i][j] = minkowskiDist(x, y, p)
+            title = 'IrisDataset correlation Matrix'
+    # 绘制
+    PlotDistMatrix(matrix, title)
+    return matrix
+
+
+def PlotDistMatrix(matrix,  title):
+    """绘制相关性矩阵"""
+    with sns.axes_style("white"):
+        plt.figure()
+        # 绘制相关性矩阵，cmap为YlGnBu
+        ########## Begin ##########
+        plot = sns.heatmap(matrix, cmap='YlGnBu')
+
+        ########## end ##########
+        plot.set_title(title)
+        plt.savefig('step9/stu_img/correlation.png')
+        return
+
+
+def minkowskiDist(x, y, p):
+    """闵可夫斯基距离"""
+
+    # 根据左侧公式实现闵可夫斯基距离函数
+    ########## Begin ##########
+    li=[(abs(i-j))**p for i,j in zip(x,y)]
+    s=(sum(li))**(1/p)
+    return s
+    ########## Begin ##########
+
+
+# 导入数据集
+data = pd.read_csv('step9/iris.csv')
+GenerateDataMatrix(data, 2)

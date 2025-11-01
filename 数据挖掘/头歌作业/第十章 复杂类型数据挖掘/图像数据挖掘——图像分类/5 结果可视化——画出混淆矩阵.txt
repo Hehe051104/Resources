@@ -1,1 +1,47 @@
-print(779,221,98,902)
+import matplotlib
+matplotlib.use('Agg')
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import os
+from keras.utils import to_categorical
+from keras.models import Sequential
+from keras.layers.core import Dense, Activation
+from keras.optimizers import Adam
+from sklearn.metrics import accuracy_score,recall_score
+import matplotlib.ticker as ticker
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score,confusion_matrix
+import keras
+
+#构建测试集
+test_data = np.load('./test_data.npz',allow_pickle=True)
+x_test = test_data["x_test"]
+y_test = test_data["y_test"]
+y_test = y_test.astype(int)
+
+#加载模型
+new_model = keras.models.load_model('./my_model.h5')
+#预测
+test_prediction= new_model.predict_classes(x_test).reshape(len(y_test))
+
+def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues, labels=None):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)#将画布分为1行1列，图像画在从上到下从左到右第1块
+    cax = ax.matshow(cm,cmap=cmap)#画一个矩阵，数据是cm,将颜色设为指定颜色
+    fig.colorbar(cax)#色彩条设置
+    if labels:
+        ax.set_xticklabels(['']+labels)#画出行的标记
+        ax.set_yticklabels(['']+labels)#画出列的标记
+    
+    plt.xlabel('True')#添加x轴label
+    plt.ylabel('Predicted')#添加y轴label
+#/*************** Begin***************/
+#要求：请补全api中的参数，计算混淆矩阵，使最终输出的混淆矩阵满足一定要求。
+cm=confusion_matrix(y_test, test_prediction, labels=None, sample_weight=None )
+#/*************** end***************/
+labels = ["cat","air"]
+plot_confusion_matrix(cm, labels=labels)
+plt.savefig('./level5/outputpicture/output.png')
+#测试
+print(cm[0][0],cm[0][1],cm[1][0],cm[1][1])

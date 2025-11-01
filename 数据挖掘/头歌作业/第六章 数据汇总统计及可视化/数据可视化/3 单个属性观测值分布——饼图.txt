@@ -1,0 +1,39 @@
+import matplotlib
+matplotlib.use('Agg') 
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+targets = iris.target
+print("标记名:",iris.target_names)
+print("标记值:",targets)
+
+dict = {}
+for i in targets:
+    if i not in dict:
+        dict[i] = 1
+    else:
+        dict[i] += 1
+print(dict)
+value = list(dict.values())
+
+def plot():
+    plt.figure(figsize=(5,5),dpi=80)
+    ########## Begin ############
+    # label标签：["Setosa", "Versicolour", "Virginica"]
+    labels = ["Setosa", "Versicolour", "Virginica"]
+    
+    # 使用pie函数绘制饼图，其中x=value
+    plt.pie(x=value, labels=labels)
+    
+    # 设置图例位置为左上角
+    plt.legend(loc='upper left',bbox_to_anchor=(-0.1, 1))
+    
+    ########## End ############    
+    # 标题："Species"
+    plt.title('Species')
+    # 保存图片
+    plt.savefig('/data/workspace/myshixun/step3/image2/pie.png')
+    plt.close()
+
+plot()

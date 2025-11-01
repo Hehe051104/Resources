@@ -1,0 +1,35 @@
+import matplotlib as mpl
+# linux终端下没有GUI，进行设置
+mpl.use('Agg')
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# 加载数据集
+iris = pd.read_csv('step8/iris.csv')
+
+# 查看iris数据集的描述性统计信息
+########## Begin ##########
+print(iris.describe())
+
+########## End ##########
+
+
+# 创建画布
+plt.figure(figsize=(7, 5))
+# 删除species
+species = iris.pop("species")
+
+
+
+########## Begin ##########
+# 将列数据进行标准化
+iris = (iris - iris.mean()) / iris.std()
+
+# 使用clustermap方法对标准化的数据绘制数据矩阵图,standard_scale参数为1
+sns.clustermap(iris, standard_scale=1)
+
+########## End ##########
+
+# 保存数据矩阵图
+plt.savefig('step8/stu_img/dss.png')

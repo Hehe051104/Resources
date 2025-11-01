@@ -1,0 +1,22 @@
+#导入相关库
+import matplotlib
+matplotlib.use("Agg")#控制绘图不显示
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+#导入鸢尾花的数据集，并转化成pandas的形式
+from sklearn import datasets
+iris = datasets.load_iris()
+data = pd.DataFrame(iris.data,columns = iris.feature_names)
+#选取鸢尾花数据里的 petal width (cm)列进行绘图
+x = np.array(data['petal width (cm)'])
+
+########## Begin ##########
+plt.hist(x,bins=15,color='pink',alpha=1)
+
+
+########## End ##########
+
+plt.title('sepal width')
+plt.savefig('/data/workspace/myshixun/step1/image1/T1.png')

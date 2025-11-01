@@ -1,0 +1,37 @@
+import matplotlib
+matplotlib.use('Agg') 
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import matplotlib.pyplot as plt
+
+iris_dataset = load_iris()
+
+# data 中共150条数据，采集了每个样本的4个特征
+# 查看数据集的特征名称,sepal花萼的长宽，petal花瓣的长宽
+print("特征名:\n", iris_dataset['feature_names'])  
+# 查看前5条数据
+print("前五条数据:\n{}".format(iris_dataset['data'][:5]))  
+# 数据集拆分
+
+iris_dataset = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris_dataset['data'],
+                                                    iris_dataset['target'],
+                                                    random_state=2)
+
+iris_dataframe = pd.DataFrame(X_train, columns=iris_dataset.feature_names)
+
+def plot():
+    ######### Begin ##########
+    # 绘制散点矩阵图
+    pd.plotting.scatter_matrix(iris_dataframe, 
+                              c=y_train, 
+                              figsize=(15, 15),
+                              marker='o', 
+                              hist_kwds={'bins': 20}, 
+                              s=60, 
+                              alpha=0.8)
+    ######### End ##########
+    # 保存图片
+    plt.savefig('/data/workspace/myshixun/step4/image2/scatter_matrix.png')
+    plt.close()

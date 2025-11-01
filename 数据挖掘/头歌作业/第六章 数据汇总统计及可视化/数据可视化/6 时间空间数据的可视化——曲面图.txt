@@ -1,0 +1,40 @@
+import matplotlib as mpl
+# linux终端下没有GUI，进行设置
+mpl.use('Agg')
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D  # 绘制3D图形
+
+message = np.load('step6/message.npy')
+########## Begin ##########
+# 根据数据简介获取相应数据
+x = message[:80, :]
+y = message[80:160, :]
+z = message[160:, :]
+
+########## End ##########
+
+########## Begin ##########
+# 统一设置图中字体大小为 20
+plt.rcParams.update({'font.size': 20})
+
+# 设置图像大小为 （10，8）和分辨为 50
+fig = plt.figure(figsize=(10,8), dpi=50)  
+
+########## End ##########
+ax3d = Axes3D(fig)  # 将图像转换为 3D 模式
+
+########## Begin ##########
+# 构建坐标系，传入数据，绘制曲面图，颜色选用 rainbow
+ax3d.plot_surface(x, y, z, cmap='rainbow')  
+
+########## End ##########
+plt.xlabel('x', labelpad=10)  # X轴名称
+plt.ylabel('y', labelpad=10)  # Y轴名称
+ax3d.set_zlabel('z', labelpad=10)  # Z轴名称
+
+########## Begin ##########
+# 保存图片，路径为：step6/image1/surface_diagram.png
+plt.savefig("step6/image1/surface_diagram.png")
+
+########## End ##########

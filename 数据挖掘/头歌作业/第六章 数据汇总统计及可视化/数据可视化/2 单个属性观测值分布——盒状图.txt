@@ -1,0 +1,28 @@
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from sklearn import datasets
+import numpy as np
+iris = datasets.load_iris()
+import pandas as pd
+data = pd.DataFrame(iris.data,columns = iris.feature_names)
+#选取出鸢尾花数据集的每列数据，并转化为一个列表list1
+x = np.array(data['sepal length (cm)'])
+y = np.array(data['sepal width (cm)'])
+z = np.array(data['petal length (cm)'])
+k = np.array(data['petal width (cm)'])
+list1 = [x,y,z,k]
+
+########## Begin ##########
+plt.boxplot(x = list1, 
+            labels = ['sepal length', 'sepal width', 'petal length','petal width '], # 添加具体的标签名称
+            
+            patch_artist=True,
+            boxprops = {'color':'yellow','facecolor':'pink'}, 
+            flierprops={'marker': 'D', 'markerfacecolor': 'red', 'markeredgecolor': 'red', 'markersize': 6},
+            meanprops = {'marker':'D','markerfacecolor':'black'},
+            medianprops={'linestyle': '--', 'color': 'green'})        
+########## End ##########
+# 显示图形
+plt.ylabel('Value(centimeters)')
+plt.savefig('/data/workspace/myshixun/step2/image1/T1.png')

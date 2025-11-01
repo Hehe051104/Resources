@@ -1,0 +1,35 @@
+import pandas as pd
+from sklearn import datasets
+iris = datasets.load_iris()  #载入数据集
+
+#将数据转换为pandas表格
+data= pd.DataFrame(iris.data,columns=iris.feature_names)
+data['species']=iris.target_names[iris.target]
+
+####begin####
+#读取数据集data中4个属性：
+#花萼长度索引：'sepal length (cm)'  存储变量：data_sepal_length
+#花萼宽度索引：'sepal width (cm)'   存储变量：data_sepal_width
+#花瓣长度索引：'petal length (cm)'  存储变量：data_petal_length
+#花瓣宽度索引：'petal width (cm)'   存储变量：data_petal_width
+data_sepal_length = data['sepal length (cm)']
+data_sepal_width = data['sepal width (cm)']
+data_petal_length = data['petal length (cm)']
+data_petal_width = data['petal width (cm)']
+####end####
+
+####begin####
+#求取各属性均值：使用*.mean()进行计算
+#存储变量：sepal_length_mean/sepal_width_mean/petal_length_mean/petal_width_mean
+sepal_length_mean = data_sepal_length.mean()
+sepal_width_mean = data_sepal_width.mean()
+petal_length_mean = data_petal_length.mean()
+petal_width_mean = data_petal_width.mean()
+####end####
+
+mean=[]
+mean.append(sepal_length_mean)
+mean.append(sepal_width_mean)
+mean.append(petal_length_mean)
+mean.append(petal_width_mean)
+print(mean)
