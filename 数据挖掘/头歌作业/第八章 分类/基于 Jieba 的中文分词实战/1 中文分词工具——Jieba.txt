@@ -1,0 +1,11 @@
+import jieba
+text = input()
+seg_list1 = ''
+seg_list2 = ''
+# ********** Begin *********#
+
+seg_list1 = jieba.cut(text, cut_all=False)  # 精确模式
+seg_list2 = jieba.cut_for_search(text)      # 搜索引擎模式
+
+# ********** End **********#
+print("精确模式："+'/'.join(seg_list1) +"  搜索引擎模式："+ ' /'.join(seg_list2))

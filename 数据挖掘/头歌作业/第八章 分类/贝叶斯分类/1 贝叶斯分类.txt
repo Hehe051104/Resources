@@ -1,0 +1,73 @@
+import os
+import numpy as np
+from collections import Counter
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+
+
+def make_Dictionary(root_dir):
+    all_words = []
+    emails = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
+    for mail in emails:
+        with open(mail, encoding='latin1') as m:
+            for line in m:
+                words = line.split()
+                all_words += words
+    dictionary = Counter(all_words)
+    list_to_remove = list(dictionary)
+    for item in list_to_remove:
+        if not item.isalpha():
+            del dictionary[item]
+        elif len(item) == 1:
+            del dictionary[item]
+    return dictionary
+
+
+def extract_features(mail_dir, dictionary):
+    files = [os.path.join(mail_dir, fi) for fi in os.listdir(mail_dir)]
+    features_matrix = np.zeros((len(files), len(dictionary)))
+    train_labels = np.zeros(len(files))
+    docID = 0
+
+    for fil in files:
+        with open(fil, encoding='latin1') as fi:
+            for i, line in enumerate(fi):
+                if i == 2:  # 只处理邮件的第3行（假设这是正文开始）
+                    words = line.split()
+                    for word in words:
+                        if word in dictionary:
+                            wordID = list(dictionary.keys()).index(word)
+                            features_matrix[docID, wordID] = words.count(word)
+                    break  # 只处理第3行，处理完就跳出
+
+        # 设置标签
+        filepathTokens = fil.split('/')
+        lastToken = filepathTokens[-1]
+        if "spmsg" in lastToken:
+            train_labels[docID] = 1
+        else:
+            train_labels[docID] = 0
+
+        docID += 1
+
+    return features_matrix, train_labels
+
+
+def test():
+    TRAIN_DIR = "src/step1/train-mails"
+    TEST_DIR = "src/step1/test-mails"
+
+    dictionary = make_Dictionary(TRAIN_DIR)
+    X_train, y_train = extract_features(TRAIN_DIR, dictionary)
+    X_test, y_test = extract_features(TEST_DIR, dictionary)
+
+    # 任务：初始化贝叶斯模型，并训练模型，测试其在分类上的性能。
+    # 调节模型参数，使邮件分类性能不低于70%，并返回精度值（百分值）
+    ########## Begin ##########
+    model = GaussianNB(var_smoothing=1e-9)  # 默认值通常效果更好，0.9太大可能欠拟合
+    model.fit(X_train, y_train)
+    y_predict = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_predict) * 100
+    ########## End ##########
+
+    return accuracy

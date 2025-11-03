@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from scipy.interpolate import lagrange
+import sklearn
+from sklearn.impute import KNNImputer
+
+data = pd.read_csv("src/death.csv", index_col='Unnamed: 0')
+
+data = data.dropna(axis=1, thresh=data.shape[0] * 0.2)
+data = data.dropna(axis=0, thresh=data.shape[1] * 0.2)
+
+
+cols = '2007/12/20'
+########## Begin ##########
+# 求出'2007/12/20'列的缺失行索引
+na_index = data.index[data[cols].isna()]
+
+# 将'2007/12/20'列的缺失行使用前后三个数进行拉格朗日法替换
+
+s = data[cols]
+for i in na_index :
+    y = s[list(range(i - 3, i)) + list(range(i + 1, i + 1 + 3))]
+    y = y[y.notnull()]
+    data[cols][i] = lagrange(y.index, list(y))(i)
+    print('2007/12/20 列的缺失值使用拉格朗日法替换为：', data[cols][i])
+
+########## End ##########
+
+na_index = pd.isna(data['FIPS'])
+print('替换前：\n', data[['Lat', 'FIPS', 'Long_']][na_index])
+
+########## Begin ##########
+# 使用 'Lat', 'FIPS', 'Long_' 三列进行 K 近邻计算
+# data[['Lat', 'FIPS', 'Long_']] = data[['Lat', 'FIPS', 'Long_']].fillna(method='bfill')
+imputer = KNNImputer(n_neighbors = 1)
+# data[['Lat', 'FIPS', 'Long_']] = imputer.fit_transform(data[['Lat', 'FIPS', 'Long_']])
+data[['Lat','FIPS','Long_']] = pd.DataFrame(imputer.fit_transform(data[['Lat','FIPS','Long_']]),columns=[['Lat', 'FIPS', 'Long_']])
+
+########## End ##########
+print('替换后：\n', data[['Lat', 'FIPS', 'Long_']][na_index])

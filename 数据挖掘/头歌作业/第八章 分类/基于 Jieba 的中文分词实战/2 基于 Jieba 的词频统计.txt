@@ -1,0 +1,16 @@
+import jieba
+jieba.setLogLevel(jieba.logging.INFO)  # 或使用 20
+
+text= input()
+words = jieba.lcut(text)  
+data={} # 词典
+
+# ********** Begin *********#
+
+for word in words:
+    if len(word) >= 2:
+        data[word] = data.get(word, 0) + 1
+
+# ********** End **********#
+data = sorted(data.items(), key=lambda x: x[1], reverse=True)
+print(data[:3],end="")

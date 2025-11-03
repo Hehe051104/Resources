@@ -1,0 +1,8 @@
+from pyhanlp import HanLP
+text = input()
+# 任务:完成对 text 文本的人名识别并输出结果
+# ********** Begin *********#
+segment = HanLP.newSegment().enableNameRecognize(True); # 构建人名识别器
+result = segment.seg(text) # 对text文本进行人名识别
+print(result) # 输出结果
+# ********** End **********#

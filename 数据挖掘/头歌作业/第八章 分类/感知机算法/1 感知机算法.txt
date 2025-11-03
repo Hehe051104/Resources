@@ -1,0 +1,30 @@
+import warnings
+warnings.filterwarnings("ignore")
+import numpy as np  
+import pandas as pd  
+from sklearn.feature_extraction.text import TfidfVectorizer  
+from sklearn.model_selection import train_test_split  
+from sklearn.linear_model import Perceptron
+def main():
+    data_path ='/data/workspace/myshixun/SMSSpamCollection'  
+    df = pd.read_csv(data_path, delimiter='\t',header=None)  
+    ######Begin ######
+    # 将label编码  
+    df[0] = df[0].replace(to_replace=['spam', 'ham'], value=[0, 1])
+    # 完成数据划分及词向量的转化  
+    X = df[1].values  
+    y = df[0].values  
+    X_train_raw,X_test_raw,y_train,y_test=train_test_split(X,y,random_state=2)  
+    vectorizer = TfidfVectorizer()  
+    x_train = vectorizer.fit_transform(X_train_raw)  
+    x_test = vectorizer.transform(X_test_raw)
+    # 构建模型  
+    model = Perceptron(random_state=2)
+    model.fit(x_train, y_train)
+    #对于测试集x_test进行预测  
+    y_pred = model.predict(x_test)
+
+    #计算验证集的准确度,参数为预测数据和真值  
+    acc = (y_pred == y_test).sum() / len(y_test)
+    return acc
+    ###### End ######  

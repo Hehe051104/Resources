@@ -1,0 +1,22 @@
+import pandas as pd
+
+data = pd.read_csv("src/death.csv", index_col='Unnamed: 0')
+data = data.dropna(axis=1, thresh=data.shape[0] * 0.2)
+data = data.dropna(axis=0, thresh=data.shape[1] * 0.2)
+
+########## Begin ##########
+# 统计存在缺失值的列
+li=list(input().split())
+cols_with_missing = data.columns[data.isnull().any()].tolist()
+
+# 逐列按要求替换缺失值,并打印每列替换值  
+for col in cols_with_missing:
+    if col in li:
+        mode_value = data[col].mode()[0]
+        data[col].fillna(mode_value, inplace=True)
+        print(f'{col} 列的缺失值使用众数法替换为： {mode_value}')
+    else:
+        mean_value = round(data[col].mean())
+        data[col].fillna(mean_value, inplace=True)
+        print(f'{col} 列的缺失值使用均值法替换为： {mean_value:.1f}')
+########## End ##########

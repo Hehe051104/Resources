@@ -1,0 +1,47 @@
+import numpy as np  
+from sklearn.tree import DecisionTreeClassifier  
+from sklearn import metrics  
+import joblib  
+import pandas as pd  
+from sklearn.feature_extraction.text import TfidfVectorizer  
+from sklearn.model_selection import train_test_split  
+
+import sys
+import os
+os.environ['PYTHONWARNINGS'] = 'ignore'
+sys.stdout = open(os.devnull, 'w')  # 临时屏蔽输出
+sys.stdout = sys.__stdout__  # 在print前恢复
+
+# 设定随机种子  
+np.random.seed(1447)
+
+#第一步：读入数据  
+data_path ='src/SMSSpamCollection.txt'  
+df = pd.read_csv(data_path, delimiter='\t',header=None)
+
+# 将label编码  
+df[0] = df[0].replace(to_replace=['spam', 'ham'], value=[0, 1])
+
+# 完成数据划分及词向量的转化  
+X = df[1].values  
+y = df[0].values  
+
+#第二步：划分测试集和训练集  
+X_train_raw,X_test_raw,y_train,y_test=train_test_split(X,y,random_state=2)  
+
+vectorizer = TfidfVectorizer()  
+x_train = vectorizer.fit_transform(X_train_raw)  
+x_test = vectorizer.transform(X_test_raw)
+
+#########  Begin #########  
+#第三步：初始化决策树,criterion设置为信息熵 
+skullsTree = DecisionTreeClassifier(criterion='entropy')
+
+#第四步：训练一棵决策树    
+clf = skullsTree.fit(x_train, y_train)
+
+#########  End #########
+# 模型保存
+joblib.dump(skullsTree, 'DecisionTree.pkl')
+
+print(clf)  

@@ -1,0 +1,53 @@
+import numpy as np
+import pandas
+import zipfile
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+import matplotlib.pyplot as plt
+from six import StringIO
+import matplotlib.image as mpimg
+from sklearn import tree
+import joblib
+import pandas as pd
+import warnings
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+warnings.filterwarnings("ignore")
+
+
+# 设定随机种子
+np.random.seed(1447)
+
+#第一步：读入数据
+data_path ='src/SMSSpamCollection.txt'
+df = pd.read_csv(data_path, delimiter='\t',header=None)
+
+# 将label编码
+df[0] = df[0].replace(to_replace=['spam', 'ham'], value=[0, 1])
+
+# 完成数据划分及词向量的转化
+X = df[1].values
+y = df[0].values
+X_train_raw,X_test_raw,y_train,y_test=train_test_split(X,y,random_state=2)
+vectorizer = TfidfVectorizer()
+x_train = vectorizer.fit_transform(X_train_raw)
+x_test = vectorizer.transform(X_test_raw)
+
+featureNames = list(df.columns.values)[2:] #获取特征名
+targetNames = df[0].unique().tolist() #获取类标
+
+########## Begin ##########
+# 训练模型加载
+model = joblib.load('DecisionTree.pkl')
+
+# 对测试集数据进行分类预测
+y_pred = model.predict(x_test)
+
+# 测试评估
+print("DecisionTrees's Accuracy: ", metrics.accuracy_score(y_test, y_pred))
+
+########## End ##########
+
+
+

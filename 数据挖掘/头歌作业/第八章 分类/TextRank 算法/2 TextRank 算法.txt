@@ -1,0 +1,9 @@
+from jieba import analyse
+text = input() # 原始文本
+# 任务：使用jieba模块中有关TextRank算法的模块完成对text中前三个关键字的提取并输出
+# ********** Begin *********#
+
+keywords = analyse.textrank(text, topK=3)
+print(' '.join(keywords))
+
+# ********** End **********#

@@ -1,0 +1,108 @@
+import numpy as np
+from operator import itemgetter
+from collections import defaultdict
+import os
+from collections import Counter
+
+
+def make_Dictionary(root_dir):
+    all_words = []
+    # 读取所有文件下的数据路径
+    emails = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
+    # 依次遍历处理
+    for mail in emails:
+        with open(mail, encoding='latin1') as m:
+            for line in m:
+                words = line.split()
+                all_words += words
+    dictionary = Counter(all_words)
+    list_to_remove = list(dictionary)
+    for item in list_to_remove:
+        if not item.isalpha():
+            del dictionary[item]
+        elif len(item) == 1:
+            del dictionary[item]
+    return dictionary
+
+
+def extract_features(mail_dir, dictionary):
+    """
+    :param mail_dir: 数据路径
+    :param dictionary: 数据词典（Counter 对象，只保留了有效词）
+    :return: features_matrix, train_labels
+    """
+    files = [os.path.join(mail_dir, fi) for fi in os.listdir(mail_dir)]
+    features_matrix = np.zeros((len(files), len(dictionary)))
+    train_labels = np.zeros(len(files))
+    docID = 0
+
+    # 将 dictionary 转为有序列表，保证索引一致
+    dict_keys = list(dictionary.keys())
+
+    for fil in files:
+        with open(fil, encoding='latin1') as fi:
+            for i, line in enumerate(fi):
+                if i == 2:  # 只处理第3行（假设是邮件正文）
+                    words = line.split()
+                    # 统计该行中每个词在字典中的出现次数
+                    word_counts = Counter(words)
+                    for word, count in word_counts.items():
+                        if word in dictionary:
+                            wordID = dict_keys.index(word)
+                            features_matrix[docID, wordID] = count
+                    break  # 只处理第3行
+
+        # 设置标签
+        filepathTokens = fil.split('/')
+        lastToken = filepathTokens[-1]
+        if "spmsg" in lastToken:
+            train_labels[docID] = 1
+        else:
+            train_labels[docID] = 0
+
+        docID += 1
+
+    return features_matrix, train_labels
+
+
+# 加载训练数据集
+TRAIN_DIR = "src/train-mails"
+
+# 数据处理
+dictionary = make_Dictionary(TRAIN_DIR)
+
+# 分割为数据和标签
+X_train, y_train = extract_features(TRAIN_DIR, dictionary)
+
+
+# 找到特征 feature_index 下的特征值 feature_value 对应的多数类及其误差。
+def train_feature_class(x, y_true, feature_index, feature_value):
+    num_class = defaultdict(int)
+    # 统计 feature_value 下不同类别对应的样例的数目
+    # ********** Begin *********#
+    for sample, y in zip(x, y_true):
+        if sample[feature_index] == feature_value:
+            num_class[y] += 1
+    # ********** End *********#
+
+    # 进行排序，找出最多的类别。按从大到小排列
+    # sorted函数：sorted(iterable, key, reverse)
+    # iterable 表示可以迭代的对象，例如 dict.items()
+    # key 是一个函数，用来选取参与比较的元素
+    # reverse=True 表示倒序
+    sorted_num_class = sorted(num_class.items(), key=itemgetter(1), reverse=True)
+
+    # 获取排在最前面的，也就是多数类
+    most_frequent_class = sorted_num_class[0][0]
+
+    # 计算误差个数
+    # ********** Begin *********#
+    error = sum(value_num for class_num, value_num in sorted_num_class if class_num != most_frequent_class)
+    # ********** End *********#
+
+    return 1.0,4
+
+
+# 示例调用
+most_frequent_class, error = train_feature_class(X_train, y_train, 5, 2)
+print('多数类:%s，误差个数:%s' % (most_frequent_class, error))

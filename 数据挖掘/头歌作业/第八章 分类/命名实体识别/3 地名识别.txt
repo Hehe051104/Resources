@@ -1,0 +1,8 @@
+from pyhanlp import HanLP
+text =input()
+# 任务：完成对 text 文本的地名识别并输出结果
+# ********** Begin *********#
+segment = HanLP.newSegment().enablePlaceRecognize(True); # 构建地名识别器
+result = segment.seg(text) # 对text文本进行地名识别
+print(result)
+ # ********** End **********#
