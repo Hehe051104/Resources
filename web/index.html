@@ -208,7 +208,6 @@
 
       <!-- ==================== 视图 B：求资料与反馈互助广场 ==================== -->
       <div id="requestsView" class="hidden space-y-4">
-        <!-- 顶部筛选与发布栏 -->
         <div class="apple-glass p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-1 text-xs bg-slate-200/50 p-1 rounded-full" id="reqFilterGroup">
             <button data-reqfilter="all" class="req-filter-btn px-3 py-1 rounded-full bg-white text-indigo-600 font-medium shadow-sm transition">全部动态</button>
@@ -222,7 +221,6 @@
           </button>
         </div>
 
-        <!-- 需求卡片列表容器 -->
         <div id="requestsListContainer" class="space-y-3">
           <div class="apple-glass p-10 rounded-2xl text-center text-slate-400 text-sm">正在加载互助广场动态...</div>
         </div>
@@ -258,9 +256,9 @@
     </div>
   </div>
 
-  <!-- 发布求资料 / 纠错反馈弹窗 -->
-  <div id="requestModal" class="hidden fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5">
-    <div class="bg-white/92 backdrop-blur-2xl border border-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
+  <!-- 发布求资料 / 纠错反馈弹窗（支持自由选择已有课程或新建不存在的课程/子目录） -->
+  <div id="requestModal" class="hidden fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white/92 backdrop-blur-2xl border border-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl my-auto">
       <div class="px-5 py-4 border-b border-slate-200/60 flex items-center justify-between bg-white/60">
         <div class="flex items-center gap-2">
           <span class="text-lg">🙋</span>
@@ -269,8 +267,8 @@
         <button onclick="closeRequestModal()" class="w-7 h-7 rounded-full bg-slate-200/70 hover:bg-slate-300/80 text-slate-600 flex items-center justify-center text-sm transition">✕</button>
       </div>
 
-      <div class="p-5 space-y-4 text-sm">
-        <!-- 类型选择 -->
+      <div class="p-5 space-y-4 text-sm max-h-[82vh] overflow-y-auto">
+        <!-- 1. 类型选择 -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1.5">1. 选择发布类型</label>
           <div class="grid grid-cols-2 gap-2.5">
@@ -285,29 +283,36 @@
           </div>
         </div>
 
-        <!-- 关联课程名 -->
+        <!-- 2. 逐级选择或新建课程目录（与上传弹窗完全一致） -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">2. 关联课程名称（强烈建议填写，方便自动定位上传目录）</label>
-          <input id="reqCourseInput" type="text" list="existingCoursesList" maxlength="40" placeholder="例如：机器学习、数据结构、高数一(上)"
-            class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500" />
-          <datalist id="existingCoursesList"></datalist>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold text-slate-700">2. 选择或新建目标课程目录（可选已有课程或新建不存在的课程）</label>
+            <button type="button" id="reqAddSubLevelBtn" onclick="addReqSubLevel()"
+              class="px-2.5 py-1 text-[11px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-full font-medium transition flex items-center gap-1 shrink-0">
+              <span>➕ 添加下一级子目录</span>
+            </button>
+          </div>
+          <div id="reqDirSelectorContainer" class="space-y-2"></div>
+          <div class="text-[11px] text-slate-500 mt-1.5 bg-slate-100/80 px-3 py-1.5 rounded-xl">
+            目标课程路径：<strong id="reqCoursePreview" class="text-indigo-600 font-mono">未指定（通用需求/建议）</strong>
+          </div>
         </div>
 
-        <!-- 具体需求描述 -->
+        <!-- 3. 具体需求描述 -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">3. 详细说明（必填）</label>
-          <textarea id="reqContentInput" rows="3" maxlength="500" placeholder="请写明具体年份、任课老师或需要哪部分课件/试卷（例如：求2025秋机器学习期末回忆版试卷）..."
+          <textarea id="reqContentInput" rows="3" maxlength="500" placeholder="请写明具体年份、任课老师或需要哪部分课件/试卷（例如：求2025秋期末回忆版试卷）..."
             class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 resize-none"></textarea>
         </div>
 
-        <!-- 昵称 -->
+        <!-- 4. 昵称 -->
         <div>
           <label class="block text-xs font-medium text-slate-600 mb-1">你的昵称（选填）</label>
           <input id="reqNicknameInput" type="text" maxlength="25" placeholder="默认：匿名苏大同学"
             class="w-full px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500" />
         </div>
 
-        <!-- 隐形蜜罐防刷字段（人类用户不可见） -->
+        <!-- 隐形蜜罐防刷字段 -->
         <input type="text" id="reqHoneypotWebsite" tabindex="-1" autocomplete="off" class="hidden" />
 
         <div id="reqFeedbackBox" class="hidden rounded-2xl p-3 text-xs leading-relaxed"></div>
@@ -346,7 +351,7 @@
           <div class="flex items-center justify-between mb-1.5">
             <label class="text-xs font-semibold text-slate-700">1. 选择或新建存放目录（支持 1~5 级自定义文件夹）</label>
             <button type="button" id="addSubLevelBtn" onclick="addNewSubLevel()"
-              class="px-2.5 py-1 text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full font-medium transition flex items-center gap-1">
+              class="px-2.5 py-1 text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full font-medium transition flex items-center gap-1 shrink-0">
               <span>➕ 添加下一级子目录</span>
             </button>
           </div>
@@ -405,7 +410,7 @@
 
   <script>
     let catalogData = null;
-    let currentView = 'library'; // 'library' | 'requests'
+    let currentView = 'library';
     let currentPath = [];
     let currentFilter = 'all';
     let searchQuery = '';
@@ -415,6 +420,7 @@
     let allRequests = [];
     let reqFilter = 'all';
     let currentReqType = 'request';
+    let reqDirLevelsState = []; // 求资料弹窗的多级目录状态
 
     // 上传模块状态
     let selectedFileObj = null;
@@ -424,7 +430,6 @@
     document.getElementById('siteTitle').textContent = CONFIG.SITE_TITLE;
     document.title = CONFIG.SITE_TITLE;
 
-    // 切换左侧导航视图
     function switchView(view) {
       currentView = view;
       const libView = document.getElementById('libraryView');
@@ -489,24 +494,142 @@
 
     async function init() {
       loadVisitorStats();
-      loadRequests(); // 后台静默拉取求资料数量更新左侧角标
+      loadRequests();
       try {
         const res = await fetch('./catalog.json?t=' + Date.now());
         if (!res.ok) throw new Error('无法读取 catalog.json');
         catalogData = await res.json();
         document.getElementById('statsText').textContent =
           `共收录 ${catalogData.total_files} 份资料 · 更新于 ${catalogData.updated_at.replace(' UTC', '')}`;
-
-        // 填充发布求资料弹窗的课程自动补全列表
-        const dl = document.getElementById('existingCoursesList');
-        if (dl && catalogData.tree && catalogData.tree.dirs) {
-          dl.innerHTML = catalogData.tree.dirs.map(d => `<option value="${d.name}">`).join('');
-        }
         render();
       } catch (err) {
         document.getElementById('listContainer').innerHTML =
           `<div class="p-10 text-center text-red-500 text-sm">目录加载失败：${err.message}</div>`;
       }
+    }
+
+    // ================= 通用多级目录选择器引擎（求资料与上传弹窗共用） =================
+    function renderCascadingDirUI({ containerId, addBtnId, stateArr, onUpdate, accentColor = 'blue', emptyFirstLabel }) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = '';
+
+      const addBtn = document.getElementById(addBtnId);
+      if (addBtn) addBtn.classList.toggle('hidden', stateArr.length >= 5);
+
+      let currentTreeNode = (catalogData && catalogData.tree) ? catalogData.tree : { dirs: [] };
+      let canWalkTree = true;
+
+      for (let i = 0; i < stateArr.length; i++) {
+        const state = stateArr[i];
+        const availableDirs = (canWalkTree && currentTreeNode && currentTreeNode.dirs) ? currentTreeNode.dirs : [];
+
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-2';
+
+        const badge = document.createElement('span');
+        badge.className = 'text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-lg shrink-0';
+        badge.textContent = `第 ${i + 1} 级`;
+        row.appendChild(badge);
+
+        if (availableDirs.length > 0) {
+          const select = document.createElement('select');
+          select.className = `flex-1 min-w-0 px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-${accentColor}-500`;
+
+          const defaultOpt = document.createElement('option');
+          defaultOpt.value = '';
+          defaultOpt.textContent = i === 0
+            ? (emptyFirstLabel || '-- 请选择所属课程 / 专题 --')
+            : '-- 存放在上一级（不建子文件夹）--';
+          select.appendChild(defaultOpt);
+
+          availableDirs.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.name;
+            opt.textContent = `📁 ${d.name}`;
+            if (state.mode === 'existing' && state.value === d.name) opt.selected = true;
+            select.appendChild(opt);
+          });
+
+          const newOpt = document.createElement('option');
+          newOpt.value = '__NEW__';
+          newOpt.textContent = i === 0 ? '➕ 新建一级课程文件夹...' : `➕ 新建第 ${i + 1} 级子文件夹...`;
+          if (state.mode === 'new') newOpt.selected = true;
+          select.appendChild(newOpt);
+
+          select.onchange = (e) => {
+            const val = e.target.value;
+            stateArr.splice(i + 1);
+            if (val === '__NEW__') {
+              stateArr[i] = { mode: 'new', value: '' };
+            } else if (val === '') {
+              stateArr[i] = { mode: 'existing', value: '' };
+            } else {
+              stateArr[i] = { mode: 'existing', value: val };
+              const matched = availableDirs.find(d => d.name === val);
+              if (matched && matched.dirs && matched.dirs.length > 0) {
+                stateArr.push({ mode: 'existing', value: '' });
+              }
+            }
+            onUpdate();
+          };
+          row.appendChild(select);
+        }
+
+        if (state.mode === 'new' || availableDirs.length === 0) {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = state.value;
+          const placeholders = [
+            '输入新的一级课程名（如：大学物理）',
+            '输入二级子目录（如：历年试卷 / 课件）',
+            '输入三级子目录（如：2026春季学期）',
+            '输入四级子目录名称',
+            '输入五级子目录名称'
+          ];
+          input.placeholder = placeholders[i] || '输入子文件夹名称';
+          input.className = `flex-1 min-w-0 px-3 py-1.5 text-xs bg-white border border-${accentColor}-300 rounded-xl outline-none focus:border-${accentColor}-500`;
+          input.oninput = (e) => {
+            stateArr[i].mode = 'new';
+            stateArr[i].value = e.target.value;
+            if (typeof onUpdate === 'function' && onUpdate.previewOnly) {
+              onUpdate.previewOnly();
+            }
+          };
+          row.appendChild(input);
+        }
+
+        if (i > 0) {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.title = '移除此级子目录';
+          delBtn.className = 'w-6 h-6 rounded-full bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 flex items-center justify-center text-xs shrink-0 transition';
+          delBtn.textContent = '✕';
+          delBtn.onclick = () => {
+            stateArr.splice(i);
+            onUpdate();
+          };
+          row.appendChild(delBtn);
+        }
+
+        container.appendChild(row);
+
+        if (canWalkTree && state.mode === 'existing' && state.value) {
+          const nextNode = availableDirs.find(d => d.name === state.value);
+          if (nextNode) currentTreeNode = nextNode;
+          else canWalkTree = false;
+        } else {
+          canWalkTree = false;
+        }
+      }
+    }
+
+    function extractDirParts(stateArr) {
+      return stateArr
+        .flatMap(s => s.value.split('/'))
+        .map(part => part.trim())
+        .filter(Boolean)
+        .slice(0, 5);
     }
 
     // ================= 求资料与反馈广场逻辑 =================
@@ -525,7 +648,7 @@
         }
       } catch (e) {
         document.getElementById('requestsListContainer').innerHTML =
-          `<div class="apple-glass p-10 rounded-2xl text-center text-red-500 text-sm">加载失败，请确认上传 Worker 已部署最新代码</div>`;
+          `<div class="apple-glass p-10 rounded-2xl text-center text-red-500 text-sm">加载失败，请稍后刷新重试</div>`;
       }
     }
 
@@ -594,10 +717,44 @@
       });
     });
 
+    function renderReqDirSelectors() {
+      const updateFn = () => {
+        renderReqDirSelectors();
+        updateReqCoursePreview();
+      };
+      updateFn.previewOnly = updateReqCoursePreview;
+
+      renderCascadingDirUI({
+        containerId: 'reqDirSelectorContainer',
+        addBtnId: 'reqAddSubLevelBtn',
+        stateArr: reqDirLevelsState,
+        onUpdate: updateFn,
+        accentColor: 'indigo',
+        emptyFirstLabel: '-- 选择已有课程（或下拉选新建）--'
+      });
+      updateReqCoursePreview();
+    }
+
+    function addReqSubLevel() {
+      if (reqDirLevelsState.length >= 5) return;
+      reqDirLevelsState.push({ mode: 'new', value: '' });
+      renderReqDirSelectors();
+    }
+
+    function updateReqCoursePreview() {
+      const parts = extractDirParts(reqDirLevelsState);
+      const el = document.getElementById('reqCoursePreview');
+      if (el) {
+        el.textContent = parts.length > 0 ? parts.join(' / ') : '未指定（通用需求/建议）';
+      }
+    }
+
     function openRequestModal() {
       document.getElementById('requestModal').classList.remove('hidden');
       document.getElementById('reqFeedbackBox').classList.add('hidden');
       setRequestType('request');
+      reqDirLevelsState = [{ mode: 'existing', value: '' }];
+      renderReqDirSelectors();
     }
 
     function closeRequestModal() {
@@ -621,7 +778,8 @@
       const box = document.getElementById('reqFeedbackBox');
       const btn = document.getElementById('submitReqBtn');
       const content = document.getElementById('reqContentInput').value.trim();
-      const course = document.getElementById('reqCourseInput').value.trim();
+      const courseParts = extractDirParts(reqDirLevelsState);
+      const course = courseParts.join(' / ');
       const nickname = document.getElementById('reqNicknameInput').value.trim() || '匿名苏大同学';
       const website = document.getElementById('reqHoneypotWebsite').value;
 
@@ -631,6 +789,9 @@
         box.classList.remove('hidden');
       };
 
+      if (currentReqType === 'request' && courseParts.length === 0) {
+        return showBox('求资料时请选择或新建至少一级课程名称，方便其他同学直接上传！');
+      }
       if (content.length < 3) return showBox('请填写至少 3 个字的具体说明！');
 
       btn.disabled = true;
@@ -656,20 +817,32 @@
       }
     }
 
-    // 响应某条求资料需求，自动定位课程文件夹并关联 Issue 编号
-    function fulfillRequest(issueNumber, courseName) {
+    // 响应某条求资料需求：逐级匹配已有目录，不存在的层级自动设为新建模式并预填名称
+    function fulfillRequest(issueNumber, coursePathStr) {
       linkedIssueNumber = issueNumber;
       const presetPath = [];
-      if (courseName && catalogData && catalogData.tree && catalogData.tree.dirs) {
-        const exact = catalogData.tree.dirs.find(d => d.name.toLowerCase() === courseName.toLowerCase());
-        const fuzzy = catalogData.tree.dirs.find(d => d.name.toLowerCase().includes(courseName.toLowerCase()) || courseName.toLowerCase().includes(d.name.toLowerCase()));
-        const matched = exact || fuzzy;
-        if (matched) {
-          presetPath.push({ mode: 'existing', value: matched.name });
-        } else {
-          presetPath.push({ mode: 'new', value: courseName });
+      const segments = (coursePathStr || '').split('/').map(s => s.trim()).filter(Boolean);
+
+      if (segments.length > 0) {
+        let node = (catalogData && catalogData.tree) ? catalogData.tree : { dirs: [] };
+        let stillExisting = true;
+
+        for (const seg of segments) {
+          if (stillExisting && node && node.dirs) {
+            const exact = node.dirs.find(d => d.name.toLowerCase() === seg.toLowerCase());
+            const fuzzy = node.dirs.find(d => d.name.toLowerCase().includes(seg.toLowerCase()) || seg.toLowerCase().includes(d.name.toLowerCase()));
+            const matched = exact || fuzzy;
+            if (matched) {
+              presetPath.push({ mode: 'existing', value: matched.name });
+              node = matched;
+              continue;
+            }
+          }
+          stillExisting = false;
+          presetPath.push({ mode: 'new', value: seg });
         }
       }
+
       openUploadModal(presetPath);
     }
 
@@ -923,7 +1096,7 @@
       document.getElementById('previewBody').innerHTML = '';
     }
 
-    // ================= 自由多级目录选择器与投稿上传逻辑 =================
+    // ================= 投稿上传弹窗逻辑 =================
     function openUploadModal(presetLevels = null) {
       if (!catalogData) {
         alert('目录数据尚未加载完成，请稍后再试');
@@ -949,7 +1122,6 @@
       }
 
       renderDirSelectors();
-      updateFinalPathPreview();
     }
 
     function closeUploadModal() {
@@ -958,140 +1130,31 @@
     }
 
     function addNewSubLevel() {
-      if (dirLevelsState.length >= 5) {
-        alert('最多支持 5 级文件夹深度');
-        return;
-      }
+      if (dirLevelsState.length >= 5) return;
       dirLevelsState.push({ mode: 'new', value: '' });
       renderDirSelectors();
-      updateFinalPathPreview();
-    }
-
-    function removeDirLevel(index) {
-      if (dirLevelsState.length <= 1) return;
-      dirLevelsState = dirLevelsState.slice(0, index);
-      renderDirSelectors();
-      updateFinalPathPreview();
     }
 
     function renderDirSelectors() {
-      const container = document.getElementById('dirSelectorContainer');
-      container.innerHTML = '';
+      const updateFn = () => {
+        renderDirSelectors();
+        updateFinalPathPreview();
+      };
+      updateFn.previewOnly = updateFinalPathPreview;
 
-      const addBtn = document.getElementById('addSubLevelBtn');
-      if (addBtn) addBtn.classList.toggle('hidden', dirLevelsState.length >= 5);
-
-      let currentTreeNode = catalogData.tree;
-      let canWalkTree = true;
-
-      for (let i = 0; i < dirLevelsState.length; i++) {
-        const state = dirLevelsState[i];
-        const availableDirs = (canWalkTree && currentTreeNode && currentTreeNode.dirs) ? currentTreeNode.dirs : [];
-
-        const row = document.createElement('div');
-        row.className = 'flex items-center gap-2';
-
-        const badge = document.createElement('span');
-        badge.className = 'text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-lg shrink-0';
-        badge.textContent = `第 ${i + 1} 级`;
-        row.appendChild(badge);
-
-        if (availableDirs.length > 0) {
-          const select = document.createElement('select');
-          select.className = 'flex-1 min-w-0 px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-500';
-
-          const defaultOpt = document.createElement('option');
-          defaultOpt.value = '';
-          defaultOpt.textContent = i === 0 ? '-- 请选择所属课程 / 专题 --' : '-- 存放在上一级（不建子文件夹）--';
-          select.appendChild(defaultOpt);
-
-          availableDirs.forEach(d => {
-            const opt = document.createElement('option');
-            opt.value = d.name;
-            opt.textContent = `📁 ${d.name}`;
-            if (state.mode === 'existing' && state.value === d.name) opt.selected = true;
-            select.appendChild(opt);
-          });
-
-          const newOpt = document.createElement('option');
-          newOpt.value = '__NEW__';
-          newOpt.textContent = i === 0 ? '➕ 新建一级课程文件夹...' : `➕ 新建第 ${i + 1} 级子文件夹...`;
-          if (state.mode === 'new') newOpt.selected = true;
-          select.appendChild(newOpt);
-
-          select.onchange = (e) => {
-            const val = e.target.value;
-            dirLevelsState = dirLevelsState.slice(0, i + 1);
-            if (val === '__NEW__') {
-              dirLevelsState[i] = { mode: 'new', value: '' };
-            } else if (val === '') {
-              dirLevelsState[i] = { mode: 'existing', value: '' };
-            } else {
-              dirLevelsState[i] = { mode: 'existing', value: val };
-              const matched = availableDirs.find(d => d.name === val);
-              if (matched && matched.dirs && matched.dirs.length > 0) {
-                dirLevelsState.push({ mode: 'existing', value: '' });
-              }
-            }
-            renderDirSelectors();
-            updateFinalPathPreview();
-          };
-          row.appendChild(select);
-        }
-
-        if (state.mode === 'new' || availableDirs.length === 0) {
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.value = state.value;
-          const placeholders = [
-            '输入一级课程名（如：大学物理）',
-            '输入二级子目录（如：历年试卷 / 课件）',
-            '输入三级子目录（如：2026春季学期）',
-            '输入四级子目录名称',
-            '输入五级子目录名称'
-          ];
-          input.placeholder = placeholders[i] || '输入子文件夹名称';
-          input.className = 'flex-1 min-w-0 px-3 py-1.5 text-xs bg-white border border-blue-300 rounded-xl outline-none focus:border-blue-500';
-          input.oninput = (e) => {
-            dirLevelsState[i].mode = 'new';
-            dirLevelsState[i].value = e.target.value;
-            updateFinalPathPreview();
-          };
-          row.appendChild(input);
-        }
-
-        if (i > 0) {
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.title = '移除此级子目录';
-          delBtn.className = 'w-6 h-6 rounded-full bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 flex items-center justify-center text-xs shrink-0 transition';
-          delBtn.textContent = '✕';
-          delBtn.onclick = () => removeDirLevel(i);
-          row.appendChild(delBtn);
-        }
-
-        container.appendChild(row);
-
-        if (canWalkTree && state.mode === 'existing' && state.value) {
-          const nextNode = availableDirs.find(d => d.name === state.value);
-          if (nextNode) currentTreeNode = nextNode;
-          else canWalkTree = false;
-        } else {
-          canWalkTree = false;
-        }
-      }
-    }
-
-    function getSelectedDirParts() {
-      return dirLevelsState
-        .flatMap(s => s.value.split('/'))
-        .map(part => part.trim())
-        .filter(Boolean)
-        .slice(0, 5);
+      renderCascadingDirUI({
+        containerId: 'dirSelectorContainer',
+        addBtnId: 'addSubLevelBtn',
+        stateArr: dirLevelsState,
+        onUpdate: updateFn,
+        accentColor: 'blue',
+        emptyFirstLabel: '-- 请选择所属课程 / 专题 --'
+      });
+      updateFinalPathPreview();
     }
 
     function updateFinalPathPreview() {
-      const dirParts = getSelectedDirParts();
+      const dirParts = extractDirParts(dirLevelsState);
       const fileName = document.getElementById('customFileNameInput').value.trim();
       const previewEl = document.getElementById('finalPathPreview');
 
@@ -1128,7 +1191,7 @@
     async function submitUpload() {
       const feedback = document.getElementById('uploadFeedback');
       const btn = document.getElementById('submitUploadBtn');
-      const dirParts = getSelectedDirParts();
+      const dirParts = extractDirParts(dirLevelsState);
       const customName = document.getElementById('customFileNameInput').value.trim();
 
       const showMsg = (msg, isError = true) => {
