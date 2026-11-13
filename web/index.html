@@ -216,7 +216,7 @@
           </div>
 
           <div class="flex items-center gap-2">
-            <button onclick="loadRequests(true)" title="立即刷新广场动态"
+            <button onclick="loadRequests()" title="立即刷新广场动态"
               class="px-3 py-2 bg-white/80 hover:bg-white border border-slate-200/80 text-slate-600 text-xs font-medium rounded-full transition cursor-pointer">
               🔄 刷新
             </button>
@@ -651,7 +651,32 @@
         .slice(0, 5);
     }
 
-    // ================= 求资料与反馈广场逻辑 =================
+    // ================= 求资料与反馈广场逻辑（含跨刷新暂存兜底） =================
+    function savePendingRequest(item) {
+      try {
+        const list = JSON.parse(sessionStorage.getItem('suda_pending_reqs') || '[]');
+        list.unshift({ item, expiresAt: Date.now() + 15000 });
+        sessionStorage.setItem('suda_pending_reqs', JSON.stringify(list.slice(0, 10)));
+      } catch (e) {}
+    }
+
+    function mergePendingRequests(serverItems) {
+      try {
+        const now = Date.now();
+        const raw = JSON.parse(sessionStorage.getItem('suda_pending_reqs') || '[]');
+        const valid = raw.filter(entry => entry && entry.expiresAt > now && entry.item);
+        sessionStorage.setItem('suda_pending_reqs', JSON.stringify(valid));
+
+        const existingNumbers = new Set(serverItems.map(i => i.number));
+        const missing = valid
+          .map(entry => entry.item)
+          .filter(item => !existingNumbers.has(item.number));
+        return [...missing, ...serverItems];
+      } catch (e) {
+        return serverItems;
+      }
+    }
+
     function updateRequestsBadge() {
       const badge = document.getElementById('openRequestsBadge');
       if (!badge) return;
@@ -659,15 +684,14 @@
       badge.classList.toggle('hidden', allRequests.length === 0);
     }
 
-    async function loadRequests(isManual = false) {
+    async function loadRequests() {
       try {
-        const url = isManual
-          ? `${CONFIG.UPLOAD_WORKER_URL}/requests?t=${Date.now()}`
-          : `${CONFIG.UPLOAD_WORKER_URL}/requests`;
-        const res = await fetch(url);
+        const res = await fetch(`${CONFIG.UPLOAD_WORKER_URL}/requests?_t=${Date.now()}`, {
+          cache: 'no-store'
+        });
         const data = await res.json();
         if (res.ok && data.success) {
-          allRequests = data.items || [];
+          allRequests = mergePendingRequests(data.items || []);
           updateRequestsBadge();
           if (currentView === 'requests') {
             renderRequests();
@@ -836,6 +860,7 @@
         if (!res.ok || !data.success) throw new Error(data.error || '发布失败');
 
         if (data.item) {
+          savePendingRequest(data.item);
           allRequests.unshift(data.item);
           updateRequestsBadge();
           renderRequests();
