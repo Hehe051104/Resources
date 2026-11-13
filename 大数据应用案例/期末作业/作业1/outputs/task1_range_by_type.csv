@@ -1,0 +1,70 @@
+﻿Make,Electric Vehicle Type,mean,median,std,count
+ACURA,Battery Electric Vehicle (BEV),47.0,47.0,0.0,357
+ALFA ROMEO,Plug-in Hybrid Electric Vehicle (PHEV),33.0,33.0,0.0,99
+ASTON MARTIN,Plug-in Hybrid Electric Vehicle (PHEV),6.0,6.0,,1
+AUDI,Battery Electric Vehicle (BEV),81.4,47.0,66.6,3978
+AUDI,Plug-in Hybrid Electric Vehicle (PHEV),20.3,20.0,3.5,2035
+AZURE DYNAMICS,Battery Electric Vehicle (BEV),56.0,56.0,0.0,3
+BENTLEY,Plug-in Hybrid Electric Vehicle (PHEV),31.5,26.5,13.2,8
+BMW,Battery Electric Vehicle (BEV),52.6,47.0,19.0,5218
+BMW,Plug-in Hybrid Electric Vehicle (PHEV),39.5,30.0,27.0,6658
+BRIGHTDROP,Battery Electric Vehicle (BEV),47.0,47.0,0.0,63
+CADILLAC,Battery Electric Vehicle (BEV),47.0,47.0,0.0,2553
+CADILLAC,Plug-in Hybrid Electric Vehicle (PHEV),36.3,37.0,2.8,82
+CHEVROLET,Battery Electric Vehicle (BEV),114.6,47.0,93.5,15282
+CHEVROLET,Plug-in Hybrid Electric Vehicle (PHEV),45.6,53.0,7.8,4416
+CHRYSLER,Plug-in Hybrid Electric Vehicle (PHEV),32.2,32.0,0.4,3523
+DODGE,Battery Electric Vehicle (BEV),47.0,47.0,0.0,116
+DODGE,Plug-in Hybrid Electric Vehicle (PHEV),32.0,32.0,0.0,388
+FIAT,Battery Electric Vehicle (BEV),80.2,84.0,13.4,843
+FISKER,Battery Electric Vehicle (BEV),47.0,47.0,0.0,98
+FISKER,Plug-in Hybrid Electric Vehicle (PHEV),33.0,33.0,0.0,10
+FORD,Battery Electric Vehicle (BEV),47.6,47.0,4.6,11906
+FORD,Plug-in Hybrid Electric Vehicle (PHEV),23.7,19.0,7.5,3883
+GENESIS,Battery Electric Vehicle (BEV),47.0,47.0,0.0,530
+GMC,Battery Electric Vehicle (BEV),47.0,47.0,0.0,587
+HONDA,Battery Electric Vehicle (BEV),47.0,47.0,0.0,2409
+HONDA,Plug-in Hybrid Electric Vehicle (PHEV),46.5,47.0,4.3,858
+HYUNDAI,Battery Electric Vehicle (BEV),53.4,47.0,34.7,10060
+HYUNDAI,Plug-in Hybrid Electric Vehicle (PHEV),31.4,32.0,1.9,1306
+JAGUAR,Battery Electric Vehicle (BEV),173.4,234.0,87.8,145
+JEEP,Battery Electric Vehicle (BEV),47.0,47.0,0.0,205
+JEEP,Plug-in Hybrid Electric Vehicle (PHEV),22.4,21.0,1.9,5817
+KIA,Battery Electric Vehicle (BEV),65.8,47.0,53.6,9971
+KIA,Plug-in Hybrid Electric Vehicle (PHEV),31.7,33.0,2.9,4397
+LAMBORGHINI,Plug-in Hybrid Electric Vehicle (PHEV),34.7,37.0,13.4,32
+LAND ROVER,Plug-in Hybrid Electric Vehicle (PHEV),50.9,58.0,15.1,235
+LEXUS,Battery Electric Vehicle (BEV),47.0,47.0,0.0,745
+LEXUS,Plug-in Hybrid Electric Vehicle (PHEV),36.9,37.0,1.0,1142
+LINCOLN,Plug-in Hybrid Electric Vehicle (PHEV),24.9,27.0,3.3,467
+LUCID,Battery Electric Vehicle (BEV),47.0,47.0,0.0,817
+MASERATI,Battery Electric Vehicle (BEV),47.0,47.0,,1
+MAZDA,Battery Electric Vehicle (BEV),47.0,47.0,0.0,21
+MAZDA,Plug-in Hybrid Electric Vehicle (PHEV),26.1,26.0,0.8,1574
+MERCEDES-BENZ,Battery Electric Vehicle (BEV),48.3,47.0,7.1,2144
+MERCEDES-BENZ,Plug-in Hybrid Electric Vehicle (PHEV),40.0,49.0,18.1,1260
+MINI,Battery Electric Vehicle (BEV),54.1,47.0,20.0,1007
+MINI,Plug-in Hybrid Electric Vehicle (PHEV),13.8,12.0,2.4,235
+MITSUBISHI,Battery Electric Vehicle (BEV),61.9,62.0,0.4,54
+MITSUBISHI,Plug-in Hybrid Electric Vehicle (PHEV),31.5,38.0,7.7,1221
+MULLEN AUTOMOTIVE INC.,Battery Electric Vehicle (BEV),47.0,47.0,0.0,10
+NISSAN,Battery Electric Vehicle (BEV),82.0,75.0,40.4,16073
+NISSAN,Plug-in Hybrid Electric Vehicle (PHEV),38.0,38.0,0.0,3
+POLESTAR,Battery Electric Vehicle (BEV),69.2,47.0,60.3,1653
+PORSCHE,Battery Electric Vehicle (BEV),96.8,47.0,85.0,1363
+PORSCHE,Plug-in Hybrid Electric Vehicle (PHEV),20.1,15.0,10.8,721
+RAM,Battery Electric Vehicle (BEV),47.0,47.0,0.0,26
+RIVIAN,Battery Electric Vehicle (BEV),47.0,47.0,0.0,9236
+ROLLS-ROYCE,Battery Electric Vehicle (BEV),47.0,47.0,0.0,5
+SMART,Battery Electric Vehicle (BEV),61.7,58.0,5.0,219
+SUBARU,Battery Electric Vehicle (BEV),47.0,47.0,0.0,2890
+SUBARU,Plug-in Hybrid Electric Vehicle (PHEV),17.0,17.0,0.0,98
+TESLA,Battery Electric Vehicle (BEV),86.8,47.0,80.5,118551
+TH!NK,Battery Electric Vehicle (BEV),100.0,100.0,0.0,6
+TOYOTA,Battery Electric Vehicle (BEV),48.0,47.0,7.5,2594
+TOYOTA,Plug-in Hybrid Electric Vehicle (PHEV),33.9,42.0,11.8,10076
+VINFAST,Battery Electric Vehicle (BEV),47.0,47.0,0.0,4
+VOLKSWAGEN,Battery Electric Vehicle (BEV),55.2,47.0,22.1,7769
+VOLVO,Battery Electric Vehicle (BEV),47.0,47.0,0.0,2719
+VOLVO,Plug-in Hybrid Electric Vehicle (PHEV),28.0,32.0,8.3,4941
+WHEEGO ELECTRIC CARS,Plug-in Hybrid Electric Vehicle (PHEV),100.0,100.0,0.0,2
