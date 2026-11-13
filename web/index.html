@@ -7,47 +7,104 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 45%, #e0f2fe 100%);
+      background-attachment: fixed;
+    }
+
+    /* Apple 风格磨砂玻璃面板 */
+    .apple-glass {
+      background: rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 8px 32px rgba(15, 23, 42, 0.045), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+
+    .apple-glass-header {
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(28px) saturate(200%);
+      -webkit-backdrop-filter: blur(28px) saturate(200%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 4px 24px rgba(15, 23, 42, 0.03);
+    }
+
+    .apple-glass-card {
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.035), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .apple-glass-card:hover {
+      background: rgba(255, 255, 255, 0.78);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    }
+
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.45); border-radius: 999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="text-slate-800 min-h-screen flex flex-col relative overflow-x-hidden">
+
+  <!-- 背景弥散光晕（衬托毛玻璃通透感） -->
+  <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-24 -left-20 w-96 h-96 rounded-full bg-blue-300/25 blur-3xl"></div>
+    <div class="absolute top-1/3 -right-24 w-[28rem] h-[28rem] rounded-full bg-indigo-300/20 blur-3xl"></div>
+    <div class="absolute -bottom-24 left-1/3 w-96 h-96 rounded-full bg-sky-200/30 blur-3xl"></div>
+  </div>
 
   <script>
-    // ================= 1. 基础配置区（请修改为你的仓库信息） =================
+    // ================= 1. 基础配置区（已为你填好仓库信息） =================
     const CONFIG = {
       SITE_TITLE: "苏州大学课程资料-Gemini",
-      GITHUB_USER: "Hehe051104",      // 例如: "zhangsan"
-      GITHUB_REPO: "Resources",          // 例如: "suda-courses"
+      GITHUB_USER: "Hehe051104",
+      GITHUB_REPO: "Resources",
+      GITHUB_REPO_URL: "https://github.com/Hehe051104/Resources",
       BRANCH: "main",                      // 默认分支，如果是 master 请修改
       // 第三步配置下载加速后填入，留空则默认走 GitHub Raw 直链
       DOWNLOAD_PROXY_PREFIX: "",
       // 第四步配置上传 Worker 后填入
       UPLOAD_WORKER_URL: ""
     };
-    // =========================================================================
+    // =====================================================================
   </script>
 
-  <!-- 顶部导航栏 -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+  <!-- 顶部毛玻璃导航栏 -->
+  <header class="apple-glass-header sticky top-0 z-30">
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="navigateTo([])">
-        <span class="text-2xl">🎓</span>
+      <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateTo([])">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-xl shadow-md shadow-blue-500/20 group-hover:scale-105 transition">
+          🎓
+        </div>
         <div>
-          <h1 id="siteTitle" class="font-bold text-lg text-slate-900 leading-tight">苏州大学课程资料共享库</h1>
-          <p id="statsText" class="text-xs text-slate-500">正在加载目录索引...</p>
+          <h1 id="siteTitle" class="font-semibold text-base sm:text-lg text-slate-900 tracking-tight leading-tight">苏州大学课程资料共享库</h1>
+          <p id="statsText" class="text-xs text-slate-500 mt-0.5">正在加载目录索引...</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2 w-full sm:w-auto">
-        <div class="relative flex-1 sm:w-72">
+        <div class="relative flex-1 sm:w-64 md:w-72">
           <input id="searchInput" type="text" placeholder="全局搜索课程、PPT、试卷..."
-            class="w-full pl-9 pr-8 py-1.5 text-sm bg-slate-100 border border-transparent focus:bg-white focus:border-blue-500 rounded-lg outline-none transition" />
-          <span class="absolute left-3 top-2 text-slate-400 text-sm">🔍</span>
+            class="w-full pl-9 pr-8 py-1.5 text-sm bg-white/60 border border-white/80 focus:bg-white/90 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 rounded-full outline-none transition placeholder:text-slate-400 shadow-inner" />
+          <span class="absolute left-3 top-2 text-slate-400 text-xs">🔍</span>
           <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1.5 text-slate-400 hover:text-slate-600 text-sm">✕</button>
         </div>
+
+        <!-- GitHub 点 Star 快捷胶囊按钮 -->
+        <a href="https://github.com/Hehe051104/Resources" target="_blank" rel="noopener noreferrer"
+          title="前往 GitHub 仓库点个 Star 支持一下"
+          class="px-3 py-1.5 bg-white/75 hover:bg-amber-50/90 border border-white/80 hover:border-amber-200 text-slate-700 hover:text-amber-700 text-xs sm:text-sm font-medium rounded-full shadow-sm transition shrink-0 flex items-center gap-1">
+          <span>🌟</span><span class="hidden md:inline">点个 Star</span>
+        </a>
+
         <button onclick="openUploadNotice()"
-          class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition shrink-0 flex items-center gap-1">
+          class="px-3.5 py-1.5 bg-blue-600/90 hover:bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-full shadow-md shadow-blue-600/20 transition shrink-0 flex items-center gap-1">
           <span>⬆️</span><span>投稿上传</span>
         </button>
       </div>
@@ -57,63 +114,77 @@
   <!-- 主体内容区 -->
   <main class="max-w-6xl w-full mx-auto px-4 py-5 flex-1">
 
-    <!-- 站点访问数据看板 -->
-    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-4">
-      <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+    <!-- 站点访问数据玻璃看板 -->
+    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-3.5">
+      <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
         <div>
-          <div class="text-[11px] sm:text-xs text-slate-500">历史总人次 (UV)</div>
-          <div id="statTotalUv" class="text-base sm:text-lg font-bold text-slate-800 mt-0.5">--</div>
+          <div class="text-[11px] sm:text-xs text-slate-500 font-medium">历史总人次 (UV)</div>
+          <div id="statTotalUv" class="text-base sm:text-xl font-bold text-slate-800 mt-0.5 tracking-tight">--</div>
         </div>
-        <span class="text-lg sm:text-xl opacity-80">👥</span>
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-500/10 flex items-center justify-center text-base sm:text-lg">👥</div>
       </div>
-      <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+      <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
         <div>
-          <div class="text-[11px] sm:text-xs text-slate-500">历史总访问次数</div>
-          <div id="statTotalPv" class="text-base sm:text-lg font-bold text-blue-600 mt-0.5">--</div>
+          <div class="text-[11px] sm:text-xs text-slate-500 font-medium">历史总访问次数</div>
+          <div id="statTotalPv" class="text-base sm:text-xl font-bold text-blue-600 mt-0.5 tracking-tight">--</div>
         </div>
-        <span class="text-lg sm:text-xl opacity-80">📈</span>
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-base sm:text-lg">📈</div>
       </div>
-      <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+      <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
         <div>
-          <div class="text-[11px] sm:text-xs text-slate-500">今日访问次数</div>
-          <div id="statTodayPv" class="text-base sm:text-lg font-bold text-emerald-600 mt-0.5">--</div>
+          <div class="text-[11px] sm:text-xs text-slate-500 font-medium">今日访问次数</div>
+          <div id="statTodayPv" class="text-base sm:text-xl font-bold text-emerald-600 mt-0.5 tracking-tight">--</div>
         </div>
-        <span class="text-lg sm:text-xl opacity-80">📅</span>
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-base sm:text-lg">📅</div>
       </div>
     </div>
 
-    <!-- 工具栏：面包屑导航 + 类型筛选 -->
-    <div class="bg-white p-3 rounded-xl border border-slate-200 mb-4 flex flex-wrap items-center justify-between gap-3">
-      <!-- 面包屑 -->
-      <nav id="breadcrumb" class="flex items-center flex-wrap gap-1 text-sm text-slate-600"></nav>
+    <!-- GitHub 仓库求 Star 玻璃致谢横幅 -->
+    <div class="apple-glass-card px-4 py-2.5 rounded-2xl mb-4 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+      <div class="flex items-center gap-2 text-slate-700">
+        <span class="text-base">✨</span>
+        <span>本资料库完全开源免费共享，如果这里的课件或试卷帮到了你，欢迎去 GitHub 点一颗 <strong class="text-amber-600 font-semibold">🌟 Star</strong> 支持整理与维护！</span>
+      </div>
+      <a href="https://github.com/Hehe051104/Resources" target="_blank" rel="noopener noreferrer"
+        class="px-3 py-1 rounded-full bg-slate-900/85 hover:bg-slate-900 text-white text-xs font-medium transition shadow-sm flex items-center gap-1.5 shrink-0">
+        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>Hehe051104/Resources</span>
+        <span class="text-amber-300">★</span>
+      </a>
+    </div>
 
-      <!-- 格式过滤按钮 -->
-      <div class="flex items-center gap-1.5 text-xs overflow-x-auto" id="filterGroup">
-        <button data-filter="all" class="filter-btn px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 font-medium">全部</button>
-        <button data-filter="ppt" class="filter-btn px-2.5 py-1 rounded-md hover:bg-slate-100 text-slate-600">课件 PPT</button>
-        <button data-filter="pdf" class="filter-btn px-2.5 py-1 rounded-md hover:bg-slate-100 text-slate-600">PDF 文档</button>
-        <button data-filter="doc" class="filter-btn px-2.5 py-1 rounded-md hover:bg-slate-100 text-slate-600">Word/笔记</button>
-        <button data-filter="zip" class="filter-btn px-2.5 py-1 rounded-md hover:bg-slate-100 text-slate-600">压缩包</button>
+    <!-- 工具栏：面包屑导航 + 类型筛选 -->
+    <div class="apple-glass p-3 rounded-2xl mb-4 flex flex-wrap items-center justify-between gap-3">
+      <!-- 面包屑 -->
+      <nav id="breadcrumb" class="flex items-center flex-wrap gap-1 text-sm text-slate-600 px-1"></nav>
+
+      <!-- 格式过滤胶囊组 -->
+      <div class="flex items-center gap-1 text-xs overflow-x-auto bg-slate-200/50 p-1 rounded-full" id="filterGroup">
+        <button data-filter="all" class="filter-btn px-3 py-1 rounded-full bg-white text-blue-600 font-medium shadow-sm transition">全部</button>
+        <button data-filter="ppt" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">课件 PPT</button>
+        <button data-filter="pdf" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">PDF 文档</button>
+        <button data-filter="doc" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">Word/笔记</button>
+        <button data-filter="zip" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">压缩包</button>
       </div>
     </div>
 
     <!-- 批量操作提示栏 -->
-    <div id="batchBar" class="hidden bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2.5 rounded-xl mb-4 flex items-center justify-between text-sm">
-      <span>已选中 <strong id="selectedCount">0</strong> 个文件</span>
+    <div id="batchBar" class="hidden apple-glass border-blue-300/60 bg-blue-50/75 text-blue-900 px-4 py-2.5 rounded-2xl mb-4 flex items-center justify-between text-sm">
+      <span>已选中 <strong id="selectedCount" class="text-blue-600">0</strong> 个文件</span>
       <div class="flex items-center gap-2">
-        <button onclick="clearSelection()" class="px-2.5 py-1 text-slate-600 hover:underline">取消全选</button>
-        <button id="zipDownloadBtn" onclick="downloadSelectedAsZip()" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm">
+        <button onclick="clearSelection()" class="px-3 py-1 text-slate-600 hover:text-slate-900 text-xs">取消全选</button>
+        <button id="zipDownloadBtn" onclick="downloadSelectedAsZip()" class="px-3.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-full font-medium shadow-sm transition">
           📦 打包下载 ZIP
         </button>
       </div>
     </div>
 
-    <!-- 列表容器 -->
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+    <!-- 文件列表玻璃容器 -->
+    <div class="apple-glass rounded-2xl overflow-hidden">
       <!-- 表头 -->
-      <div class="grid grid-cols-12 gap-2 px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-xs font-medium text-slate-500">
-        <div class="col-span-7 sm:col-span-8 flex items-center gap-2">
-          <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" class="rounded border-slate-300" />
+      <div class="grid grid-cols-12 gap-2 px-4 py-3 bg-white/40 border-b border-white/60 text-xs font-medium text-slate-500">
+        <div class="col-span-7 sm:col-span-8 flex items-center gap-2.5">
+          <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500/30" />
           <span>名称</span>
         </div>
         <div class="col-span-2 text-right hidden sm:block">大小</div>
@@ -121,34 +192,42 @@
       </div>
 
       <!-- 动态内容列表 -->
-      <div id="listContainer" class="divide-y divide-slate-100">
+      <div id="listContainer" class="divide-y divide-slate-200/45">
         <div class="p-10 text-center text-slate-400 text-sm">正在加载课程目录，请稍候...</div>
       </div>
     </div>
   </main>
 
-  <!-- 底部版权 -->
-  <footer class="text-center text-xs text-slate-400 py-6">
-    苏州大学课程资料共享库 · 基于 GitHub + Cloudflare Pages 构建
+  <!-- 底部版权与 GitHub 链接 -->
+  <footer class="text-center text-xs text-slate-500 py-6 space-y-1.5">
+    <div>
+      开源仓库地址：
+      <a href="https://github.com/Hehe051104/Resources" target="_blank" rel="noopener noreferrer"
+        class="text-blue-600 hover:text-blue-700 font-medium underline decoration-blue-300 underline-offset-2">
+        https://github.com/Hehe051104/Resources
+      </a>
+      （欢迎点 🌟 Star 支持）
+    </div>
+    <div class="text-slate-400">苏州大学课程资料共享库 · 基于 GitHub + Cloudflare Pages 构建</div>
   </footer>
 
-  <!-- 在线预览弹窗 -->
-  <div id="previewModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 sm:p-6">
-    <div class="bg-white rounded-2xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden shadow-2xl">
-      <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-        <h3 id="previewTitle" class="font-medium text-sm text-slate-800 truncate pr-4">文件预览</h3>
+  <!-- 在线预览毛玻璃弹窗 -->
+  <div id="previewModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white/85 backdrop-blur-2xl border border-white/80 rounded-3xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="px-5 py-3.5 border-b border-slate-200/60 flex items-center justify-between bg-white/50">
+        <h3 id="previewTitle" class="font-semibold text-sm text-slate-800 truncate pr-4">文件预览</h3>
         <div class="flex items-center gap-2 shrink-0">
-          <a id="previewDownloadBtn" href="#" target="_blank" class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700">下载原文件</a>
-          <button onclick="closePreview()" class="p-1 text-slate-500 hover:text-slate-800 text-lg leading-none">✕</button>
+          <a id="previewDownloadBtn" href="#" target="_blank" class="px-3.5 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-full hover:bg-blue-700 shadow-sm transition">下载原文件</a>
+          <button onclick="closePreview()" class="w-7 h-7 rounded-full bg-slate-200/70 hover:bg-slate-300/80 text-slate-600 flex items-center justify-center text-sm transition">✕</button>
         </div>
       </div>
-      <div id="previewBody" class="flex-1 bg-slate-100 overflow-auto flex flex-col items-center justify-center p-2"></div>
+      <div id="previewBody" class="flex-1 bg-slate-100/70 overflow-auto flex flex-col items-center justify-center p-2"></div>
     </div>
   </div>
 
   <script>
     let catalogData = null;
-    let currentPath = []; // 当前所在文件夹路径数组
+    let currentPath = [];
     let currentFilter = 'all';
     let searchQuery = '';
     let selectedPaths = new Set();
@@ -156,7 +235,6 @@
     document.getElementById('siteTitle').textContent = CONFIG.SITE_TITLE;
     document.title = CONFIG.SITE_TITLE;
 
-    // 拼接文件下载地址（自动转为完整绝对 URL，确保第三方在线预览器可正常抓取）
     function getRawUrl(filePath) {
       const encodedPath = filePath.split('/').map(encodeURIComponent).join('/');
       if (CONFIG.DOWNLOAD_PROXY_PREFIX) {
@@ -167,11 +245,9 @@
       return `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/${CONFIG.BRANCH}/${encodedPath}`;
     }
 
-    // 加载访问统计（历史总人次 UV、历史总访问 PV、今日访问 PV）
     async function loadVisitorStats() {
       const ns = `suda-repo-${CONFIG.GITHUB_USER}-${CONFIG.GITHUB_REPO}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
       const baseApi = `https://api.counterapi.com/v1/${ns}`;
-      // 获取北京时间今日日期 YYYY-MM-DD
       const todayStr = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
       const isNewVisitor = !localStorage.getItem('suda_repo_visited');
 
@@ -200,7 +276,6 @@
       }
     }
 
-    // 加载 catalog.json
     async function init() {
       loadVisitorStats();
       try {
@@ -255,7 +330,6 @@
       return '📄';
     }
 
-    // 支持预览的格式：PDF、Word(doc/docx)、图片、纯文本/Markdown
     function canPreview(ext) {
       return ['pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'md', 'txt'].includes(ext);
     }
@@ -264,10 +338,10 @@
       if (!catalogData) return;
 
       const bc = document.getElementById('breadcrumb');
-      let bcHtml = `<button onclick="navigateTo([])" class="hover:text-blue-600 font-medium flex items-center gap-1">🏠 全部资料</button>`;
+      let bcHtml = `<button onclick="navigateTo([])" class="hover:text-blue-600 font-medium flex items-center gap-1 transition">🏠 全部资料</button>`;
       currentPath.forEach((seg, idx) => {
         const target = JSON.stringify(currentPath.slice(0, idx + 1)).replace(/"/g, '&quot;');
-        bcHtml += `<span class="text-slate-300">/</span><button onclick="navigateTo(${target})" class="hover:text-blue-600 ${idx === currentPath.length - 1 ? 'text-slate-900 font-semibold' : ''}">${seg}</button>`;
+        bcHtml += `<span class="text-slate-300 mx-0.5">/</span><button onclick="navigateTo(${target})" class="hover:text-blue-600 transition ${idx === currentPath.length - 1 ? 'text-slate-900 font-semibold' : ''}">${seg}</button>`;
       });
       bc.innerHTML = bcHtml;
 
@@ -296,15 +370,15 @@
       dirsToShow.forEach(dir => {
         const nextPath = JSON.stringify([...currentPath, dir.name]).replace(/"/g, '&quot;');
         html += `
-          <div onclick="navigateTo(${nextPath})" class="grid grid-cols-12 gap-2 px-4 py-3 hover:bg-blue-50/50 cursor-pointer transition items-center">
+          <div onclick="navigateTo(${nextPath})" class="grid grid-cols-12 gap-2 px-4 py-3 hover:bg-white/65 cursor-pointer transition items-center group">
             <div class="col-span-9 sm:col-span-8 flex items-center gap-2.5 min-w-0">
               <span class="w-4"></span>
-              <span class="text-lg">📁</span>
-              <span class="font-medium text-sm text-slate-800 truncate">${dir.name}</span>
-              <span class="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-full shrink-0">${dir.total_files}</span>
+              <span class="text-lg group-hover:scale-110 transition">📁</span>
+              <span class="font-medium text-sm text-slate-800 truncate group-hover:text-blue-600 transition">${dir.name}</span>
+              <span class="text-[11px] px-2 py-0.5 bg-white/80 border border-slate-200/60 text-slate-500 rounded-full shrink-0">${dir.total_files}</span>
             </div>
             <div class="col-span-2 text-right text-xs text-slate-400 hidden sm:block">文件夹</div>
-            <div class="col-span-3 sm:col-span-2 text-right text-xs text-blue-600 font-medium">打开 →</div>
+            <div class="col-span-3 sm:col-span-2 text-right text-xs text-blue-600 font-medium opacity-80 group-hover:opacity-100">打开 →</div>
           </div>`;
       });
 
@@ -318,9 +392,9 @@
           : '';
 
         html += `
-          <div class="grid grid-cols-12 gap-2 px-4 py-2.5 hover:bg-slate-50 transition items-center">
+          <div class="grid grid-cols-12 gap-2 px-4 py-2.5 hover:bg-white/60 transition items-center">
             <div class="col-span-7 sm:col-span-8 flex items-center gap-2.5 min-w-0">
-              <input type="checkbox" ${checked} onchange="toggleFileSelect('${safePath}', this.checked)" class="file-checkbox rounded border-slate-300 shrink-0" data-path="${file.path}" />
+              <input type="checkbox" ${checked} onchange="toggleFileSelect('${safePath}', this.checked)" class="file-checkbox rounded border-slate-300 text-blue-600 shrink-0" data-path="${file.path}" />
               <span class="text-lg shrink-0">${getFileIcon(file.ext)}</span>
               <div class="min-w-0 flex-1">
                 <div class="text-sm text-slate-800 truncate" title="${file.name}">${file.name}</div>
@@ -329,8 +403,8 @@
             </div>
             <div class="col-span-2 text-right text-xs text-slate-500 hidden sm:block">${file.size_str}</div>
             <div class="col-span-5 sm:col-span-2 flex items-center justify-end gap-1.5">
-              ${canPreview(file.ext) ? `<button onclick="openPreview('${safePath}', '${safeName}', '${file.ext}')" class="px-2 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded transition">预览</button>` : ''}
-              <a href="${url}" download="${file.name}" target="_blank" class="px-2.5 py-1 text-xs bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white rounded font-medium transition">下载</a>
+              ${canPreview(file.ext) ? `<button onclick="openPreview('${safePath}', '${safeName}', '${file.ext}')" class="px-2.5 py-1 text-xs bg-white/80 hover:bg-white border border-slate-200/70 text-slate-700 rounded-full transition shadow-2xs">预览</button>` : ''}
+              <a href="${url}" download="${file.name}" target="_blank" class="px-3 py-1 text-xs bg-blue-500/10 hover:bg-blue-600 text-blue-600 hover:text-white rounded-full font-medium transition">下载</a>
             </div>
           </div>`;
       });
@@ -354,9 +428,9 @@
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => {
-          b.className = 'filter-btn px-2.5 py-1 rounded-md hover:bg-slate-100 text-slate-600';
+          b.className = 'filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition';
         });
-        btn.className = 'filter-btn px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 font-medium';
+        btn.className = 'filter-btn px-3 py-1 rounded-full bg-white text-blue-600 font-medium shadow-sm transition';
         currentFilter = btn.dataset.filter;
         render();
       });
@@ -421,7 +495,6 @@
       }
     }
 
-    // 在线预览逻辑（新增 doc / docx 支持）
     async function openPreview(filePath, fileName, ext) {
       const modal = document.getElementById('previewModal');
       const body = document.getElementById('previewBody');
@@ -435,22 +508,22 @@
       modal.classList.remove('hidden');
 
       if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
-        body.innerHTML = `<img src="${url}" class="max-h-full max-w-full object-contain rounded shadow" />`;
+        body.innerHTML = `<img src="${url}" class="max-h-full max-w-full object-contain rounded-xl shadow" />`;
       } else if (ext === 'pdf') {
         const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
-        body.innerHTML = `<iframe src="${viewerUrl}" class="w-full h-full border-0 rounded"></iframe>`;
+        body.innerHTML = `<iframe src="${viewerUrl}" class="w-full h-full border-0 rounded-2xl"></iframe>`;
       } else if (['doc', 'docx'].includes(ext)) {
         const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
         body.innerHTML = `
           <div class="w-full text-center text-[11px] text-slate-500 pb-1.5">
             正在通过 Office Online 渲染文档，若文件较大或加载超时，请点击右上角「下载原文件」查看
           </div>
-          <iframe src="${officeViewerUrl}" class="w-full flex-1 border-0 rounded bg-white"></iframe>`;
+          <iframe src="${officeViewerUrl}" class="w-full flex-1 border-0 rounded-2xl bg-white"></iframe>`;
       } else {
         try {
           const res = await fetch(url);
           const text = await res.text();
-          body.innerHTML = `<pre class="w-full h-full bg-white p-4 rounded text-xs font-mono overflow-auto whitespace-pre-wrap text-slate-800">${text.replace(/</g, '&lt;')}</pre>`;
+          body.innerHTML = `<pre class="w-full h-full bg-white/90 p-5 rounded-2xl text-xs font-mono overflow-auto whitespace-pre-wrap text-slate-800">${text.replace(/</g, '&lt;')}</pre>`;
         } catch (e) {
           body.innerHTML = `<div class="text-sm text-red-500">文本加载失败，请直接点击右上角下载查看。</div>`;
         }
