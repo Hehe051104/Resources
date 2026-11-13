@@ -122,7 +122,7 @@
         <button id="navRequestsBtn" onclick="switchView('requests')"
           class="flex-1 md:flex-none flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-white/60 transition cursor-pointer">
           <span class="flex items-center gap-2"><span>🙋</span><span>求资料与反馈</span></span>
-          <span id="openRequestsBadge" class="hidden px-2 py-0.5 text-[11px] font-bold bg-indigo-500 text-white rounded-full">0</span>
+          <span id="openRequestsBadge" class="hidden px-2 py-0.5 text-[11px] font-bold bg-indigo-500 text-white rounded-full transition-all">0</span>
         </button>
       </nav>
 
@@ -215,10 +215,16 @@
             <button data-reqfilter="feedback" class="req-filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">🚨 纠错与建议</button>
           </div>
 
-          <button onclick="openRequestModal()"
-            class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs sm:text-sm font-semibold rounded-full shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5 cursor-pointer">
-            <span>➕</span><span>发布求资料 / 纠错</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="loadRequests(true)" title="立即刷新广场动态"
+              class="px-3 py-2 bg-white/80 hover:bg-white border border-slate-200/80 text-slate-600 text-xs font-medium rounded-full transition cursor-pointer">
+              🔄 刷新
+            </button>
+            <button onclick="openRequestModal()"
+              class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs sm:text-sm font-semibold rounded-full shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5 cursor-pointer">
+              <span>➕</span><span>发布求资料 / 纠错</span>
+            </button>
+          </div>
         </div>
 
         <div id="requestsListContainer" class="space-y-3">
@@ -256,7 +262,7 @@
     </div>
   </div>
 
-  <!-- 发布求资料 / 纠错反馈弹窗（支持自由选择已有课程或新建不存在的课程/子目录） -->
+  <!-- 发布求资料 / 纠错反馈弹窗 -->
   <div id="requestModal" class="hidden fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white/92 backdrop-blur-2xl border border-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl my-auto">
       <div class="px-5 py-4 border-b border-slate-200/60 flex items-center justify-between bg-white/60">
@@ -283,7 +289,7 @@
           </div>
         </div>
 
-        <!-- 2. 逐级选择或新建课程目录（与上传弹窗完全一致） -->
+        <!-- 2. 逐级选择或新建课程目录 -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label class="text-xs font-semibold text-slate-700">2. 选择或新建目标课程目录（可选已有课程或新建不存在的课程）</label>
@@ -420,7 +426,7 @@
     let allRequests = [];
     let reqFilter = 'all';
     let currentReqType = 'request';
-    let reqDirLevelsState = []; // 求资料弹窗的多级目录状态
+    let reqDirLevelsState = [];
 
     // 上传模块状态
     let selectedFileObj = null;
@@ -495,8 +501,21 @@
     async function init() {
       loadVisitorStats();
       loadRequests();
+
+      // 智能静默轮询：页面处于前台可见状态时每 20 秒同步最新求资料动态
+      setInterval(() => {
+        if (!document.hidden) loadRequests();
+      }, 20000);
+
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) loadRequests();
+      });
+
       try {
-        const res = await fetch('./catalog.json?t=' + Date.now());
+        const catalogUrl = CONFIG.DOWNLOAD_PROXY_PREFIX
+          ? `${CONFIG.DOWNLOAD_PROXY_PREFIX.replace(/\/$/, '')}/catalog.json`
+          : './catalog.json?t=' + Date.now();
+        const res = await fetch(catalogUrl);
         if (!res.ok) throw new Error('无法读取 catalog.json');
         catalogData = await res.json();
         document.getElementById('statsText').textContent =
@@ -508,7 +527,7 @@
       }
     }
 
-    // ================= 通用多级目录选择器引擎（求资料与上传弹窗共用） =================
+    // ================= 通用多级目录选择器引擎 =================
     function renderCascadingDirUI({ containerId, addBtnId, stateArr, onUpdate, accentColor = 'blue', emptyFirstLabel }) {
       const container = document.getElementById(containerId);
       if (!container) return;
@@ -633,22 +652,32 @@
     }
 
     // ================= 求资料与反馈广场逻辑 =================
-    async function loadRequests() {
+    function updateRequestsBadge() {
+      const badge = document.getElementById('openRequestsBadge');
+      if (!badge) return;
+      badge.textContent = allRequests.length;
+      badge.classList.toggle('hidden', allRequests.length === 0);
+    }
+
+    async function loadRequests(isManual = false) {
       try {
-        const res = await fetch(`${CONFIG.UPLOAD_WORKER_URL}/requests?t=${Date.now()}`);
+        const url = isManual
+          ? `${CONFIG.UPLOAD_WORKER_URL}/requests?t=${Date.now()}`
+          : `${CONFIG.UPLOAD_WORKER_URL}/requests`;
+        const res = await fetch(url);
         const data = await res.json();
         if (res.ok && data.success) {
           allRequests = data.items || [];
-          const badge = document.getElementById('openRequestsBadge');
-          if (badge) {
-            badge.textContent = allRequests.length;
-            badge.classList.toggle('hidden', allRequests.length === 0);
+          updateRequestsBadge();
+          if (currentView === 'requests') {
+            renderRequests();
           }
-          renderRequests();
         }
       } catch (e) {
-        document.getElementById('requestsListContainer').innerHTML =
-          `<div class="apple-glass p-10 rounded-2xl text-center text-red-500 text-sm">加载失败，请稍后刷新重试</div>`;
+        if (currentView === 'requests' && allRequests.length === 0) {
+          document.getElementById('requestsListContainer').innerHTML =
+            `<div class="apple-glass p-10 rounded-2xl text-center text-red-500 text-sm">加载失败，请稍后点击右上角刷新重试</div>`;
+        }
       }
     }
 
@@ -806,9 +835,13 @@
         const data = await res.json();
         if (!res.ok || !data.success) throw new Error(data.error || '发布失败');
 
+        if (data.item) {
+          allRequests.unshift(data.item);
+          updateRequestsBadge();
+          renderRequests();
+        }
         document.getElementById('reqContentInput').value = '';
         closeRequestModal();
-        loadRequests();
       } catch (e) {
         showBox(`❌ ${e.message}`);
       } finally {
@@ -817,7 +850,6 @@
       }
     }
 
-    // 响应某条求资料需求：逐级匹配已有目录，不存在的层级自动设为新建模式并预填名称
     function fulfillRequest(issueNumber, coursePathStr) {
       linkedIssueNumber = issueNumber;
       const presetPath = [];
