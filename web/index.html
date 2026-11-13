@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>苏州大学课程资料-Gemini</title>
+  <title>苏州大学课程资料共享库</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
@@ -23,7 +23,7 @@
     }
 
     .apple-glass-header {
-      background: rgba(255, 255, 255, 0.72);
+      background: rgba(255, 255, 255, 0.75);
       backdrop-filter: blur(28px) saturate(200%);
       -webkit-backdrop-filter: blur(28px) saturate(200%);
       border-bottom: 1px solid rgba(255, 255, 255, 0.7);
@@ -62,7 +62,7 @@
   <script>
     // ================= 1. 基础配置区（已为你填好仓库信息） =================
     const CONFIG = {
-      SITE_TITLE: "苏州大学课程资料-Gemini",
+      SITE_TITLE: "苏州大学课程资料共享库",
       GITHUB_USER: "Hehe051104",
       GITHUB_REPO: "Resources",
       GITHUB_REPO_URL: "https://github.com/Hehe051104/Resources",
@@ -88,24 +88,28 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-        <div class="relative flex-1 sm:w-64 md:w-72">
+      <div class="flex items-center gap-2.5 w-full sm:w-auto">
+        <div class="relative flex-1 sm:w-60 md:w-68">
           <input id="searchInput" type="text" placeholder="全局搜索课程、PPT、试卷..."
-            class="w-full pl-9 pr-8 py-1.5 text-sm bg-white/60 border border-white/80 focus:bg-white/90 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 rounded-full outline-none transition placeholder:text-slate-400 shadow-inner" />
-          <span class="absolute left-3 top-2 text-slate-400 text-xs">🔍</span>
-          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1.5 text-slate-400 hover:text-slate-600 text-sm">✕</button>
+            class="w-full pl-9 pr-8 py-2 text-sm bg-white/65 border border-white/85 focus:bg-white/95 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 rounded-full outline-none transition placeholder:text-slate-400 shadow-inner" />
+          <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-sm">✕</button>
         </div>
 
         <!-- GitHub 点 Star 快捷胶囊按钮 -->
         <a href="https://github.com/Hehe051104/Resources" target="_blank" rel="noopener noreferrer"
           title="前往 GitHub 仓库点个 Star 支持一下"
-          class="px-3 py-1.5 bg-white/75 hover:bg-amber-50/90 border border-white/80 hover:border-amber-200 text-slate-700 hover:text-amber-700 text-xs sm:text-sm font-medium rounded-full shadow-sm transition shrink-0 flex items-center gap-1">
-          <span>🌟</span><span class="hidden md:inline">点个 Star</span>
+          class="px-3 py-2 bg-white/80 hover:bg-amber-50/95 border border-white/90 hover:border-amber-200 text-slate-700 hover:text-amber-700 text-xs sm:text-sm font-medium rounded-full shadow-sm transition shrink-0 flex items-center gap-1">
+          <span>🌟</span><span class="hidden lg:inline">点个 Star</span>
         </a>
 
+        <!-- 高亮醒目的投稿上传资料按钮 -->
         <button onclick="openUploadNotice()"
-          class="px-3.5 py-1.5 bg-blue-600/90 hover:bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-full shadow-md shadow-blue-600/20 transition shrink-0 flex items-center gap-1">
-          <span>⬆️</span><span>投稿上传</span>
+          class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white text-xs sm:text-sm font-semibold rounded-full shadow-lg shadow-blue-600/30 ring-2 ring-blue-400/30 transition shrink-0 flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0-12l-4 4m4-4l4 4" />
+          </svg>
+          <span>投稿上传资料</span>
         </button>
       </div>
     </div>
@@ -115,7 +119,7 @@
   <main class="max-w-6xl w-full mx-auto px-4 py-5 flex-1">
 
     <!-- 站点访问数据玻璃看板 -->
-    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-3.5">
+    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-4">
       <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
         <div>
           <div class="text-[11px] sm:text-xs text-slate-500 font-medium">历史总人次 (UV)</div>
@@ -137,20 +141,6 @@
         </div>
         <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-base sm:text-lg">📅</div>
       </div>
-    </div>
-
-    <!-- GitHub 仓库求 Star 玻璃致谢横幅 -->
-    <div class="apple-glass-card px-4 py-2.5 rounded-2xl mb-4 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
-      <div class="flex items-center gap-2 text-slate-700">
-        <span class="text-base">✨</span>
-        <span>本资料库完全开源免费共享，如果这里的课件或试卷帮到了你，欢迎去 GitHub 点一颗 <strong class="text-amber-600 font-semibold">🌟 Star</strong> 支持整理与维护！</span>
-      </div>
-      <a href="https://github.com/Hehe051104/Resources" target="_blank" rel="noopener noreferrer"
-        class="px-3 py-1 rounded-full bg-slate-900/85 hover:bg-slate-900 text-white text-xs font-medium transition shadow-sm flex items-center gap-1.5 shrink-0">
-        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        <span>Hehe051104/Resources</span>
-        <span class="text-amber-300">★</span>
-      </a>
     </div>
 
     <!-- 工具栏：面包屑导航 + 类型筛选 -->
@@ -245,34 +235,63 @@
       return `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/${CONFIG.BRANCH}/${encodedPath}`;
     }
 
+    // 加载访问统计（使用 Abacus 计数接口 + Vercount 备用容错，解决国内超时显示 -- 的问题）
     async function loadVisitorStats() {
-      const ns = `suda-repo-${CONFIG.GITHUB_USER}-${CONFIG.GITHUB_REPO}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-      const baseApi = `https://api.counterapi.com/v1/${ns}`;
+      const ns = `suda-${CONFIG.GITHUB_USER}-${CONFIG.GITHUB_REPO}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const apiBase = 'https://abacus.jasoncameron.dev';
       const todayStr = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
-      const isNewVisitor = !localStorage.getItem('suda_repo_visited');
+      const isNewVisitor = !localStorage.getItem('suda_repo_visited_v2');
 
       try {
-        const [totalPvRes, todayPvRes, totalUvRes] = await Promise.all([
-          fetch(`${baseApi}/total-pv/up`),
-          fetch(`${baseApi}/pv-${todayStr}/up`),
-          fetch(isNewVisitor ? `${baseApi}/total-uv/up` : `${baseApi}/total-uv`)
+        // 1. 历史总访问次数 & 今日访问次数（每次打开页面 +1）
+        const [totalPvRes, todayPvRes] = await Promise.all([
+          fetch(`${apiBase}/hit/${ns}/total-pv`),
+          fetch(`${apiBase}/hit/${ns}/pv-${todayStr}`)
         ]);
 
         if (totalPvRes.ok) {
-          const data = await totalPvRes.json();
-          document.getElementById('statTotalPv').textContent = (data.count || 0).toLocaleString();
+          const d = await totalPvRes.json();
+          if (typeof d.value === 'number') {
+            document.getElementById('statTotalPv').textContent = d.value.toLocaleString();
+          }
         }
         if (todayPvRes.ok) {
-          const data = await todayPvRes.json();
-          document.getElementById('statTodayPv').textContent = (data.count || 0).toLocaleString();
+          const d = await todayPvRes.json();
+          if (typeof d.value === 'number') {
+            document.getElementById('statTodayPv').textContent = d.value.toLocaleString();
+          }
         }
-        if (totalUvRes.ok) {
-          const data = await totalUvRes.json();
-          document.getElementById('statTotalUv').textContent = (data.count || 0).toLocaleString();
-          if (isNewVisitor) localStorage.setItem('suda_repo_visited', '1');
+
+        // 2. 历史总人次 UV（新访客 +1，老访客只读取）
+        let uvRes = await fetch(`${apiBase}/${isNewVisitor ? 'hit' : 'get'}/${ns}/total-uv`);
+        if (uvRes.status === 404) {
+          uvRes = await fetch(`${apiBase}/hit/${ns}/total-uv`);
+        }
+        if (uvRes.ok) {
+          const d = await uvRes.json();
+          if (typeof d.value === 'number') {
+            document.getElementById('statTotalUv').textContent = d.value.toLocaleString();
+            localStorage.setItem('suda_repo_visited_v2', '1');
+          }
         }
       } catch (e) {
-        console.warn('访问统计加载跳过:', e);
+        // 备用通道：Vercount 统计接口
+        try {
+          const fallbackRes = await fetch('https://events.vercount.one/api/v2/log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: window.location.origin + window.location.pathname })
+          });
+          if (fallbackRes.ok) {
+            const fb = await fallbackRes.json();
+            if (fb.data) {
+              document.getElementById('statTotalUv').textContent = (fb.data.site_uv || 1).toLocaleString();
+              document.getElementById('statTotalPv').textContent = (fb.data.site_pv || 1).toLocaleString();
+            }
+          }
+        } catch (err2) {
+          console.warn('访问统计接口暂不可用:', err2);
+        }
       }
     }
 
