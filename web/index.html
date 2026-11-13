@@ -6,7 +6,6 @@
   <title>苏州大学课程资料共享库</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
@@ -60,7 +59,7 @@
   </div>
 
   <script>
-    // ================= 1. 基础配置区 =================
+    // ================= 1. 基础配置区（已全部配置完成） =================
     const CONFIG = {
       SITE_TITLE: "苏州大学课程资料共享库",
       GITHUB_USER: "Hehe051104",
@@ -68,11 +67,9 @@
       GITHUB_REPO_URL: "https://github.com/Hehe051104/Resources",
       BRANCH: "main",
       DOWNLOAD_PROXY_PREFIX: "https://dl.bridges.codes",
-      UPLOAD_WORKER_URL: "https://upload.bridges.codes",
-      // 【请填入你在 Cloudflare Turnstile 申请的 Site Key】
-      TURNSTILE_SITE_KEY: "0x4AAAAAAF_OZsAmGua4N7nrL8W4CrFo374"
+      UPLOAD_WORKER_URL: "https://upload.bridges.codes"
     };
-    // ================================================
+    // ===============================================================
   </script>
 
   <!-- 顶部毛玻璃导航栏 -->
@@ -211,7 +208,7 @@
 
   <!-- 投稿上传资料毛玻璃弹窗 -->
   <div id="uploadModal" class="hidden fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-    <div class="bg-white/90 backdrop-blur-2xl border border-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl my-auto">
+    <div class="bg-white/92 backdrop-blur-2xl border border-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl my-auto">
       <div class="px-5 py-4 border-b border-slate-200/60 flex items-center justify-between bg-white/60">
         <div class="flex items-center gap-2">
           <span class="text-lg">📤</span>
@@ -220,11 +217,18 @@
         <button onclick="closeUploadModal()" class="w-7 h-7 rounded-full bg-slate-200/70 hover:bg-slate-300/80 text-slate-600 flex items-center justify-center text-sm transition">✕</button>
       </div>
 
-      <div class="p-5 space-y-4 text-sm max-h-[80vh] overflow-y-auto">
-        <!-- 1. 逐级选择或新建存放目录 -->
+      <div class="p-5 space-y-4 text-sm max-h-[82vh] overflow-y-auto">
+        <!-- 1. 自由逐级选择或新建多级存放目录 -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1.5">1. 选择存放目录（支持逐级选择或新建子文件夹）</label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold text-slate-700">1. 选择或新建存放目录（支持 1~5 级自定义文件夹）</label>
+            <button type="button" id="addSubLevelBtn" onclick="addNewSubLevel()"
+              class="px-2.5 py-1 text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full font-medium transition flex items-center gap-1">
+              <span>➕ 添加下一级子目录</span>
+            </button>
+          </div>
           <div id="dirSelectorContainer" class="space-y-2"></div>
+          <p class="text-[11px] text-slate-400 mt-1.5">提示：无论是已有课程还是新建文件夹，都可点击右上角「添加下一级子目录」继续创建二、三级文件夹。</p>
         </div>
 
         <!-- 2. 选择文件 -->
@@ -264,11 +268,6 @@
           </div>
         </div>
 
-        <!-- 5. Cloudflare Turnstile 人机验证容器 -->
-        <div class="flex flex-col items-center pt-1">
-          <div id="turnstileWidget"></div>
-        </div>
-
         <!-- 状态反馈提示框 -->
         <div id="uploadFeedback" class="hidden rounded-2xl p-3 text-xs leading-relaxed"></div>
 
@@ -276,7 +275,7 @@
         <div class="pt-1 flex items-center justify-end gap-2">
           <button onclick="closeUploadModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-full transition">取消</button>
           <button id="submitUploadBtn" onclick="submitUpload()"
-            class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs sm:text-sm font-semibold rounded-full shadow-md shadow-blue-600/25 transition">
+            class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs sm:text-sm font-semibold rounded-full shadow-md shadow-blue-600/25 transition cursor-pointer">
             确认提交资料
           </button>
         </div>
@@ -291,11 +290,8 @@
     let searchQuery = '';
     let selectedPaths = new Set();
 
-    // 上传模块状态
     let selectedFileObj = null;
-    let dirLevelsState = []; // 每级目录的选择状态: { mode: 'existing' | 'new', value: string }
-    let turnstileWidgetId = null;
-    let turnstileToken = "";
+    let dirLevelsState = []; // [{ mode: 'existing' | 'new', value: string }]
 
     document.getElementById('siteTitle').textContent = CONFIG.SITE_TITLE;
     document.title = CONFIG.SITE_TITLE;
@@ -603,7 +599,7 @@
       document.getElementById('previewBody').innerHTML = '';
     }
 
-    // ================= 投稿上传弹窗与逐级目录选择器逻辑 =================
+    // ================= 自由多级目录选择器逻辑（支持任意新增 1~5 级） =================
     function openUploadModal() {
       if (!catalogData) {
         alert('目录数据尚未加载完成，请稍后再试');
@@ -612,37 +608,43 @@
       document.getElementById('uploadModal').classList.remove('hidden');
       document.getElementById('uploadFeedback').classList.add('hidden');
 
-      // 如果用户当前正浏览某个课程文件夹，默认帮他自动定位到该目录
       dirLevelsState = currentPath.length > 0
         ? currentPath.map(name => ({ mode: 'existing', value: name }))
         : [{ mode: 'existing', value: '' }];
 
       renderDirSelectors();
       updateFinalPathPreview();
-
-      // 渲染 Turnstile 验证码
-      if (window.turnstile && CONFIG.TURNSTILE_SITE_KEY && !CONFIG.TURNSTILE_SITE_KEY.includes('请替换')) {
-        if (turnstileWidgetId === null) {
-          turnstileWidgetId = turnstile.render('#turnstileWidget', {
-            sitekey: CONFIG.TURNSTILE_SITE_KEY,
-            callback: (token) => { turnstileToken = token; },
-            'expired-callback': () => { turnstileToken = ""; }
-          });
-        } else {
-          turnstile.reset(turnstileWidgetId);
-          turnstileToken = "";
-        }
-      }
     }
 
     function closeUploadModal() {
       document.getElementById('uploadModal').classList.add('hidden');
     }
 
-    // 渲染多级目录联动下拉框 + 新建子文件夹输入框
+    function addNewSubLevel() {
+      if (dirLevelsState.length >= 5) {
+        alert('最多支持 5 级文件夹深度');
+        return;
+      }
+      dirLevelsState.push({ mode: 'new', value: '' });
+      renderDirSelectors();
+      updateFinalPathPreview();
+    }
+
+    function removeDirLevel(index) {
+      if (dirLevelsState.length <= 1) return;
+      dirLevelsState = dirLevelsState.slice(0, index);
+      renderDirSelectors();
+      updateFinalPathPreview();
+    }
+
     function renderDirSelectors() {
       const container = document.getElementById('dirSelectorContainer');
       container.innerHTML = '';
+
+      const addBtn = document.getElementById('addSubLevelBtn');
+      if (addBtn) {
+        addBtn.classList.toggle('hidden', dirLevelsState.length >= 5);
+      }
 
       let currentTreeNode = catalogData.tree;
       let canWalkTree = true;
@@ -655,17 +657,17 @@
         row.className = 'flex items-center gap-2';
 
         const badge = document.createElement('span');
-        badge.className = 'text-[11px] font-medium text-slate-400 w-12 shrink-0';
+        badge.className = 'text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-lg shrink-0';
         badge.textContent = `第 ${i + 1} 级`;
         row.appendChild(badge);
 
         if (availableDirs.length > 0) {
           const select = document.createElement('select');
-          select.className = 'flex-1 px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-500';
+          select.className = 'flex-1 min-w-0 px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-500';
 
           const defaultOpt = document.createElement('option');
           defaultOpt.value = '';
-          defaultOpt.textContent = i === 0 ? '-- 请选择所属课程 / 专题 --' : '-- 存放在上一级目录（不进入子目录）--';
+          defaultOpt.textContent = i === 0 ? '-- 请选择所属课程 / 专题 --' : '-- 存放在上一级（不建子文件夹）--';
           select.appendChild(defaultOpt);
 
           availableDirs.forEach(d => {
@@ -678,13 +680,12 @@
 
           const newOpt = document.createElement('option');
           newOpt.value = '__NEW__';
-          newOpt.textContent = i === 0 ? '➕ 新建顶级课程文件夹...' : '➕ 在此新建子文件夹...';
+          newOpt.textContent = i === 0 ? '➕ 新建一级课程文件夹...' : `➕ 新建第 ${i + 1} 级子文件夹...`;
           if (state.mode === 'new') newOpt.selected = true;
           select.appendChild(newOpt);
 
           select.onchange = (e) => {
             const val = e.target.value;
-            // 截断后面的层级状态
             dirLevelsState = dirLevelsState.slice(0, i + 1);
             if (val === '__NEW__') {
               dirLevelsState[i] = { mode: 'new', value: '' };
@@ -703,13 +704,19 @@
           row.appendChild(select);
         }
 
-        // 如果当前级处于新建模式，或者当前目录下已经没有预设子目录了，显示新建目录输入框
         if (state.mode === 'new' || availableDirs.length === 0) {
           const input = document.createElement('input');
           input.type = 'text';
           input.value = state.value;
-          input.placeholder = i === 0 ? '输入新课程全称（如：大学物理）' : '输入新子文件夹名称（如：历年试卷）';
-          input.className = 'flex-1 px-3 py-1.5 text-xs bg-white border border-blue-300 rounded-xl outline-none focus:border-blue-500';
+          const placeholders = [
+            '输入一级课程名（如：大学物理）',
+            '输入二级子目录（如：历年试卷 / 课件）',
+            '输入三级子目录（如：2026春季学期）',
+            '输入四级子目录名称',
+            '输入五级子目录名称'
+          ];
+          input.placeholder = placeholders[i] || '输入子文件夹名称';
+          input.className = 'flex-1 min-w-0 px-3 py-1.5 text-xs bg-white border border-blue-300 rounded-xl outline-none focus:border-blue-500';
           input.oninput = (e) => {
             dirLevelsState[i].mode = 'new';
             dirLevelsState[i].value = e.target.value;
@@ -718,23 +725,19 @@
           row.appendChild(input);
         }
 
-        // 如果第 1 级已经选好了且总层级小于 5 级，允许用户主动追加下一级子文件夹
-        if (i === dirLevelsState.length - 1 && state.value.trim() !== '' && dirLevelsState.length < 5) {
-          const addSubBtn = document.createElement('button');
-          addSubBtn.type = 'button';
-          addSubBtn.title = '继续在下面新建下一级子文件夹';
-          addSubBtn.className = 'px-2.5 py-1.5 text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl shrink-0 font-medium transition';
-          addSubBtn.textContent = '+ 子目录';
-          addSubBtn.onclick = () => {
-            dirLevelsState.push({ mode: 'new', value: '' });
-            renderDirSelectors();
-          };
-          row.appendChild(addSubBtn);
+        // 第 2 级及以上提供删除当前层级的按钮
+        if (i > 0) {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.title = '移除此级子目录';
+          delBtn.className = 'w-6 h-6 rounded-full bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 flex items-center justify-center text-xs shrink-0 transition';
+          delBtn.textContent = '✕';
+          delBtn.onclick = () => removeDirLevel(i);
+          row.appendChild(delBtn);
         }
 
         container.appendChild(row);
 
-        // 推进目录树节点指针
         if (canWalkTree && state.mode === 'existing' && state.value) {
           const nextNode = availableDirs.find(d => d.name === state.value);
           if (nextNode) currentTreeNode = nextNode;
@@ -746,7 +749,12 @@
     }
 
     function getSelectedDirParts() {
-      return dirLevelsState.map(s => s.value.trim()).filter(Boolean);
+      // 同时支持用户在输入框里直接用 "/" 写出多级路径
+      return dirLevelsState
+        .flatMap(s => s.value.split('/'))
+        .map(part => part.trim())
+        .filter(Boolean)
+        .slice(0, 5);
     }
 
     function updateFinalPathPreview() {
@@ -773,7 +781,6 @@
       updateFinalPathPreview();
     }
 
-    // 支持拖拽文件到上传框
     const dropZone = document.getElementById('dropZone');
     dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-blue-50'); });
     dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-blue-500', 'bg-blue-50'); });
@@ -799,7 +806,6 @@
 
       if (dirParts.length === 0) return showMsg('请至少选择或输入一级课程目录！');
       if (!selectedFileObj || !customName) return showMsg('请先选择要上传的资料文件！');
-      if (!turnstileToken) return showMsg('请先完成上方的人机验证！');
 
       const targetPath = `${dirParts.join('/')}/${customName}`;
       const formData = new FormData();
@@ -807,7 +813,6 @@
       formData.append('targetPath', targetPath);
       formData.append('contributor', document.getElementById('contributorInput').value.trim() || '匿名苏大同学');
       formData.append('remark', document.getElementById('remarkInput').value.trim());
-      formData.append('cfToken', turnstileToken);
 
       btn.disabled = true;
       btn.textContent = '正在上传并生成审核请求...';
@@ -837,10 +842,6 @@
       } finally {
         btn.disabled = false;
         btn.textContent = '确认提交资料';
-        if (window.turnstile && turnstileWidgetId !== null) {
-          turnstile.reset(turnstileWidgetId);
-          turnstileToken = "";
-        }
       }
     }
 
