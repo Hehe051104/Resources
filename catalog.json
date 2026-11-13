@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-13 06:22:50 UTC",
-  "total_files": 5507,
+  "updated_at": "2026-11-13 08:07:46 UTC",
+  "total_files": 5508,
   "directories": [
     "Linux操作系统",
     "Python-非科班",
@@ -113,6 +113,8 @@
     "机器视觉/machine-vision/肤色识别/结果输出",
     "机器视觉/machine-vision/货箱直线检测",
     "机器视觉/ppt",
+    "测试",
+    "测试/测试多级目录",
     "王道408课件",
     "王道408课件/操作系统",
     "王道408课件/操作系统/【课件】操作系统基础考点讲解",
@@ -217,7 +219,7 @@
     "高数一(下)/历年期末试卷及答案"
   ],
   "tree": {
-    "total_files": 5507,
+    "total_files": 5508,
     "dirs": [
       {
         "name": "Linux操作系统",
@@ -9616,6 +9618,35 @@
                 "size_bytes": 2318544,
                 "size_str": "2.2 MB",
                 "sha256": "b05f74aca2e7b258199e135a0e376671a56a4c58ff0124a02a88c2b84f29a876"
+              }
+            ]
+          }
+        ],
+        "files": []
+      },
+      {
+        "name": "测试",
+        "path": "测试",
+        "total_files": 1,
+        "dirs": [
+          {
+            "name": "测试多级目录",
+            "path": "测试/测试多级目录",
+            "total_files": 1,
+            "dirs": [],
+            "files": [
+              {
+                "name": "测试.txt",
+                "path": "测试/测试多级目录/测试.txt",
+                "parts": [
+                  "测试",
+                  "测试多级目录",
+                  "测试.txt"
+                ],
+                "ext": "txt",
+                "size_bytes": 9,
+                "size_str": "9 B",
+                "sha256": "8a5028197dc22552c1c99e4426081a34650943ccf00b35d28c785e70e0b3bb4c"
               }
             ]
           }
@@ -95575,6 +95606,19 @@
       "size_bytes": 2318544,
       "size_str": "2.2 MB",
       "sha256": "b05f74aca2e7b258199e135a0e376671a56a4c58ff0124a02a88c2b84f29a876"
+    },
+    {
+      "name": "测试.txt",
+      "path": "测试/测试多级目录/测试.txt",
+      "parts": [
+        "测试",
+        "测试多级目录",
+        "测试.txt"
+      ],
+      "ext": "txt",
+      "size_bytes": 9,
+      "size_str": "9 B",
+      "sha256": "8a5028197dc22552c1c99e4426081a34650943ccf00b35d28c785e70e0b3bb4c"
     },
     {
       "name": "操作系统基础考点讲解所有章节合并版.pdf",
