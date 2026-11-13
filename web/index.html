@@ -6,6 +6,7 @@
   <title>苏州大学课程资料共享库</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
@@ -13,7 +14,6 @@
       background-attachment: fixed;
     }
 
-    /* Apple 风格磨砂玻璃面板 */
     .apple-glass {
       background: rgba(255, 255, 255, 0.68);
       backdrop-filter: blur(22px) saturate(180%);
@@ -52,7 +52,7 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <!-- 背景弥散光晕（衬托毛玻璃通透感） -->
+  <!-- 背景弥散光晕 -->
   <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
     <div class="absolute -top-24 -left-20 w-96 h-96 rounded-full bg-blue-300/25 blur-3xl"></div>
     <div class="absolute top-1/3 -right-24 w-[28rem] h-[28rem] rounded-full bg-indigo-300/20 blur-3xl"></div>
@@ -60,19 +60,19 @@
   </div>
 
   <script>
-    // ================= 1. 基础配置区（已为你填好仓库信息） =================
+    // ================= 1. 基础配置区 =================
     const CONFIG = {
       SITE_TITLE: "苏州大学课程资料共享库",
       GITHUB_USER: "Hehe051104",
       GITHUB_REPO: "Resources",
       GITHUB_REPO_URL: "https://github.com/Hehe051104/Resources",
-      BRANCH: "main",                      // 默认分支，如果是 master 请修改
-      // 第三步配置下载加速后填入，留空则默认走 GitHub Raw 直链
+      BRANCH: "main",
       DOWNLOAD_PROXY_PREFIX: "https://dl.bridges.codes",
-      // 第四步配置上传 Worker 后填入
-      UPLOAD_WORKER_URL: ""
+      UPLOAD_WORKER_URL: "https://upload.bridges.codes",
+      // 【请填入你在 Cloudflare Turnstile 申请的 Site Key】
+      TURNSTILE_SITE_KEY: "0x4AAAAAAF_OZsAmGua4N7nrL8W4CrFo374"
     };
-    // =====================================================================
+    // ================================================
   </script>
 
   <!-- 顶部毛玻璃导航栏 -->
@@ -96,15 +96,13 @@
           <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-sm">✕</button>
         </div>
 
-        <!-- GitHub 点 Star 快捷胶囊按钮 -->
         <a href="https://github.com/Hehe051104/Resources" target="_blank" rel="noopener noreferrer"
           title="前往 GitHub 仓库点个 Star 支持一下"
           class="px-3 py-2 bg-white/80 hover:bg-amber-50/95 border border-white/90 hover:border-amber-200 text-slate-700 hover:text-amber-700 text-xs sm:text-sm font-medium rounded-full shadow-sm transition shrink-0 flex items-center gap-1">
           <span>🌟</span><span class="hidden lg:inline">点个 Star</span>
         </a>
 
-        <!-- 高亮醒目的投稿上传资料按钮 -->
-        <button onclick="openUploadNotice()"
+        <button onclick="openUploadModal()"
           class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white text-xs sm:text-sm font-semibold rounded-full shadow-lg shadow-blue-600/30 ring-2 ring-blue-400/30 transition shrink-0 flex items-center gap-1.5 cursor-pointer">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0-12l-4 4m4-4l4 4" />
@@ -145,10 +143,8 @@
 
     <!-- 工具栏：面包屑导航 + 类型筛选 -->
     <div class="apple-glass p-3 rounded-2xl mb-4 flex flex-wrap items-center justify-between gap-3">
-      <!-- 面包屑 -->
       <nav id="breadcrumb" class="flex items-center flex-wrap gap-1 text-sm text-slate-600 px-1"></nav>
 
-      <!-- 格式过滤胶囊组 -->
       <div class="flex items-center gap-1 text-xs overflow-x-auto bg-slate-200/50 p-1 rounded-full" id="filterGroup">
         <button data-filter="all" class="filter-btn px-3 py-1 rounded-full bg-white text-blue-600 font-medium shadow-sm transition">全部</button>
         <button data-filter="ppt" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">课件 PPT</button>
@@ -171,7 +167,6 @@
 
     <!-- 文件列表玻璃容器 -->
     <div class="apple-glass rounded-2xl overflow-hidden">
-      <!-- 表头 -->
       <div class="grid grid-cols-12 gap-2 px-4 py-3 bg-white/40 border-b border-white/60 text-xs font-medium text-slate-500">
         <div class="col-span-7 sm:col-span-8 flex items-center gap-2.5">
           <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500/30" />
@@ -181,14 +176,13 @@
         <div class="col-span-5 sm:col-span-2 text-right">操作</div>
       </div>
 
-      <!-- 动态内容列表 -->
       <div id="listContainer" class="divide-y divide-slate-200/45">
         <div class="p-10 text-center text-slate-400 text-sm">正在加载课程目录，请稍候...</div>
       </div>
     </div>
   </main>
 
-  <!-- 底部版权与 GitHub 链接 -->
+  <!-- 底部版权 -->
   <footer class="text-center text-xs text-slate-500 py-6 space-y-1.5">
     <div>
       开源仓库地址：
@@ -215,12 +209,93 @@
     </div>
   </div>
 
+  <!-- 投稿上传资料毛玻璃弹窗 -->
+  <div id="uploadModal" class="hidden fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white/90 backdrop-blur-2xl border border-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl my-auto">
+      <div class="px-5 py-4 border-b border-slate-200/60 flex items-center justify-between bg-white/60">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">📤</span>
+          <h3 class="font-semibold text-base text-slate-900">投稿上传课程资料</h3>
+        </div>
+        <button onclick="closeUploadModal()" class="w-7 h-7 rounded-full bg-slate-200/70 hover:bg-slate-300/80 text-slate-600 flex items-center justify-center text-sm transition">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4 text-sm max-h-[80vh] overflow-y-auto">
+        <!-- 1. 逐级选择或新建存放目录 -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">1. 选择存放目录（支持逐级选择或新建子文件夹）</label>
+          <div id="dirSelectorContainer" class="space-y-2"></div>
+        </div>
+
+        <!-- 2. 选择文件 -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">2. 选择资料文件（单文件上限 20 MB）</label>
+          <label id="dropZone" class="flex flex-col items-center justify-center border-2 border-dashed border-blue-300/80 hover:border-blue-500 bg-blue-50/40 hover:bg-blue-50/70 rounded-2xl p-4 cursor-pointer transition text-center">
+            <input type="file" id="uploadFileInput" class="hidden" onchange="handleFilePicked(this.files[0])" />
+            <span class="text-2xl mb-1">📄</span>
+            <span id="pickedFileText" class="text-xs font-medium text-slate-700">点击选择文件，或将文件拖拽至此处</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">支持 PDF / PPT / Word / Excel / Markdown / 图片 / 代码 / 压缩包</span>
+          </label>
+        </div>
+
+        <!-- 3. 实时最终路径预览与重命名 -->
+        <div class="bg-slate-100/80 border border-slate-200/70 rounded-2xl p-3 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-medium text-slate-600">保存文件名（可按需修改）：</span>
+            <input id="customFileNameInput" type="text" placeholder="选择文件后自动填充" oninput="updateFinalPathPreview()"
+              class="flex-1 px-2.5 py-1 text-xs bg-white border border-slate-200 rounded-lg outline-none focus:border-blue-500" />
+          </div>
+          <div class="text-[11px] text-slate-500 break-all">
+            最终归档路径：<strong id="finalPathPreview" class="text-blue-600 font-mono">请先选择目录和文件</strong>
+          </div>
+        </div>
+
+        <!-- 4. 贡献者署名与备注 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">贡献者昵称（选填）</label>
+            <input id="contributorInput" type="text" maxlength="25" placeholder="默认：匿名苏大同学"
+              class="w-full px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">资料备注（选填）</label>
+            <input id="remarkInput" type="text" maxlength="100" placeholder="如：2025秋期末回忆版/张老师课件"
+              class="w-full px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-500" />
+          </div>
+        </div>
+
+        <!-- 5. Cloudflare Turnstile 人机验证容器 -->
+        <div class="flex flex-col items-center pt-1">
+          <div id="turnstileWidget"></div>
+        </div>
+
+        <!-- 状态反馈提示框 -->
+        <div id="uploadFeedback" class="hidden rounded-2xl p-3 text-xs leading-relaxed"></div>
+
+        <!-- 提交按钮 -->
+        <div class="pt-1 flex items-center justify-end gap-2">
+          <button onclick="closeUploadModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-full transition">取消</button>
+          <button id="submitUploadBtn" onclick="submitUpload()"
+            class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs sm:text-sm font-semibold rounded-full shadow-md shadow-blue-600/25 transition">
+            确认提交资料
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let catalogData = null;
     let currentPath = [];
     let currentFilter = 'all';
     let searchQuery = '';
     let selectedPaths = new Set();
+
+    // 上传模块状态
+    let selectedFileObj = null;
+    let dirLevelsState = []; // 每级目录的选择状态: { mode: 'existing' | 'new', value: string }
+    let turnstileWidgetId = null;
+    let turnstileToken = "";
 
     document.getElementById('siteTitle').textContent = CONFIG.SITE_TITLE;
     document.title = CONFIG.SITE_TITLE;
@@ -235,7 +310,6 @@
       return `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/${CONFIG.BRANCH}/${encodedPath}`;
     }
 
-    // 加载访问统计（使用 Abacus 计数接口 + Vercount 备用容错，解决国内超时显示 -- 的问题）
     async function loadVisitorStats() {
       const ns = `suda-${CONFIG.GITHUB_USER}-${CONFIG.GITHUB_REPO}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
       const apiBase = 'https://abacus.jasoncameron.dev';
@@ -243,7 +317,6 @@
       const isNewVisitor = !localStorage.getItem('suda_repo_visited_v2');
 
       try {
-        // 1. 历史总访问次数 & 今日访问次数（每次打开页面 +1）
         const [totalPvRes, todayPvRes] = await Promise.all([
           fetch(`${apiBase}/hit/${ns}/total-pv`),
           fetch(`${apiBase}/hit/${ns}/pv-${todayStr}`)
@@ -251,22 +324,15 @@
 
         if (totalPvRes.ok) {
           const d = await totalPvRes.json();
-          if (typeof d.value === 'number') {
-            document.getElementById('statTotalPv').textContent = d.value.toLocaleString();
-          }
+          if (typeof d.value === 'number') document.getElementById('statTotalPv').textContent = d.value.toLocaleString();
         }
         if (todayPvRes.ok) {
           const d = await todayPvRes.json();
-          if (typeof d.value === 'number') {
-            document.getElementById('statTodayPv').textContent = d.value.toLocaleString();
-          }
+          if (typeof d.value === 'number') document.getElementById('statTodayPv').textContent = d.value.toLocaleString();
         }
 
-        // 2. 历史总人次 UV（新访客 +1，老访客只读取）
         let uvRes = await fetch(`${apiBase}/${isNewVisitor ? 'hit' : 'get'}/${ns}/total-uv`);
-        if (uvRes.status === 404) {
-          uvRes = await fetch(`${apiBase}/hit/${ns}/total-uv`);
-        }
+        if (uvRes.status === 404) uvRes = await fetch(`${apiBase}/hit/${ns}/total-uv`);
         if (uvRes.ok) {
           const d = await uvRes.json();
           if (typeof d.value === 'number') {
@@ -275,23 +341,7 @@
           }
         }
       } catch (e) {
-        // 备用通道：Vercount 统计接口
-        try {
-          const fallbackRes = await fetch('https://events.vercount.one/api/v2/log', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: window.location.origin + window.location.pathname })
-          });
-          if (fallbackRes.ok) {
-            const fb = await fallbackRes.json();
-            if (fb.data) {
-              document.getElementById('statTotalUv').textContent = (fb.data.site_uv || 1).toLocaleString();
-              document.getElementById('statTotalPv').textContent = (fb.data.site_pv || 1).toLocaleString();
-            }
-          }
-        } catch (err2) {
-          console.warn('访问统计接口暂不可用:', err2);
-        }
+        console.warn('访问统计跳过:', e);
       }
     }
 
@@ -306,7 +356,7 @@
         render();
       } catch (err) {
         document.getElementById('listContainer').innerHTML =
-          `<div class="p-10 text-center text-red-500 text-sm">目录加载失败：${err.message}<br><span class="text-xs text-slate-400">请确认仓库根目录已生成 catalog.json</span></div>`;
+          `<div class="p-10 text-center text-red-500 text-sm">目录加载失败：${err.message}</div>`;
       }
     }
 
@@ -345,7 +395,7 @@
       if (['xls', 'xlsx', 'csv'].includes(ext)) return '📗';
       if (['zip', 'rar', '7z'].includes(ext)) return '📦';
       if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) return '🖼️';
-      if (['py', 'c', 'cpp', 'java', 'js', 'html', 'md'].includes(ext)) return '💻';
+      if (['py', 'c', 'cpp', 'java', 'js', 'html', 'md', 'ipynb'].includes(ext)) return '💻';
       return '📄';
     }
 
@@ -507,7 +557,7 @@
         link.download = `苏大课程资料打包_${new Date().toISOString().slice(0,10)}.zip`;
         link.click();
       } catch (e) {
-        alert('打包过程中出错：' + e.message + '\n（提示：未配置下载加速前，部分地区直连 GitHub 可能会超时）');
+        alert('打包过程中出错：' + e.message);
       } finally {
         btn.disabled = false;
         btn.textContent = originText;
@@ -529,13 +579,12 @@
       if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
         body.innerHTML = `<img src="${url}" class="max-h-full max-w-full object-contain rounded-xl shadow" />`;
       } else if (ext === 'pdf') {
-        const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
-        body.innerHTML = `<iframe src="${viewerUrl}" class="w-full h-full border-0 rounded-2xl"></iframe>`;
+        body.innerHTML = `<iframe src="${url}?inline=1" class="w-full h-full border-0 rounded-2xl bg-white"></iframe>`;
       } else if (['doc', 'docx'].includes(ext)) {
         const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
         body.innerHTML = `
           <div class="w-full text-center text-[11px] text-slate-500 pb-1.5">
-            正在通过 Office Online 渲染文档，若文件较大或加载超时，请点击右上角「下载原文件」查看
+            正在通过 Office Online 渲染文档，若加载较慢可点击右上角「下载原文件」查看
           </div>
           <iframe src="${officeViewerUrl}" class="w-full flex-1 border-0 rounded-2xl bg-white"></iframe>`;
       } else {
@@ -554,9 +603,244 @@
       document.getElementById('previewBody').innerHTML = '';
     }
 
-    function openUploadNotice() {
-      if (!CONFIG.UPLOAD_WORKER_URL) {
-        alert('投稿上传接口将在第四步接入！目前浏览、搜索与下载功能已就绪。');
+    // ================= 投稿上传弹窗与逐级目录选择器逻辑 =================
+    function openUploadModal() {
+      if (!catalogData) {
+        alert('目录数据尚未加载完成，请稍后再试');
+        return;
+      }
+      document.getElementById('uploadModal').classList.remove('hidden');
+      document.getElementById('uploadFeedback').classList.add('hidden');
+
+      // 如果用户当前正浏览某个课程文件夹，默认帮他自动定位到该目录
+      dirLevelsState = currentPath.length > 0
+        ? currentPath.map(name => ({ mode: 'existing', value: name }))
+        : [{ mode: 'existing', value: '' }];
+
+      renderDirSelectors();
+      updateFinalPathPreview();
+
+      // 渲染 Turnstile 验证码
+      if (window.turnstile && CONFIG.TURNSTILE_SITE_KEY && !CONFIG.TURNSTILE_SITE_KEY.includes('请替换')) {
+        if (turnstileWidgetId === null) {
+          turnstileWidgetId = turnstile.render('#turnstileWidget', {
+            sitekey: CONFIG.TURNSTILE_SITE_KEY,
+            callback: (token) => { turnstileToken = token; },
+            'expired-callback': () => { turnstileToken = ""; }
+          });
+        } else {
+          turnstile.reset(turnstileWidgetId);
+          turnstileToken = "";
+        }
+      }
+    }
+
+    function closeUploadModal() {
+      document.getElementById('uploadModal').classList.add('hidden');
+    }
+
+    // 渲染多级目录联动下拉框 + 新建子文件夹输入框
+    function renderDirSelectors() {
+      const container = document.getElementById('dirSelectorContainer');
+      container.innerHTML = '';
+
+      let currentTreeNode = catalogData.tree;
+      let canWalkTree = true;
+
+      for (let i = 0; i < dirLevelsState.length; i++) {
+        const state = dirLevelsState[i];
+        const availableDirs = (canWalkTree && currentTreeNode && currentTreeNode.dirs) ? currentTreeNode.dirs : [];
+
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-2';
+
+        const badge = document.createElement('span');
+        badge.className = 'text-[11px] font-medium text-slate-400 w-12 shrink-0';
+        badge.textContent = `第 ${i + 1} 级`;
+        row.appendChild(badge);
+
+        if (availableDirs.length > 0) {
+          const select = document.createElement('select');
+          select.className = 'flex-1 px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-500';
+
+          const defaultOpt = document.createElement('option');
+          defaultOpt.value = '';
+          defaultOpt.textContent = i === 0 ? '-- 请选择所属课程 / 专题 --' : '-- 存放在上一级目录（不进入子目录）--';
+          select.appendChild(defaultOpt);
+
+          availableDirs.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.name;
+            opt.textContent = `📁 ${d.name}`;
+            if (state.mode === 'existing' && state.value === d.name) opt.selected = true;
+            select.appendChild(opt);
+          });
+
+          const newOpt = document.createElement('option');
+          newOpt.value = '__NEW__';
+          newOpt.textContent = i === 0 ? '➕ 新建顶级课程文件夹...' : '➕ 在此新建子文件夹...';
+          if (state.mode === 'new') newOpt.selected = true;
+          select.appendChild(newOpt);
+
+          select.onchange = (e) => {
+            const val = e.target.value;
+            // 截断后面的层级状态
+            dirLevelsState = dirLevelsState.slice(0, i + 1);
+            if (val === '__NEW__') {
+              dirLevelsState[i] = { mode: 'new', value: '' };
+            } else if (val === '') {
+              dirLevelsState[i] = { mode: 'existing', value: '' };
+            } else {
+              dirLevelsState[i] = { mode: 'existing', value: val };
+              const matched = availableDirs.find(d => d.name === val);
+              if (matched && matched.dirs && matched.dirs.length > 0) {
+                dirLevelsState.push({ mode: 'existing', value: '' });
+              }
+            }
+            renderDirSelectors();
+            updateFinalPathPreview();
+          };
+          row.appendChild(select);
+        }
+
+        // 如果当前级处于新建模式，或者当前目录下已经没有预设子目录了，显示新建目录输入框
+        if (state.mode === 'new' || availableDirs.length === 0) {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = state.value;
+          input.placeholder = i === 0 ? '输入新课程全称（如：大学物理）' : '输入新子文件夹名称（如：历年试卷）';
+          input.className = 'flex-1 px-3 py-1.5 text-xs bg-white border border-blue-300 rounded-xl outline-none focus:border-blue-500';
+          input.oninput = (e) => {
+            dirLevelsState[i].mode = 'new';
+            dirLevelsState[i].value = e.target.value;
+            updateFinalPathPreview();
+          };
+          row.appendChild(input);
+        }
+
+        // 如果第 1 级已经选好了且总层级小于 5 级，允许用户主动追加下一级子文件夹
+        if (i === dirLevelsState.length - 1 && state.value.trim() !== '' && dirLevelsState.length < 5) {
+          const addSubBtn = document.createElement('button');
+          addSubBtn.type = 'button';
+          addSubBtn.title = '继续在下面新建下一级子文件夹';
+          addSubBtn.className = 'px-2.5 py-1.5 text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl shrink-0 font-medium transition';
+          addSubBtn.textContent = '+ 子目录';
+          addSubBtn.onclick = () => {
+            dirLevelsState.push({ mode: 'new', value: '' });
+            renderDirSelectors();
+          };
+          row.appendChild(addSubBtn);
+        }
+
+        container.appendChild(row);
+
+        // 推进目录树节点指针
+        if (canWalkTree && state.mode === 'existing' && state.value) {
+          const nextNode = availableDirs.find(d => d.name === state.value);
+          if (nextNode) currentTreeNode = nextNode;
+          else canWalkTree = false;
+        } else {
+          canWalkTree = false;
+        }
+      }
+    }
+
+    function getSelectedDirParts() {
+      return dirLevelsState.map(s => s.value.trim()).filter(Boolean);
+    }
+
+    function updateFinalPathPreview() {
+      const dirParts = getSelectedDirParts();
+      const fileName = document.getElementById('customFileNameInput').value.trim();
+      const previewEl = document.getElementById('finalPathPreview');
+
+      if (dirParts.length === 0 || !fileName) {
+        previewEl.textContent = '请先选择（或输入）至少一级文件夹并选择文件';
+        return;
+      }
+      previewEl.textContent = `${dirParts.join(' / ')} / ${fileName}`;
+    }
+
+    function handleFilePicked(file) {
+      if (!file) return;
+      if (file.size > 20 * 1024 * 1024) {
+        alert('文件体积超过 20 MB 上限，请压缩后再上传！');
+        return;
+      }
+      selectedFileObj = file;
+      document.getElementById('pickedFileText').textContent = `已选择：${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+      document.getElementById('customFileNameInput').value = file.name;
+      updateFinalPathPreview();
+    }
+
+    // 支持拖拽文件到上传框
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-blue-50'); });
+    dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-blue-500', 'bg-blue-50'); });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleFilePicked(e.dataTransfer.files[0]);
+      }
+    });
+
+    async function submitUpload() {
+      const feedback = document.getElementById('uploadFeedback');
+      const btn = document.getElementById('submitUploadBtn');
+      const dirParts = getSelectedDirParts();
+      const customName = document.getElementById('customFileNameInput').value.trim();
+
+      const showMsg = (msg, isError = true) => {
+        feedback.className = `rounded-2xl p-3 text-xs leading-relaxed ${isError ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`;
+        feedback.innerHTML = msg;
+        feedback.classList.remove('hidden');
+      };
+
+      if (dirParts.length === 0) return showMsg('请至少选择或输入一级课程目录！');
+      if (!selectedFileObj || !customName) return showMsg('请先选择要上传的资料文件！');
+      if (!turnstileToken) return showMsg('请先完成上方的人机验证！');
+
+      const targetPath = `${dirParts.join('/')}/${customName}`;
+      const formData = new FormData();
+      formData.append('file', selectedFileObj);
+      formData.append('targetPath', targetPath);
+      formData.append('contributor', document.getElementById('contributorInput').value.trim() || '匿名苏大同学');
+      formData.append('remark', document.getElementById('remarkInput').value.trim());
+      formData.append('cfToken', turnstileToken);
+
+      btn.disabled = true;
+      btn.textContent = '正在上传并生成审核请求...';
+      feedback.classList.add('hidden');
+
+      try {
+        const res = await fetch(CONFIG.UPLOAD_WORKER_URL, {
+          method: 'POST',
+          body: formData
+        });
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+          throw new Error(result.error || '上传失败，请稍后重试');
+        }
+
+        showMsg(
+          `🎉 <strong>投稿成功！</strong><br>资料已自动提交至仓库审核队列（PR #${result.prNumber}），管理员点击合并后全站即可看到！<br><a href="${result.prUrl}" target="_blank" class="underline font-medium mt-1 inline-block">点击查看提交记录 →</a>`,
+          false
+        );
+        selectedFileObj = null;
+        document.getElementById('pickedFileText').textContent = '点击选择文件，或将文件拖拽至此处';
+        document.getElementById('customFileNameInput').value = '';
+        updateFinalPathPreview();
+      } catch (err) {
+        showMsg(`❌ ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '确认提交资料';
+        if (window.turnstile && turnstileWidgetId !== null) {
+          turnstile.reset(turnstileWidgetId);
+          turnstileToken = "";
+        }
       }
     }
 
