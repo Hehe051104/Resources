@@ -39,7 +39,7 @@
     }
 
     .apple-glass-card:hover {
-      background: rgba(255, 255, 255, 0.78);
+      background: rgba(255, 255, 255, 0.8);
       transform: translateY(-1px);
       box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
     }
@@ -59,7 +59,6 @@
   </div>
 
   <script>
-    // ================= 1. 基础配置区（已全部配置完成） =================
     const CONFIG = {
       SITE_TITLE: "苏州大学课程资料共享库",
       GITHUB_USER: "Hehe051104",
@@ -69,13 +68,12 @@
       DOWNLOAD_PROXY_PREFIX: "https://dl.bridges.codes",
       UPLOAD_WORKER_URL: "https://upload.bridges.codes"
     };
-    // ===============================================================
   </script>
 
   <!-- 顶部毛玻璃导航栏 -->
   <header class="apple-glass-header sticky top-0 z-30">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateTo([])">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 cursor-pointer group" onclick="switchView('library'); navigateTo([])">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-xl shadow-md shadow-blue-500/20 group-hover:scale-105 transition">
           🎓
         </div>
@@ -86,7 +84,7 @@
       </div>
 
       <div class="flex items-center gap-2.5 w-full sm:w-auto">
-        <div class="relative flex-1 sm:w-60 md:w-68">
+        <div class="relative flex-1 sm:w-60 md:w-72">
           <input id="searchInput" type="text" placeholder="全局搜索课程、PPT、试卷..."
             class="w-full pl-9 pr-8 py-2 text-sm bg-white/65 border border-white/85 focus:bg-white/95 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 rounded-full outline-none transition placeholder:text-slate-400 shadow-inner" />
           <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
@@ -110,74 +108,128 @@
     </div>
   </header>
 
-  <!-- 主体内容区 -->
-  <main class="max-w-6xl w-full mx-auto px-4 py-5 flex-1">
+  <!-- 主体布局：左侧毛玻璃侧边栏 + 右侧主内容区 -->
+  <div class="max-w-7xl w-full mx-auto px-4 py-5 flex-1 flex flex-col md:flex-row gap-5 items-start">
 
-    <!-- 站点访问数据玻璃看板 -->
-    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-4">
-      <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
-        <div>
-          <div class="text-[11px] sm:text-xs text-slate-500 font-medium">历史总人次 (UV)</div>
-          <div id="statTotalUv" class="text-base sm:text-xl font-bold text-slate-800 mt-0.5 tracking-tight">--</div>
-        </div>
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-500/10 flex items-center justify-center text-base sm:text-lg">👥</div>
-      </div>
-      <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
-        <div>
-          <div class="text-[11px] sm:text-xs text-slate-500 font-medium">历史总访问次数</div>
-          <div id="statTotalPv" class="text-base sm:text-xl font-bold text-blue-600 mt-0.5 tracking-tight">--</div>
-        </div>
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-base sm:text-lg">📈</div>
-      </div>
-      <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
-        <div>
-          <div class="text-[11px] sm:text-xs text-slate-500 font-medium">今日访问次数</div>
-          <div id="statTodayPv" class="text-base sm:text-xl font-bold text-emerald-600 mt-0.5 tracking-tight">--</div>
-        </div>
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-base sm:text-lg">📅</div>
-      </div>
-    </div>
-
-    <!-- 工具栏：面包屑导航 + 类型筛选 -->
-    <div class="apple-glass p-3 rounded-2xl mb-4 flex flex-wrap items-center justify-between gap-3">
-      <nav id="breadcrumb" class="flex items-center flex-wrap gap-1 text-sm text-slate-600 px-1"></nav>
-
-      <div class="flex items-center gap-1 text-xs overflow-x-auto bg-slate-200/50 p-1 rounded-full" id="filterGroup">
-        <button data-filter="all" class="filter-btn px-3 py-1 rounded-full bg-white text-blue-600 font-medium shadow-sm transition">全部</button>
-        <button data-filter="ppt" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">课件 PPT</button>
-        <button data-filter="pdf" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">PDF 文档</button>
-        <button data-filter="doc" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">Word/笔记</button>
-        <button data-filter="zip" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">压缩包</button>
-      </div>
-    </div>
-
-    <!-- 批量操作提示栏 -->
-    <div id="batchBar" class="hidden apple-glass border-blue-300/60 bg-blue-50/75 text-blue-900 px-4 py-2.5 rounded-2xl mb-4 flex items-center justify-between text-sm">
-      <span>已选中 <strong id="selectedCount" class="text-blue-600">0</strong> 个文件</span>
-      <div class="flex items-center gap-2">
-        <button onclick="clearSelection()" class="px-3 py-1 text-slate-600 hover:text-slate-900 text-xs">取消全选</button>
-        <button id="zipDownloadBtn" onclick="downloadSelectedAsZip()" class="px-3.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-full font-medium shadow-sm transition">
-          📦 打包下载 ZIP
+    <!-- 左侧毛玻璃功能导航栏 -->
+    <aside class="w-full md:w-56 shrink-0 md:sticky md:top-20">
+      <nav class="apple-glass p-2 rounded-2xl flex md:flex-col gap-1.5">
+        <button id="navLibraryBtn" onclick="switchView('library')"
+          class="flex-1 md:flex-none flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white text-blue-600 shadow-sm transition cursor-pointer">
+          <span class="flex items-center gap-2"><span>📚</span><span>课程资料库</span></span>
         </button>
-      </div>
-    </div>
 
-    <!-- 文件列表玻璃容器 -->
-    <div class="apple-glass rounded-2xl overflow-hidden">
-      <div class="grid grid-cols-12 gap-2 px-4 py-3 bg-white/40 border-b border-white/60 text-xs font-medium text-slate-500">
-        <div class="col-span-7 sm:col-span-8 flex items-center gap-2.5">
-          <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500/30" />
-          <span>名称</span>
+        <button id="navRequestsBtn" onclick="switchView('requests')"
+          class="flex-1 md:flex-none flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-white/60 transition cursor-pointer">
+          <span class="flex items-center gap-2"><span>🙋</span><span>求资料与反馈</span></span>
+          <span id="openRequestsBadge" class="hidden px-2 py-0.5 text-[11px] font-bold bg-indigo-500 text-white rounded-full">0</span>
+        </button>
+      </nav>
+
+      <!-- 侧边栏互助提示小卡片（桌面端显示） -->
+      <div class="hidden md:block apple-glass-card p-3.5 rounded-2xl mt-3.5 text-xs text-slate-600 space-y-2 leading-relaxed">
+        <div class="font-semibold text-slate-800 flex items-center gap-1.5">
+          <span>💡</span><span>互助说明</span>
         </div>
-        <div class="col-span-2 text-right hidden sm:block">大小</div>
-        <div class="col-span-5 sm:col-span-2 text-right">操作</div>
+        <p class="text-[11px] text-slate-500">找不到某门课的试卷或课件？点上方「求资料与反馈」发布需求，有资料的同学点击即可一键投喂。</p>
+      </div>
+    </aside>
+
+    <!-- 右侧主工作区 -->
+    <main class="flex-1 w-full min-w-0">
+
+      <!-- 站点访问数据玻璃看板 -->
+      <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-4">
+        <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
+          <div>
+            <div class="text-[11px] sm:text-xs text-slate-500 font-medium">历史总人次 (UV)</div>
+            <div id="statTotalUv" class="text-base sm:text-xl font-bold text-slate-800 mt-0.5 tracking-tight">--</div>
+          </div>
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-500/10 flex items-center justify-center text-base sm:text-lg">👥</div>
+        </div>
+        <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
+          <div>
+            <div class="text-[11px] sm:text-xs text-slate-500 font-medium">历史总访问次数</div>
+            <div id="statTotalPv" class="text-base sm:text-xl font-bold text-blue-600 mt-0.5 tracking-tight">--</div>
+          </div>
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-base sm:text-lg">📈</div>
+        </div>
+        <div class="apple-glass-card px-3.5 sm:px-4 py-3 rounded-2xl flex items-center justify-between">
+          <div>
+            <div class="text-[11px] sm:text-xs text-slate-500 font-medium">今日访问次数</div>
+            <div id="statTodayPv" class="text-base sm:text-xl font-bold text-emerald-600 mt-0.5 tracking-tight">--</div>
+          </div>
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-base sm:text-lg">📅</div>
+        </div>
       </div>
 
-      <div id="listContainer" class="divide-y divide-slate-200/45">
-        <div class="p-10 text-center text-slate-400 text-sm">正在加载课程目录，请稍候...</div>
+      <!-- ==================== 视图 A：课程资料库 ==================== -->
+      <div id="libraryView">
+        <!-- 工具栏：面包屑导航 + 类型筛选 -->
+        <div class="apple-glass p-3 rounded-2xl mb-4 flex flex-wrap items-center justify-between gap-3">
+          <nav id="breadcrumb" class="flex items-center flex-wrap gap-1 text-sm text-slate-600 px-1"></nav>
+
+          <div class="flex items-center gap-1 text-xs overflow-x-auto bg-slate-200/50 p-1 rounded-full" id="filterGroup">
+            <button data-filter="all" class="filter-btn px-3 py-1 rounded-full bg-white text-blue-600 font-medium shadow-sm transition">全部</button>
+            <button data-filter="ppt" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">课件 PPT</button>
+            <button data-filter="pdf" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">PDF 文档</button>
+            <button data-filter="doc" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">Word/笔记</button>
+            <button data-filter="zip" class="filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">压缩包</button>
+          </div>
+        </div>
+
+        <!-- 批量操作提示栏 -->
+        <div id="batchBar" class="hidden apple-glass border-blue-300/60 bg-blue-50/75 text-blue-900 px-4 py-2.5 rounded-2xl mb-4 flex items-center justify-between text-sm">
+          <span>已选中 <strong id="selectedCount" class="text-blue-600">0</strong> 个文件</span>
+          <div class="flex items-center gap-2">
+            <button onclick="clearSelection()" class="px-3 py-1 text-slate-600 hover:text-slate-900 text-xs">取消全选</button>
+            <button id="zipDownloadBtn" onclick="downloadSelectedAsZip()" class="px-3.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-full font-medium shadow-sm transition">
+              📦 打包下载 ZIP
+            </button>
+          </div>
+        </div>
+
+        <!-- 文件列表玻璃容器 -->
+        <div class="apple-glass rounded-2xl overflow-hidden">
+          <div class="grid grid-cols-12 gap-2 px-4 py-3 bg-white/40 border-b border-white/60 text-xs font-medium text-slate-500">
+            <div class="col-span-7 sm:col-span-8 flex items-center gap-2.5">
+              <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500/30" />
+              <span>名称</span>
+            </div>
+            <div class="col-span-2 text-right hidden sm:block">大小</div>
+            <div class="col-span-5 sm:col-span-2 text-right">操作</div>
+          </div>
+
+          <div id="listContainer" class="divide-y divide-slate-200/45">
+            <div class="p-10 text-center text-slate-400 text-sm">正在加载课程目录，请稍候...</div>
+          </div>
+        </div>
       </div>
-    </div>
-  </main>
+
+      <!-- ==================== 视图 B：求资料与反馈互助广场 ==================== -->
+      <div id="requestsView" class="hidden space-y-4">
+        <!-- 顶部筛选与发布栏 -->
+        <div class="apple-glass p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-1 text-xs bg-slate-200/50 p-1 rounded-full" id="reqFilterGroup">
+            <button data-reqfilter="all" class="req-filter-btn px-3 py-1 rounded-full bg-white text-indigo-600 font-medium shadow-sm transition">全部动态</button>
+            <button data-reqfilter="request" class="req-filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">🙏 求课程资料</button>
+            <button data-reqfilter="feedback" class="req-filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition">🚨 纠错与建议</button>
+          </div>
+
+          <button onclick="openRequestModal()"
+            class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs sm:text-sm font-semibold rounded-full shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5 cursor-pointer">
+            <span>➕</span><span>发布求资料 / 纠错</span>
+          </button>
+        </div>
+
+        <!-- 需求卡片列表容器 -->
+        <div id="requestsListContainer" class="space-y-3">
+          <div class="apple-glass p-10 rounded-2xl text-center text-slate-400 text-sm">正在加载互助广场动态...</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
 
   <!-- 底部版权 -->
   <footer class="text-center text-xs text-slate-500 py-6 space-y-1.5">
@@ -206,6 +258,71 @@
     </div>
   </div>
 
+  <!-- 发布求资料 / 纠错反馈弹窗 -->
+  <div id="requestModal" class="hidden fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white/92 backdrop-blur-2xl border border-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 border-b border-slate-200/60 flex items-center justify-between bg-white/60">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🙋</span>
+          <h3 class="font-semibold text-base text-slate-900">发布求资料 / 纠错反馈</h3>
+        </div>
+        <button onclick="closeRequestModal()" class="w-7 h-7 rounded-full bg-slate-200/70 hover:bg-slate-300/80 text-slate-600 flex items-center justify-center text-sm transition">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4 text-sm">
+        <!-- 类型选择 -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">1. 选择发布类型</label>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button type="button" id="reqTypeRequestBtn" onclick="setRequestType('request')"
+              class="py-2 px-3 rounded-xl border-2 border-indigo-500 bg-indigo-50/80 text-indigo-700 text-xs font-semibold transition">
+              🙏 求课程资料
+            </button>
+            <button type="button" id="reqTypeFeedbackBtn" onclick="setRequestType('feedback')"
+              class="py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-medium hover:bg-slate-50 transition">
+              🚨 资料纠错 / 建议
+            </button>
+          </div>
+        </div>
+
+        <!-- 关联课程名 -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">2. 关联课程名称（强烈建议填写，方便自动定位上传目录）</label>
+          <input id="reqCourseInput" type="text" list="existingCoursesList" maxlength="40" placeholder="例如：机器学习、数据结构、高数一(上)"
+            class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500" />
+          <datalist id="existingCoursesList"></datalist>
+        </div>
+
+        <!-- 具体需求描述 -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">3. 详细说明（必填）</label>
+          <textarea id="reqContentInput" rows="3" maxlength="500" placeholder="请写明具体年份、任课老师或需要哪部分课件/试卷（例如：求2025秋机器学习期末回忆版试卷）..."
+            class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 resize-none"></textarea>
+        </div>
+
+        <!-- 昵称 -->
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">你的昵称（选填）</label>
+          <input id="reqNicknameInput" type="text" maxlength="25" placeholder="默认：匿名苏大同学"
+            class="w-full px-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500" />
+        </div>
+
+        <!-- 隐形蜜罐防刷字段（人类用户不可见） -->
+        <input type="text" id="reqHoneypotWebsite" tabindex="-1" autocomplete="off" class="hidden" />
+
+        <div id="reqFeedbackBox" class="hidden rounded-2xl p-3 text-xs leading-relaxed"></div>
+
+        <div class="pt-1 flex items-center justify-end gap-2">
+          <button onclick="closeRequestModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-full transition">取消</button>
+          <button id="submitReqBtn" onclick="submitRequest()"
+            class="px-5 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 disabled:opacity-50 text-white text-xs sm:text-sm font-semibold rounded-full shadow-md transition cursor-pointer">
+            立即发布
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 投稿上传资料毛玻璃弹窗 -->
   <div id="uploadModal" class="hidden fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white/92 backdrop-blur-2xl border border-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl my-auto">
@@ -218,6 +335,12 @@
       </div>
 
       <div class="p-5 space-y-4 text-sm max-h-[82vh] overflow-y-auto">
+        <!-- 关联求资料需求提示条 -->
+        <div id="linkedIssueBanner" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-800 px-3.5 py-2.5 rounded-2xl text-xs flex items-center justify-between gap-2">
+          <span id="linkedIssueText">正在响应求资料需求</span>
+          <button type="button" onclick="clearLinkedIssue()" class="text-indigo-500 hover:text-indigo-800 underline shrink-0">取消关联</button>
+        </div>
+
         <!-- 1. 自由逐级选择或新建多级存放目录 -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
@@ -228,7 +351,6 @@
             </button>
           </div>
           <div id="dirSelectorContainer" class="space-y-2"></div>
-          <p class="text-[11px] text-slate-400 mt-1.5">提示：无论是已有课程还是新建文件夹，都可点击右上角「添加下一级子目录」继续创建二、三级文件夹。</p>
         </div>
 
         <!-- 2. 选择文件 -->
@@ -268,10 +390,8 @@
           </div>
         </div>
 
-        <!-- 状态反馈提示框 -->
         <div id="uploadFeedback" class="hidden rounded-2xl p-3 text-xs leading-relaxed"></div>
 
-        <!-- 提交按钮 -->
         <div class="pt-1 flex items-center justify-end gap-2">
           <button onclick="closeUploadModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-full transition">取消</button>
           <button id="submitUploadBtn" onclick="submitUpload()"
@@ -285,16 +405,46 @@
 
   <script>
     let catalogData = null;
+    let currentView = 'library'; // 'library' | 'requests'
     let currentPath = [];
     let currentFilter = 'all';
     let searchQuery = '';
     let selectedPaths = new Set();
 
+    // 求资料与反馈状态
+    let allRequests = [];
+    let reqFilter = 'all';
+    let currentReqType = 'request';
+
+    // 上传模块状态
     let selectedFileObj = null;
-    let dirLevelsState = []; // [{ mode: 'existing' | 'new', value: string }]
+    let dirLevelsState = [];
+    let linkedIssueNumber = null;
 
     document.getElementById('siteTitle').textContent = CONFIG.SITE_TITLE;
     document.title = CONFIG.SITE_TITLE;
+
+    // 切换左侧导航视图
+    function switchView(view) {
+      currentView = view;
+      const libView = document.getElementById('libraryView');
+      const reqView = document.getElementById('requestsView');
+      const libBtn = document.getElementById('navLibraryBtn');
+      const reqBtn = document.getElementById('navRequestsBtn');
+
+      if (view === 'library') {
+        libView.classList.remove('hidden');
+        reqView.classList.add('hidden');
+        libBtn.className = 'flex-1 md:flex-none flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white text-blue-600 shadow-sm transition cursor-pointer';
+        reqBtn.className = 'flex-1 md:flex-none flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-white/60 transition cursor-pointer';
+      } else {
+        libView.classList.add('hidden');
+        reqView.classList.remove('hidden');
+        reqBtn.className = 'flex-1 md:flex-none flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white text-indigo-600 shadow-sm transition cursor-pointer';
+        libBtn.className = 'flex-1 md:flex-none flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-white/60 transition cursor-pointer';
+        loadRequests();
+      }
+    }
 
     function getRawUrl(filePath) {
       const encodedPath = filePath.split('/').map(encodeURIComponent).join('/');
@@ -317,7 +467,6 @@
           fetch(`${apiBase}/hit/${ns}/total-pv`),
           fetch(`${apiBase}/hit/${ns}/pv-${todayStr}`)
         ]);
-
         if (totalPvRes.ok) {
           const d = await totalPvRes.json();
           if (typeof d.value === 'number') document.getElementById('statTotalPv').textContent = d.value.toLocaleString();
@@ -326,7 +475,6 @@
           const d = await todayPvRes.json();
           if (typeof d.value === 'number') document.getElementById('statTodayPv').textContent = d.value.toLocaleString();
         }
-
         let uvRes = await fetch(`${apiBase}/${isNewVisitor ? 'hit' : 'get'}/${ns}/total-uv`);
         if (uvRes.status === 404) uvRes = await fetch(`${apiBase}/hit/${ns}/total-uv`);
         if (uvRes.ok) {
@@ -336,19 +484,24 @@
             localStorage.setItem('suda_repo_visited_v2', '1');
           }
         }
-      } catch (e) {
-        console.warn('访问统计跳过:', e);
-      }
+      } catch (e) {}
     }
 
     async function init() {
       loadVisitorStats();
+      loadRequests(); // 后台静默拉取求资料数量更新左侧角标
       try {
         const res = await fetch('./catalog.json?t=' + Date.now());
         if (!res.ok) throw new Error('无法读取 catalog.json');
         catalogData = await res.json();
         document.getElementById('statsText').textContent =
           `共收录 ${catalogData.total_files} 份资料 · 更新于 ${catalogData.updated_at.replace(' UTC', '')}`;
+
+        // 填充发布求资料弹窗的课程自动补全列表
+        const dl = document.getElementById('existingCoursesList');
+        if (dl && catalogData.tree && catalogData.tree.dirs) {
+          dl.innerHTML = catalogData.tree.dirs.map(d => `<option value="${d.name}">`).join('');
+        }
         render();
       } catch (err) {
         document.getElementById('listContainer').innerHTML =
@@ -356,6 +509,176 @@
       }
     }
 
+    // ================= 求资料与反馈广场逻辑 =================
+    async function loadRequests() {
+      try {
+        const res = await fetch(`${CONFIG.UPLOAD_WORKER_URL}/requests?t=${Date.now()}`);
+        const data = await res.json();
+        if (res.ok && data.success) {
+          allRequests = data.items || [];
+          const badge = document.getElementById('openRequestsBadge');
+          if (badge) {
+            badge.textContent = allRequests.length;
+            badge.classList.toggle('hidden', allRequests.length === 0);
+          }
+          renderRequests();
+        }
+      } catch (e) {
+        document.getElementById('requestsListContainer').innerHTML =
+          `<div class="apple-glass p-10 rounded-2xl text-center text-red-500 text-sm">加载失败，请确认上传 Worker 已部署最新代码</div>`;
+      }
+    }
+
+    function renderRequests() {
+      const container = document.getElementById('requestsListContainer');
+      const filtered = allRequests.filter(item => reqFilter === 'all' || item.type === reqFilter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="apple-glass p-12 rounded-2xl text-center space-y-2">
+            <div class="text-2xl">🎉</div>
+            <div class="text-sm text-slate-600 font-medium">当前暂无待处理的求资料或反馈</div>
+            <div class="text-xs text-slate-400">如果你缺少某门课的复习资料，欢迎点击右上角「发布求资料 / 纠错」</div>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const isReq = item.type === 'request';
+        const badgeHtml = isReq
+          ? `<span class="px-2.5 py-0.5 text-[11px] font-semibold bg-indigo-500/10 text-indigo-600 border border-indigo-200/70 rounded-full">🙏 求课程资料</span>`
+          : `<span class="px-2.5 py-0.5 text-[11px] font-semibold bg-amber-500/10 text-amber-700 border border-amber-200/70 rounded-full">🚨 纠错与建议</span>`;
+        const courseTag = item.course
+          ? `<span class="px-2.5 py-0.5 text-[11px] font-medium bg-white/80 text-slate-700 border border-slate-200/80 rounded-full">📁 ${escapeHtml(item.course)}</span>`
+          : '';
+        const dateStr = new Date(item.created_at).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        const safeCourse = escapeHtml(item.course).replace(/'/g, "\\'");
+
+        return `
+          <div class="apple-glass-card p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+            <div class="space-y-1.5 min-w-0 flex-1">
+              <div class="flex items-center flex-wrap gap-2">
+                ${badgeHtml}
+                ${courseTag}
+                <span class="text-[11px] text-slate-400">#${item.number} · ${escapeHtml(item.author)} · ${dateStr}</span>
+              </div>
+              <p class="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(item.content)}</p>
+            </div>
+            <div class="shrink-0 flex items-center justify-end">
+              ${isReq ? `
+                <button onclick="fulfillRequest(${item.number}, '${safeCourse}')"
+                  class="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-full shadow-md shadow-blue-600/20 transition flex items-center gap-1.5 cursor-pointer">
+                  <span>📤</span><span>我有资料，点此上传</span>
+                </button>` : `
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer"
+                  class="px-3 py-1.5 bg-white/80 hover:bg-white border border-slate-200 text-slate-600 text-xs rounded-full transition">
+                  查看进度 ↗
+                </a>`}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    document.querySelectorAll('.req-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.req-filter-btn').forEach(b => {
+          b.className = 'req-filter-btn px-3 py-1 rounded-full hover:bg-white/60 text-slate-600 transition';
+        });
+        btn.className = 'req-filter-btn px-3 py-1 rounded-full bg-white text-indigo-600 font-medium shadow-sm transition';
+        reqFilter = btn.dataset.reqfilter;
+        renderRequests();
+      });
+    });
+
+    function openRequestModal() {
+      document.getElementById('requestModal').classList.remove('hidden');
+      document.getElementById('reqFeedbackBox').classList.add('hidden');
+      setRequestType('request');
+    }
+
+    function closeRequestModal() {
+      document.getElementById('requestModal').classList.add('hidden');
+    }
+
+    function setRequestType(type) {
+      currentReqType = type;
+      const reqBtn = document.getElementById('reqTypeRequestBtn');
+      const fbBtn = document.getElementById('reqTypeFeedbackBtn');
+      if (type === 'request') {
+        reqBtn.className = 'py-2 px-3 rounded-xl border-2 border-indigo-500 bg-indigo-50/80 text-indigo-700 text-xs font-semibold transition';
+        fbBtn.className = 'py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-medium hover:bg-slate-50 transition';
+      } else {
+        fbBtn.className = 'py-2 px-3 rounded-xl border-2 border-amber-500 bg-amber-50/80 text-amber-700 text-xs font-semibold transition';
+        reqBtn.className = 'py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-medium hover:bg-slate-50 transition';
+      }
+    }
+
+    async function submitRequest() {
+      const box = document.getElementById('reqFeedbackBox');
+      const btn = document.getElementById('submitReqBtn');
+      const content = document.getElementById('reqContentInput').value.trim();
+      const course = document.getElementById('reqCourseInput').value.trim();
+      const nickname = document.getElementById('reqNicknameInput').value.trim() || '匿名苏大同学';
+      const website = document.getElementById('reqHoneypotWebsite').value;
+
+      const showBox = (msg, isErr = true) => {
+        box.className = `rounded-2xl p-3 text-xs leading-relaxed ${isErr ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`;
+        box.innerHTML = msg;
+        box.classList.remove('hidden');
+      };
+
+      if (content.length < 3) return showBox('请填写至少 3 个字的具体说明！');
+
+      btn.disabled = true;
+      btn.textContent = '正在发布...';
+
+      try {
+        const res = await fetch(`${CONFIG.UPLOAD_WORKER_URL}/requests`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: currentReqType, course, content, nickname, website })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error || '发布失败');
+
+        document.getElementById('reqContentInput').value = '';
+        closeRequestModal();
+        loadRequests();
+      } catch (e) {
+        showBox(`❌ ${e.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '立即发布';
+      }
+    }
+
+    // 响应某条求资料需求，自动定位课程文件夹并关联 Issue 编号
+    function fulfillRequest(issueNumber, courseName) {
+      linkedIssueNumber = issueNumber;
+      const presetPath = [];
+      if (courseName && catalogData && catalogData.tree && catalogData.tree.dirs) {
+        const exact = catalogData.tree.dirs.find(d => d.name.toLowerCase() === courseName.toLowerCase());
+        const fuzzy = catalogData.tree.dirs.find(d => d.name.toLowerCase().includes(courseName.toLowerCase()) || courseName.toLowerCase().includes(d.name.toLowerCase()));
+        const matched = exact || fuzzy;
+        if (matched) {
+          presetPath.push({ mode: 'existing', value: matched.name });
+        } else {
+          presetPath.push({ mode: 'new', value: courseName });
+        }
+      }
+      openUploadModal(presetPath);
+    }
+
+    function clearLinkedIssue() {
+      linkedIssueNumber = null;
+      document.getElementById('linkedIssueBanner').classList.add('hidden');
+    }
+
+    // ================= 课程资料库浏览与预览逻辑 =================
     function getCurrentNode() {
       let node = catalogData.tree;
       for (const segment of currentPath) {
@@ -478,6 +801,7 @@
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
+      if (currentView !== 'library') switchView('library');
       searchQuery = e.target.value;
       document.getElementById('clearSearchBtn').classList.toggle('hidden', !searchQuery);
       render();
@@ -599,8 +923,8 @@
       document.getElementById('previewBody').innerHTML = '';
     }
 
-    // ================= 自由多级目录选择器逻辑（支持任意新增 1~5 级） =================
-    function openUploadModal() {
+    // ================= 自由多级目录选择器与投稿上传逻辑 =================
+    function openUploadModal(presetLevels = null) {
       if (!catalogData) {
         alert('目录数据尚未加载完成，请稍后再试');
         return;
@@ -608,9 +932,21 @@
       document.getElementById('uploadModal').classList.remove('hidden');
       document.getElementById('uploadFeedback').classList.add('hidden');
 
-      dirLevelsState = currentPath.length > 0
-        ? currentPath.map(name => ({ mode: 'existing', value: name }))
-        : [{ mode: 'existing', value: '' }];
+      const banner = document.getElementById('linkedIssueBanner');
+      if (linkedIssueNumber) {
+        document.getElementById('linkedIssueText').textContent = `🎯 正在响应求资料需求 #${linkedIssueNumber}（审核合并后将自动结单）`;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      if (presetLevels && presetLevels.length > 0) {
+        dirLevelsState = presetLevels;
+      } else {
+        dirLevelsState = currentPath.length > 0
+          ? currentPath.map(name => ({ mode: 'existing', value: name }))
+          : [{ mode: 'existing', value: '' }];
+      }
 
       renderDirSelectors();
       updateFinalPathPreview();
@@ -618,6 +954,7 @@
 
     function closeUploadModal() {
       document.getElementById('uploadModal').classList.add('hidden');
+      linkedIssueNumber = null;
     }
 
     function addNewSubLevel() {
@@ -642,9 +979,7 @@
       container.innerHTML = '';
 
       const addBtn = document.getElementById('addSubLevelBtn');
-      if (addBtn) {
-        addBtn.classList.toggle('hidden', dirLevelsState.length >= 5);
-      }
+      if (addBtn) addBtn.classList.toggle('hidden', dirLevelsState.length >= 5);
 
       let currentTreeNode = catalogData.tree;
       let canWalkTree = true;
@@ -725,7 +1060,6 @@
           row.appendChild(input);
         }
 
-        // 第 2 级及以上提供删除当前层级的按钮
         if (i > 0) {
           const delBtn = document.createElement('button');
           delBtn.type = 'button';
@@ -749,7 +1083,6 @@
     }
 
     function getSelectedDirParts() {
-      // 同时支持用户在输入框里直接用 "/" 写出多级路径
       return dirLevelsState
         .flatMap(s => s.value.split('/'))
         .map(part => part.trim())
@@ -813,6 +1146,9 @@
       formData.append('targetPath', targetPath);
       formData.append('contributor', document.getElementById('contributorInput').value.trim() || '匿名苏大同学');
       formData.append('remark', document.getElementById('remarkInput').value.trim());
+      if (linkedIssueNumber) {
+        formData.append('issueNumber', String(linkedIssueNumber));
+      }
 
       btn.disabled = true;
       btn.textContent = '正在上传并生成审核请求...';
@@ -834,6 +1170,7 @@
           false
         );
         selectedFileObj = null;
+        clearLinkedIssue();
         document.getElementById('pickedFileText').textContent = '点击选择文件，或将文件拖拽至此处';
         document.getElementById('customFileNameInput').value = '';
         updateFinalPathPreview();
