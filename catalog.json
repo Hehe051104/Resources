@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-13 08:47:01 UTC",
-  "total_files": 5509,
+  "updated_at": "2026-11-13 08:49:31 UTC",
+  "total_files": 5510,
   "directories": [
     "Linux操作系统",
     "Python-非科班",
@@ -219,7 +219,7 @@
     "高数一(下)/历年期末试卷及答案"
   ],
   "tree": {
-    "total_files": 5509,
+    "total_files": 5510,
     "dirs": [
       {
         "name": "Linux操作系统",
@@ -9627,12 +9627,12 @@
       {
         "name": "测试",
         "path": "测试",
-        "total_files": 2,
+        "total_files": 3,
         "dirs": [
           {
             "name": "测试多级目录",
             "path": "测试/测试多级目录",
-            "total_files": 2,
+            "total_files": 3,
             "dirs": [],
             "files": [
               {
@@ -9655,6 +9655,19 @@
                   "测试",
                   "测试多级目录",
                   "测试1.txt"
+                ],
+                "ext": "txt",
+                "size_bytes": 9,
+                "size_str": "9 B",
+                "sha256": "8a5028197dc22552c1c99e4426081a34650943ccf00b35d28c785e70e0b3bb4c"
+              },
+              {
+                "name": "测试及时性.txt",
+                "path": "测试/测试多级目录/测试及时性.txt",
+                "parts": [
+                  "测试",
+                  "测试多级目录",
+                  "测试及时性.txt"
                 ],
                 "ext": "txt",
                 "size_bytes": 9,
@@ -95640,6 +95653,19 @@
         "测试",
         "测试多级目录",
         "测试1.txt"
+      ],
+      "ext": "txt",
+      "size_bytes": 9,
+      "size_str": "9 B",
+      "sha256": "8a5028197dc22552c1c99e4426081a34650943ccf00b35d28c785e70e0b3bb4c"
+    },
+    {
+      "name": "测试及时性.txt",
+      "path": "测试/测试多级目录/测试及时性.txt",
+      "parts": [
+        "测试",
+        "测试多级目录",
+        "测试及时性.txt"
       ],
       "ext": "txt",
       "size_bytes": 9,
