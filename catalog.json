@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-13 09:33:28 UTC",
-  "total_files": 5512,
+  "updated_at": "2026-11-13 09:49:24 UTC",
+  "total_files": 5513,
   "directories": [
     "Linux操作系统",
     "Python-非科班",
@@ -219,7 +219,7 @@
     "高数一(下)/历年期末试卷及答案"
   ],
   "tree": {
-    "total_files": 5512,
+    "total_files": 5513,
     "dirs": [
       {
         "name": "Linux操作系统",
@@ -9627,12 +9627,12 @@
       {
         "name": "测试",
         "path": "测试",
-        "total_files": 5,
+        "total_files": 6,
         "dirs": [
           {
             "name": "测试多级目录",
             "path": "测试/测试多级目录",
-            "total_files": 5,
+            "total_files": 6,
             "dirs": [],
             "files": [
               {
@@ -9681,6 +9681,19 @@
                   "测试",
                   "测试多级目录",
                   "测试bbb.txt"
+                ],
+                "ext": "txt",
+                "size_bytes": 9,
+                "size_str": "9 B",
+                "sha256": "8a5028197dc22552c1c99e4426081a34650943ccf00b35d28c785e70e0b3bb4c"
+              },
+              {
+                "name": "测试cccc.txt",
+                "path": "测试/测试多级目录/测试cccc.txt",
+                "parts": [
+                  "测试",
+                  "测试多级目录",
+                  "测试cccc.txt"
                 ],
                 "ext": "txt",
                 "size_bytes": 9,
@@ -95705,6 +95718,19 @@
         "测试",
         "测试多级目录",
         "测试bbb.txt"
+      ],
+      "ext": "txt",
+      "size_bytes": 9,
+      "size_str": "9 B",
+      "sha256": "8a5028197dc22552c1c99e4426081a34650943ccf00b35d28c785e70e0b3bb4c"
+    },
+    {
+      "name": "测试cccc.txt",
+      "path": "测试/测试多级目录/测试cccc.txt",
+      "parts": [
+        "测试",
+        "测试多级目录",
+        "测试cccc.txt"
       ],
       "ext": "txt",
       "size_bytes": 9,
