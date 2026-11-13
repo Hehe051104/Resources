@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>大学课程资料共享库</title>
+  <title>苏州大学课程资料-Gemini</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
@@ -16,9 +16,9 @@
   <script>
     // ================= 1. 基础配置区（请修改为你的仓库信息） =================
     const CONFIG = {
-      SITE_TITLE: "大学课程资料共享库",
+      SITE_TITLE: "苏州大学课程资料-Gemini",
       GITHUB_USER: "Hehe051104",      // 例如: "zhangsan"
-      GITHUB_REPO: "Resources",          // 例如: "university-courses"
+      GITHUB_REPO: "Resources",          // 例如: "suda-courses"
       BRANCH: "main",                      // 默认分支，如果是 master 请修改
       // 第三步配置下载加速后填入，留空则默认走 GitHub Raw 直链
       DOWNLOAD_PROXY_PREFIX: "",
@@ -31,10 +31,10 @@
   <!-- 顶部导航栏 -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo([])">
-        <span class="text-2xl">📚</span>
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="navigateTo([])">
+        <span class="text-2xl">🎓</span>
         <div>
-          <h1 id="siteTitle" class="font-bold text-lg text-slate-900 leading-tight">大学课程资料共享库</h1>
+          <h1 id="siteTitle" class="font-bold text-lg text-slate-900 leading-tight">苏州大学课程资料共享库</h1>
           <p id="statsText" class="text-xs text-slate-500">正在加载目录索引...</p>
         </div>
       </div>
@@ -56,6 +56,31 @@
 
   <!-- 主体内容区 -->
   <main class="max-w-6xl w-full mx-auto px-4 py-5 flex-1">
+
+    <!-- 站点访问数据看板 -->
+    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 mb-4">
+      <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+        <div>
+          <div class="text-[11px] sm:text-xs text-slate-500">历史总人次 (UV)</div>
+          <div id="statTotalUv" class="text-base sm:text-lg font-bold text-slate-800 mt-0.5">--</div>
+        </div>
+        <span class="text-lg sm:text-xl opacity-80">👥</span>
+      </div>
+      <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+        <div>
+          <div class="text-[11px] sm:text-xs text-slate-500">历史总访问次数</div>
+          <div id="statTotalPv" class="text-base sm:text-lg font-bold text-blue-600 mt-0.5">--</div>
+        </div>
+        <span class="text-lg sm:text-xl opacity-80">📈</span>
+      </div>
+      <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+        <div>
+          <div class="text-[11px] sm:text-xs text-slate-500">今日访问次数</div>
+          <div id="statTodayPv" class="text-base sm:text-lg font-bold text-emerald-600 mt-0.5">--</div>
+        </div>
+        <span class="text-lg sm:text-xl opacity-80">📅</span>
+      </div>
+    </div>
 
     <!-- 工具栏：面包屑导航 + 类型筛选 -->
     <div class="bg-white p-3 rounded-xl border border-slate-200 mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -104,12 +129,12 @@
 
   <!-- 底部版权 -->
   <footer class="text-center text-xs text-slate-400 py-6">
-    基于 GitHub + Cloudflare Pages 构建 · 仅供学习交流使用
+    苏州大学课程资料共享库 · 基于 GitHub + Cloudflare Pages 构建
   </footer>
 
   <!-- 在线预览弹窗 -->
   <div id="previewModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 sm:p-6">
-    <div class="bg-white rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+    <div class="bg-white rounded-2xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden shadow-2xl">
       <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50">
         <h3 id="previewTitle" class="font-medium text-sm text-slate-800 truncate pr-4">文件预览</h3>
         <div class="flex items-center gap-2 shrink-0">
@@ -117,13 +142,13 @@
           <button onclick="closePreview()" class="p-1 text-slate-500 hover:text-slate-800 text-lg leading-none">✕</button>
         </div>
       </div>
-      <div id="previewBody" class="flex-1 bg-slate-100 overflow-auto flex items-center justify-center p-2"></div>
+      <div id="previewBody" class="flex-1 bg-slate-100 overflow-auto flex flex-col items-center justify-center p-2"></div>
     </div>
   </div>
 
   <script>
     let catalogData = null;
-    let currentPath = []; // 当前所在文件夹路径数组，例如 ['机器学习', '课件']
+    let currentPath = []; // 当前所在文件夹路径数组
     let currentFilter = 'all';
     let searchQuery = '';
     let selectedPaths = new Set();
@@ -131,17 +156,53 @@
     document.getElementById('siteTitle').textContent = CONFIG.SITE_TITLE;
     document.title = CONFIG.SITE_TITLE;
 
-    // 拼接文件下载地址（兼容后续第三步的 Cloudflare 加速反代）
+    // 拼接文件下载地址（自动转为完整绝对 URL，确保第三方在线预览器可正常抓取）
     function getRawUrl(filePath) {
       const encodedPath = filePath.split('/').map(encodeURIComponent).join('/');
       if (CONFIG.DOWNLOAD_PROXY_PREFIX) {
-        return `${CONFIG.DOWNLOAD_PROXY_PREFIX.replace(/\/$/, '')}/${encodedPath}`;
+        const prefix = CONFIG.DOWNLOAD_PROXY_PREFIX.replace(/\/$/, '');
+        const fullPrefix = prefix.startsWith('http') ? prefix : `${window.location.origin}${prefix}`;
+        return `${fullPrefix}/${encodedPath}`;
       }
       return `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/${CONFIG.BRANCH}/${encodedPath}`;
     }
 
+    // 加载访问统计（历史总人次 UV、历史总访问 PV、今日访问 PV）
+    async function loadVisitorStats() {
+      const ns = `suda-repo-${CONFIG.GITHUB_USER}-${CONFIG.GITHUB_REPO}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const baseApi = `https://api.counterapi.com/v1/${ns}`;
+      // 获取北京时间今日日期 YYYY-MM-DD
+      const todayStr = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+      const isNewVisitor = !localStorage.getItem('suda_repo_visited');
+
+      try {
+        const [totalPvRes, todayPvRes, totalUvRes] = await Promise.all([
+          fetch(`${baseApi}/total-pv/up`),
+          fetch(`${baseApi}/pv-${todayStr}/up`),
+          fetch(isNewVisitor ? `${baseApi}/total-uv/up` : `${baseApi}/total-uv`)
+        ]);
+
+        if (totalPvRes.ok) {
+          const data = await totalPvRes.json();
+          document.getElementById('statTotalPv').textContent = (data.count || 0).toLocaleString();
+        }
+        if (todayPvRes.ok) {
+          const data = await todayPvRes.json();
+          document.getElementById('statTodayPv').textContent = (data.count || 0).toLocaleString();
+        }
+        if (totalUvRes.ok) {
+          const data = await totalUvRes.json();
+          document.getElementById('statTotalUv').textContent = (data.count || 0).toLocaleString();
+          if (isNewVisitor) localStorage.setItem('suda_repo_visited', '1');
+        }
+      } catch (e) {
+        console.warn('访问统计加载跳过:', e);
+      }
+    }
+
     // 加载 catalog.json
     async function init() {
+      loadVisitorStats();
       try {
         const res = await fetch('./catalog.json?t=' + Date.now());
         if (!res.ok) throw new Error('无法读取 catalog.json');
@@ -155,7 +216,6 @@
       }
     }
 
-    // 根据 currentPath 获取当前目录节点
     function getCurrentNode() {
       let node = catalogData.tree;
       for (const segment of currentPath) {
@@ -195,15 +255,14 @@
       return '📄';
     }
 
+    // 支持预览的格式：PDF、Word(doc/docx)、图片、纯文本/Markdown
     function canPreview(ext) {
-      return ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'md', 'txt'].includes(ext);
+      return ['pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'md', 'txt'].includes(ext);
     }
 
-    // 渲染面包屑与文件列表
     function render() {
       if (!catalogData) return;
 
-      // 1. 渲染面包屑
       const bc = document.getElementById('breadcrumb');
       let bcHtml = `<button onclick="navigateTo([])" class="hover:text-blue-600 font-medium flex items-center gap-1">🏠 全部资料</button>`;
       currentPath.forEach((seg, idx) => {
@@ -212,7 +271,6 @@
       });
       bc.innerHTML = bcHtml;
 
-      // 2. 获取要展示的文件夹和文件
       const container = document.getElementById('listContainer');
       let dirsToShow = [];
       let filesToShow = [];
@@ -235,7 +293,6 @@
 
       let html = '';
 
-      // 渲染子文件夹
       dirsToShow.forEach(dir => {
         const nextPath = JSON.stringify([...currentPath, dir.name]).replace(/"/g, '&quot;');
         html += `
@@ -251,7 +308,6 @@
           </div>`;
       });
 
-      // 渲染文件
       filesToShow.forEach(file => {
         const checked = selectedPaths.has(file.path) ? 'checked' : '';
         const url = getRawUrl(file.path);
@@ -282,7 +338,6 @@
       container.innerHTML = html;
     }
 
-    // 搜索与筛选事件
     document.getElementById('searchInput').addEventListener('input', (e) => {
       searchQuery = e.target.value;
       document.getElementById('clearSearchBtn').classList.toggle('hidden', !searchQuery);
@@ -307,7 +362,6 @@
       });
     });
 
-    // 多选与本地 ZIP 打包
     function toggleFileSelect(path, isChecked) {
       if (isChecked) selectedPaths.add(path);
       else selectedPaths.delete(path);
@@ -357,7 +411,7 @@
         const content = await zip.generateAsync({ type: 'blob' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(content);
-        link.download = `课程资料打包_${new Date().toISOString().slice(0,10)}.zip`;
+        link.download = `苏大课程资料打包_${new Date().toISOString().slice(0,10)}.zip`;
         link.click();
       } catch (e) {
         alert('打包过程中出错：' + e.message + '\n（提示：未配置下载加速前，部分地区直连 GitHub 可能会超时）');
@@ -367,7 +421,7 @@
       }
     }
 
-    // 在线预览逻辑
+    // 在线预览逻辑（新增 doc / docx 支持）
     async function openPreview(filePath, fileName, ext) {
       const modal = document.getElementById('previewModal');
       const body = document.getElementById('previewBody');
@@ -383,9 +437,15 @@
       if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
         body.innerHTML = `<img src="${url}" class="max-h-full max-w-full object-contain rounded shadow" />`;
       } else if (ext === 'pdf') {
-        // 使用 Mozilla PDF.js 公共预览器或 iframe，解决 raw.githubusercontent.com 强制下载头导致无法内嵌的问题
         const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
         body.innerHTML = `<iframe src="${viewerUrl}" class="w-full h-full border-0 rounded"></iframe>`;
+      } else if (['doc', 'docx'].includes(ext)) {
+        const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+        body.innerHTML = `
+          <div class="w-full text-center text-[11px] text-slate-500 pb-1.5">
+            正在通过 Office Online 渲染文档，若文件较大或加载超时，请点击右上角「下载原文件」查看
+          </div>
+          <iframe src="${officeViewerUrl}" class="w-full flex-1 border-0 rounded bg-white"></iframe>`;
       } else {
         try {
           const res = await fetch(url);
