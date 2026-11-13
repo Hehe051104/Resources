@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-13 09:49:24 UTC",
-  "total_files": 5513,
+  "updated_at": "2026-11-13 10:01:47 UTC",
+  "total_files": 5514,
   "directories": [
     "Linux操作系统",
     "Python-非科班",
@@ -219,7 +219,7 @@
     "高数一(下)/历年期末试卷及答案"
   ],
   "tree": {
-    "total_files": 5513,
+    "total_files": 5514,
     "dirs": [
       {
         "name": "Linux操作系统",
@@ -9627,14 +9627,27 @@
       {
         "name": "测试",
         "path": "测试",
-        "total_files": 6,
+        "total_files": 7,
         "dirs": [
           {
             "name": "测试多级目录",
             "path": "测试/测试多级目录",
-            "total_files": 6,
+            "total_files": 7,
             "dirs": [],
             "files": [
+              {
+                "name": "最终测试.txt",
+                "path": "测试/测试多级目录/最终测试.txt",
+                "parts": [
+                  "测试",
+                  "测试多级目录",
+                  "最终测试.txt"
+                ],
+                "ext": "txt",
+                "size_bytes": 9,
+                "size_str": "9 B",
+                "sha256": "8a5028197dc22552c1c99e4426081a34650943ccf00b35d28c785e70e0b3bb4c"
+              },
               {
                 "name": "测试.txt",
                 "path": "测试/测试多级目录/测试.txt",
@@ -95671,6 +95684,19 @@
       "size_bytes": 2318544,
       "size_str": "2.2 MB",
       "sha256": "b05f74aca2e7b258199e135a0e376671a56a4c58ff0124a02a88c2b84f29a876"
+    },
+    {
+      "name": "最终测试.txt",
+      "path": "测试/测试多级目录/最终测试.txt",
+      "parts": [
+        "测试",
+        "测试多级目录",
+        "最终测试.txt"
+      ],
+      "ext": "txt",
+      "size_bytes": 9,
+      "size_str": "9 B",
+      "sha256": "8a5028197dc22552c1c99e4426081a34650943ccf00b35d28c785e70e0b3bb4c"
     },
     {
       "name": "测试.txt",
